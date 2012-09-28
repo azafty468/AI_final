@@ -21,6 +21,8 @@ public class GraphicsCanvas extends Canvas {
 	}
 	
 	public void paint(Graphics g) {
+		if (myPrintList == null)
+			return;
 		for (int y = 0; y < myPrintList.length; y++) {
 			for (int x = 0; x < myPrintList[y].length; x++) {
 				if (myPrintList[y][x] != null) {

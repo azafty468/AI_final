@@ -1,8 +1,11 @@
 package primary;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import javax.swing.JOptionPane;
 
-public class MainApplication {
+public class MainApplication implements KeyListener {
 
 	/**
 	 * @param args
@@ -50,6 +53,24 @@ public class MainApplication {
 			myView.drawGraphics();
 		}
 		*/
+	}
+
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
