@@ -1,34 +1,55 @@
 package primary;
 
 import java.awt.Insets;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 /**
  * Manages all aspects of the View
  * @author Andrew
  *
  */
-public class ApplicationView {
-	private JFrame masterFrame;
+public class ApplicationView extends JFrame implements KeyListener, WindowListener {
+	private static final long serialVersionUID = 1L;
 	private GraphicsCanvas myGraphicCanvas;
+	private CommandOutJPanel myOutput;
+	private ApplicationController myController;
 	
 	public boolean initializeScreen() {
-		masterFrame = new JFrame("Test View");
-		masterFrame.setSize(800, 600);
-		masterFrame.setLayout(null);
-	    masterFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    masterFrame.setVisible(true);
+		addKeyListener(this);
+		addWindowListener(this);
+		
+		setSize(800, 600);
+		setLayout(null);
+	    setVisible(true);
+	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    
-	    Insets insets = masterFrame.getInsets();
-	    myGraphicCanvas = new GraphicsCanvas(); 
-	    myGraphicCanvas.setBounds(insets.left + 5, insets.top + 5, 800-3*(insets.left + 5), 400-2*(insets.top + 5));
+	    Insets insets = getInsets();
+	    myGraphicCanvas = new GraphicsCanvas(0, 0, 800-3*(insets.left + 5), 400-2*(insets.top + 5));
 	    myGraphicCanvas.setVisible(true);
-	    masterFrame.add(myGraphicCanvas);
+	    add(myGraphicCanvas);
+
+	    myOutput = new CommandOutJPanel(0, 375, 800-3*(insets.left + 5), 150);
+	    add(myOutput);
+	    myOutput.revalidate();
+
+	    repaint();
+	    myGraphicCanvas.initialize();
 	    
 	    return true;
+	}
+	
+	public void setController(ApplicationController newController) {
+		myController = newController;
+	}
+
+	public void displayMessage(String newMessage){
+		myOutput.displayMessage(newMessage);
 	}
 	
 	/**
@@ -36,14 +57,27 @@ public class ApplicationView {
 	 *   of calling.
 	 * @param printList
 	 */
-	public void setDisplayGraphics(BufferedImage[][] printList) {
-		myGraphicCanvas.setPrintList(printList);
+	public void renderGraphics(BufferedImage[][] printList) {
+		myGraphicCanvas.render(printList);
 	}
+
+	public void keyPressed(KeyEvent arg0) {
+		myController.receiveKeyInput(arg0);
+	}
+
+	public void windowClosing(WindowEvent arg0) {
+		if (myController != null)
+			myController.stop();
+		System.exit(0);
+	}
+
 	
-	/**
-	 * Actually prompts the graphics canvas to draw itself
-	 */
-	public void drawGraphics() {
-		myGraphicCanvas.repaint();
-	}
+	public void windowActivated(WindowEvent arg0) { ; }
+	public void windowClosed(WindowEvent arg0) { ; }
+	public void windowDeactivated(WindowEvent arg0) { ; }
+	public void windowDeiconified(WindowEvent arg0) { ; }
+	public void windowIconified(WindowEvent arg0) { ; }
+	public void windowOpened(WindowEvent arg0) { ; }
+	public void keyReleased(KeyEvent arg0) { ; }
+	public void keyTyped(KeyEvent arg0) { ; }
 }

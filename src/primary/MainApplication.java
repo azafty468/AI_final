@@ -1,17 +1,12 @@
 package primary;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
 import javax.swing.JOptionPane;
 
-public class MainApplication implements KeyListener {
-
+public class MainApplication {
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		int boardWidth = 15;
 		int boardHeight = 10;
 		
@@ -32,45 +27,9 @@ public class MainApplication implements KeyListener {
 			JOptionPane.showMessageDialog(null, "Error while initialization the base Application Controller.  Exiting.");
 			System.exit(0);				
 		}
-		
-		myController.setCurrentGraphics();
-		myView.drawGraphics();
-		
-		/* to be used once we need a repetitive message pump
-		boolean done = false;
-		done = true;
-		while (!done) {
-			//Process Moves
-			myController.processActions();
-			
-			//Process UI Requests.  <--- This part depends largely on the underlying draw methods as it can be asynchronous
-			
-			//Plan next AI action
-			myController.planNextMoves();
-			
-			//update screen <---- this also depends on the underlying graphics engine.  
-			myController.setCurrentGraphics();
-			myView.drawGraphics();
-		}
-		*/
-	}
 
-	@Override
-	public void keyPressed(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		myController.startGraphicTimer();
+		myView.displayMessage(new String("Load complete"));
 	}
 
 }
