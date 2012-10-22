@@ -7,8 +7,8 @@ public class MainApplication {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		int boardWidth = 15;
-		int boardHeight = 10;
+		int boardWidth = getScreenWorkingWidth();
+		int boardHeight = getScreenWorkingHeight();
 		
 		ApplicationView myView = new ApplicationView();
 		if (!myView.initializeScreen()) {
@@ -31,5 +31,12 @@ public class MainApplication {
 		myController.startGraphicTimer();
 		myView.displayMessage(new String("Load complete"));
 	}
+	
+	public static int getScreenWorkingWidth() {
+	    return java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().width;
+	}
 
+	public static int getScreenWorkingHeight() {
+	    return java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height;
+	}
 }

@@ -24,12 +24,12 @@ public class Board {
 		
 		if (height < 3)
 			height = 3;
-		if (height > 40)
-			height = 40;
+		if (height > 30)
+			height = 30;
 		
 		if (width < 3) 
 			width = 3;
-		if (width > 40)
+		if (width > 30)
 			width = 40;
 		myGO = new GameObjectBackground[height][width];
 		
@@ -54,11 +54,10 @@ public class Board {
 				else {
 					myGO[y][x] = boundaryOpen;
 				}
-					
 			}
 		}
 	}
-
+	
 	private BufferedImage convertImageToLocalSettings(BufferedImage input) {
 		GraphicsConfiguration gfx_config = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration(); 
 

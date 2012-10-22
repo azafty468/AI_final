@@ -1,6 +1,7 @@
 package primary;
 
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
@@ -20,21 +21,32 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	private CommandOutJPanel myOutput;
 	private ApplicationController myController;
 	
+	ApplicationView() {
+		super("FullScreen");
+		getContentPane().setPreferredSize( Toolkit.getDefaultToolkit().getScreenSize());
+	    pack();
+	    setResizable(false);
+	}
+	
 	public boolean initializeScreen() {
 		addKeyListener(this);
 		addWindowListener(this);
 		
-		setSize(800, 600);
-		setLayout(null);
+		//setSize(1250, 900);
+		//setLayout(null);
 	    setVisible(true);
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    
+	    int width = getScreenWorkingWidth();
+		int height = getScreenWorkingHeight();
+	    
 	    Insets insets = getInsets();
-	    myGraphicCanvas = new GraphicsCanvas(0, 0, 800-3*(insets.left + 5), 400-2*(insets.top + 5));
+	    //myGraphicCanvas = new GraphicsCanvas(0, 0, width-3*(insets.left + 5), height-3*(insets.top + 5));
+	    myGraphicCanvas = new GraphicsCanvas(0, 0, width, height-10);
 	    myGraphicCanvas.setVisible(true);
 	    add(myGraphicCanvas);
 
-	    myOutput = new CommandOutJPanel(0, 375, 800-3*(insets.left + 5), 150);
+	    myOutput = new CommandOutJPanel(975, 0, 300-3*(insets.left + 5), 800);
 	    add(myOutput);
 	    myOutput.revalidate();
 
@@ -71,7 +83,6 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 		System.exit(0);
 	}
 
-	
 	public void windowActivated(WindowEvent arg0) { ; }
 	public void windowClosed(WindowEvent arg0) { ; }
 	public void windowDeactivated(WindowEvent arg0) { ; }
@@ -80,4 +91,12 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	public void windowOpened(WindowEvent arg0) { ; }
 	public void keyReleased(KeyEvent arg0) { ; }
 	public void keyTyped(KeyEvent arg0) { ; }
+	
+	public static int getScreenWorkingWidth() {
+	    return java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().width;
+	}
+
+	public static int getScreenWorkingHeight() {
+	    return java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height;
+	}
 }

@@ -30,17 +30,15 @@ public class ApplicationController {
 		//Ask the model for a list of all objects that need to be drawn and pass it along to the View for display
 		myView.renderGraphics(myModel.buildPrintList());
 	}
-
 	
 	public void receiveKeyInput(KeyEvent e) {
 		switch (e.getKeyCode()) {
-		default: 
-			String newMessage = new String("Error, unrecognized command: " + e.getKeyChar());
-			myView.displayMessage(newMessage);
-			break;
+			default: 
+				String newMessage = new String("Error, unrecognized command: " + e.getKeyChar());
+				myView.displayMessage(newMessage);
+				break;
 		}
 	}
-
 	
 	/*
 	 * Actions are intended before they are carried out.  This step processes all intended actions
@@ -56,7 +54,6 @@ public class ApplicationController {
 		
 	}
 	
-
 	public void startGraphicTimer() {
 		if (renderTask != null) {
 			renderTask.cancel();
@@ -68,7 +65,6 @@ public class ApplicationController {
 				processActions();
 				
 				renderGraphics();
-
 				
 				/* to be used once we need a repetitive message pump
 					//Process Moves
