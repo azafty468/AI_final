@@ -1,4 +1,4 @@
-package primary;
+package view;
 
 import java.awt.BorderLayout;
 
@@ -18,13 +18,14 @@ public class CommandOutJPanel extends JPanel {
 		
 		setLayout(new BorderLayout());
 		setBounds(newLeft, newTop, newWidth, newHeight);
+		
 		myCommandWindow = new JTextArea();
 
 		myCommandWindow.setLineWrap(true);
 		myCommandWindow.setWrapStyleWord(true);
 		myCommandWindow.setEditable(false);
+		myCommandWindow.setVisible(true);
 		myCommandWindow.setFocusable(false);
-	    myCommandWindow.setVisible(true);
 	    
 	    scrollPane = new JScrollPane(myCommandWindow); 
 	    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -35,6 +36,7 @@ public class CommandOutJPanel extends JPanel {
 	}
 
 	public void displayMessage(String message) {
+		currentLog += newline + message;
 		myCommandWindow.append(newline + message);
 		myCommandWindow.setCaretPosition(myCommandWindow.getDocument().getLength());
 	}

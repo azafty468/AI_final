@@ -2,6 +2,8 @@ package primary;
 
 import javax.swing.JOptionPane;
 
+import view.ApplicationView;
+
 public class MainApplication {
 	/**
 	 * @param args
@@ -10,26 +12,23 @@ public class MainApplication {
 		int boardWidth = getScreenWorkingWidth();
 		int boardHeight = getScreenWorkingHeight();
 		
-		ApplicationView myView = new ApplicationView();
-		if (!myView.initializeScreen()) {
+		if (!ApplicationView.getInstance().initializeScreen()) {
 			JOptionPane.showMessageDialog(null, "Error while initialization the base Application View.  Exiting.");
 			System.exit(0);
 		}
 		
-		ApplicationModel myModel = new ApplicationModel();
-		if(!myModel.initialize(boardWidth, boardHeight)) {
+		if(!ApplicationModel.getInstance().initialize(boardWidth, boardHeight)) {
 			JOptionPane.showMessageDialog(null, "Error while initialization the base Application Model.  Exiting.");
 			System.exit(0);		
 		}
 		
-		ApplicationController myController = new ApplicationController(myModel, myView);
-		if(!myController.initialize()) {
+		if(!ApplicationController.getInstance().initialize()) {
 			JOptionPane.showMessageDialog(null, "Error while initialization the base Application Controller.  Exiting.");
 			System.exit(0);				
 		}
 
-		myController.startGraphicTimer();
-		myView.displayMessage(new String("Load complete"));
+		ApplicationController.getInstance().startGraphicTimer();
+		ApplicationView.getInstance().displayMessage(new String("Load complete"));
 	}
 	
 	public static int getScreenWorkingWidth() {

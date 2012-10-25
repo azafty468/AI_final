@@ -10,4 +10,17 @@ public class GameObjectBackground extends GameObject {
 		super();
 		canBlockMovement = true;
 	}
+	
+	public GameObject generateClone(GameObject newObject) {
+		GameObject tmpObject;
+		
+		if (newObject == null)
+			tmpObject = new GameObjectBackground();
+		else
+			tmpObject = newObject;
+		
+		tmpObject = super.generateClone(tmpObject);
+		
+		return tmpObject;
+	}
 }

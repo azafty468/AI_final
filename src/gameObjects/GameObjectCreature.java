@@ -9,12 +9,28 @@ import actions.Action;
  */
 public class GameObjectCreature extends GameObject {
 	public AIModel myAIModel;
-	Action currentAction;
+	public Action currentAction;
 	
-	GameObjectCreature() {
+	public GameObjectCreature() {
 		super();
 		canBlockMovement = true;
 		currentAction = null;
 		myAIModel = null;
+	}
+	
+	public GameObject generateClone(GameObject newObject) {
+		GameObject tmpObject;
+		
+		if (newObject == null)
+			tmpObject = new GameObjectCreature();
+		else
+			tmpObject = newObject;
+		
+		tmpObject = super.generateClone(tmpObject);
+		
+		GameObjectCreature tmpO = (GameObjectCreature) tmpObject;
+		tmpO.myAIModel = myAIModel;
+		
+		return tmpObject;
 	}
 }

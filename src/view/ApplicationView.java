@@ -1,6 +1,8 @@
-package primary;
+package view;
 
-import java.awt.Insets;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -10,6 +12,9 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
+import primary.ApplicationController;
+
+
 /**
  * Manages all aspects of the View
  * @author Andrew
@@ -18,50 +23,49 @@ import javax.swing.JFrame;
 public class ApplicationView extends JFrame implements KeyListener, WindowListener {
 	private static final long serialVersionUID = 1L;
 	private GraphicsCanvas myGraphicCanvas;
-	private CommandOutJPanel myOutput;
-	private ApplicationController myController;
+	private CommandOutJPanel commandOutArea;
+	static ApplicationView thisView = null;
 	
 	ApplicationView() {
 		super("FullScreen");
 		getContentPane().setPreferredSize( Toolkit.getDefaultToolkit().getScreenSize());
-	    pack();
 	    setResizable(false);
+	}
+	
+	public static ApplicationView getInstance() {
+		if (thisView == null)
+			thisView = new ApplicationView();
+		
+		return thisView;
 	}
 	
 	public boolean initializeScreen() {
 		addKeyListener(this);
 		addWindowListener(this);
 		
-		//setSize(1250, 900);
-		//setLayout(null);
+		setLayout(null);
 	    setVisible(true);
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    
 	    int width = getScreenWorkingWidth();
 		int height = getScreenWorkingHeight();
-	    
-	    Insets insets = getInsets();
-	    //myGraphicCanvas = new GraphicsCanvas(0, 0, width-3*(insets.left + 5), height-3*(insets.top + 5));
-	    myGraphicCanvas = new GraphicsCanvas(0, 0, width, height-10);
+
+	    myGraphicCanvas = new GraphicsCanvas(0, 0, width, (int)(height*0.8));
 	    myGraphicCanvas.setVisible(true);
 	    add(myGraphicCanvas);
 
-	    myOutput = new CommandOutJPanel(975, 0, 300-3*(insets.left + 5), 800);
-	    add(myOutput);
-	    myOutput.revalidate();
-
+	    commandOutArea = new CommandOutJPanel(0, (int)(height*0.8), width, height - (int)(height*0.8));
+	    add(commandOutArea);
+	    
+	    pack();
 	    repaint();
 	    myGraphicCanvas.initialize();
-	    
+
 	    return true;
-	}
-	
-	public void setController(ApplicationController newController) {
-		myController = newController;
 	}
 
 	public void displayMessage(String newMessage){
-		myOutput.displayMessage(newMessage);
+		commandOutArea.displayMessage(newMessage);
 	}
 	
 	/**
@@ -69,17 +73,37 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	 *   of calling.
 	 * @param printList
 	 */
-	public void renderGraphics(BufferedImage[][] printList) {
+	public void renderGraphics(PrintListNode[][] printList) {
 		myGraphicCanvas.render(printList);
+	}	
+	
+	public static BufferedImage convertImageToLocalSettings(BufferedImage input) {
+		GraphicsConfiguration gfx_config = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration(); 
+
+		// if image is already compatible and optimized for current system settings, simply return it 
+		if (input.getColorModel().equals(gfx_config.getColorModel())) 
+			return input; 
+		
+		// image is not optimized, so create a new image that is 
+		BufferedImage new_image = gfx_config.createCompatibleImage(input.getWidth(), input.getHeight(), input.getTransparency()); 
+
+		// get the graphics context of the new image to draw the old image on 
+		Graphics2D g2d = (Graphics2D) new_image.getGraphics(); 
+
+		// actually draw the image and dispose of context no longer needed 
+		g2d.drawImage(input, 0, 0, null); 
+		g2d.dispose(); 
+
+		// return the new optimized image 
+		return new_image; 
 	}
 
 	public void keyPressed(KeyEvent arg0) {
-		myController.receiveKeyInput(arg0);
+		ApplicationController.getInstance().receiveKeyInput(arg0);
 	}
 
 	public void windowClosing(WindowEvent arg0) {
-		if (myController != null)
-			myController.stop();
+		ApplicationController.getInstance().stop();
 		System.exit(0);
 	}
 
