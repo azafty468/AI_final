@@ -45,7 +45,7 @@ public class GraphicsCanvas extends Canvas {
 						if (printList[y][x].overrideColor){
 							bkG.setXORMode(printList[y][x].baseColor);
 							bkG.drawImage(printList[y][x].myImage,  x*baseImageSize, y*baseImageSize, null);
-							bkG.setXORMode(new Color (0, 0, 0));
+							bkG.setPaintMode();
 						}
 						else
 							bkG.drawImage(printList[y][x].myImage,  x*baseImageSize, y*baseImageSize, null); 

@@ -33,7 +33,7 @@ public class ApplicationModel {
 		try {
 			BufferedImage imgBasePlayer = ImageIO.read(new File("images\\Pacman.bmp"));
 			myPlayer.setGraphics(ApplicationView.convertImageToLocalSettings(imgBasePlayer));
-			myPlayer.overrideColor = false;
+			myPlayer.overrideColor = true;
 			myPlayer.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
 			myPlayer.name = "Pac-man";
 		}
