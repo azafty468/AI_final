@@ -13,4 +13,20 @@ public class Point {
 		x = copyPoint.x;
 		y = copyPoint.y;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) 
+			return false;
+		
+		if (!(o instanceof Point))
+			return false;
+		
+		Point temp = (Point) o;
+		
+		if (this.x == temp.x && this.y == temp.y)
+			return true;
+		
+		return false;
+	}
 }

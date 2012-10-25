@@ -3,6 +3,7 @@ package primary;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -14,6 +15,7 @@ import gameObjects.Board;
 import gameObjects.GameObject;
 import gameObjects.GameObjectCreature;
 import gameObjects.GameObjectPlayer;
+import gameObjects.GameObjectToken;
 
 /**
  * Controls all aspects of the Model objects
@@ -62,8 +64,15 @@ public class ApplicationModel {
 			for (int x = 0; x < width; x++) {
 				if ((x == myPlayer.myLocation.x) && (y == myPlayer.myLocation.y))
 					printList[y][x] = myPlayer.generateDisplayNode();
-				else 
+				else {
 					printList[y][x] = myBoard.myGO[y][x].generateDisplayNode();
+
+					ArrayList<GameObjectToken> tempList = myBoard.myTokens;
+					for (int i = 0; i < tempList.size(); i++) {
+						if (tempList.get(i).myLocation.equals(new Point(x, y)))
+							printList[y][x] = tempList.get(i).generateDisplayNode();
+					}
+				}
 			}
 		}
 
@@ -75,8 +84,15 @@ public class ApplicationModel {
 			//go through each player...currently only one
 			if (myPlayer.myLocation.x == targetLocation.x && myPlayer.myLocation.y == targetLocation.y)
 				return myPlayer;
-			else
+			else {
+				ArrayList<GameObjectToken> tempList = myBoard.myTokens;
+				for (int i = 0; i < tempList.size(); i++) {
+					if (tempList.get(i).myLocation.equals(targetLocation))
+						return tempList.get(i);
+				}
+				
 				return myBoard.myGO[targetLocation.y][targetLocation.x];
+			}
 		}
 		
 		return null;

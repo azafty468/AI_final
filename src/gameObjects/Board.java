@@ -5,6 +5,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -20,6 +21,8 @@ import view.ApplicationView;
 public class Board {
 	public int width, height;
 	public GameObjectBackground[][] myGO;
+	public ArrayList<GameObjectToken> myTokens;
+	private GameObjectToken templateStrawberryToken;
 	
 	public Board(int newWidth, int newHeight) {
 		height = newHeight;
@@ -36,15 +39,24 @@ public class Board {
 			width = 40;
 		myGO = new GameObjectBackground[height][width];
 		
+		myTokens = new ArrayList<GameObjectToken>();
+		
 		GameObjectBackground boundaryWall = new GameObjectBackground();
 		GameObjectBackground boundaryOpen = new GameObjectBackground();
+		templateStrawberryToken = new GameObjectToken();
+		templateStrawberryToken.name = "Strawberry";
+		templateStrawberryToken.canBlockMovement = false;
 		try {
-			BufferedImage imgBlocked = ImageIO.read(new File("images\\TestObstruction.bmp"));
-			boundaryWall.setGraphics(ApplicationView.convertImageToLocalSettings(imgBlocked));
+			BufferedImage imgTemp = ImageIO.read(new File("images\\TestObstruction.bmp"));
+			boundaryWall.setGraphics(ApplicationView.convertImageToLocalSettings(imgTemp));
 			
-			BufferedImage imgOpen = ImageIO.read(new File("images\\BackgroundEmpty.bmp"));
-			boundaryOpen.setGraphics(ApplicationView.convertImageToLocalSettings(imgOpen));
+			imgTemp = ImageIO.read(new File("images\\BackgroundEmpty.bmp"));
+			boundaryOpen.setGraphics(ApplicationView.convertImageToLocalSettings(imgTemp));
 			boundaryOpen.canBlockMovement = false;
+			
+			imgTemp = ImageIO.read(new File("images\\strawberry.bmp"));
+			templateStrawberryToken.setGraphics(imgTemp);
+			
 		}
 		catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error while loading base graphics with exception: " + e.getMessage());
@@ -62,6 +74,13 @@ public class Board {
 				cursor.setXY(x,  y);
 				myGO[y][x] = cursor;
 			}
+		}
+		
+		int totalBerries =  ApplicationController.getGenerator().nextInt(5)+1;
+		for (int a = 0; a < totalBerries; a++) {
+			GameObjectToken tempTok = (GameObjectToken) templateStrawberryToken.generateClone(null);
+			tempTok.setXY(ApplicationController.getGenerator().nextInt(width-2)+1, ApplicationController.getGenerator().nextInt(height-2)+1);
+			myTokens.add(tempTok);
 		}
 	}
 }
