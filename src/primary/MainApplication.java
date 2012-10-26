@@ -22,7 +22,7 @@ public class MainApplication {
 			System.exit(0);		
 		}
 		
-		if(!ApplicationController.getInstance().initialize()) {
+		if(!ApplicationController.getInstance().initialize(true)) {
 			JOptionPane.showMessageDialog(null, "Error while initialization the base Application Controller.  Exiting.");
 			System.exit(0);				
 		}

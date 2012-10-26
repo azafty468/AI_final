@@ -77,7 +77,7 @@ public class Board {
 			}
 		}
 		
-		int totalBerries =  ApplicationController.getGenerator().nextInt(5)+1;
+		int totalBerries =  ApplicationController.getGenerator().nextInt(15)+15;
 		for (int a = 0; a < totalBerries; a++) {
 			GameObjectToken tempTok = (GameObjectToken) templateStrawberryToken.generateClone(null);
 			tempTok.setXY(ApplicationController.getGenerator().nextInt(width-2)+1, ApplicationController.getGenerator().nextInt(height-2)+1);

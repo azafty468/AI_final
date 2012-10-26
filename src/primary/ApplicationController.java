@@ -6,8 +6,10 @@ import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import actions.Action;
 import actions.ActionMove;
 import actions.Event;
+import aiModels.AIModelDirectMove;
 import primary.Point;
 
 import view.ApplicationView;
@@ -45,7 +47,11 @@ public class ApplicationController {
 		return thisController;
 	}
 	
-	public boolean initialize() {
+	public boolean initialize(boolean automatePlayer) {
+		
+		if (automatePlayer)
+			ApplicationModel.getInstance().myPlayer.myAIModel = new AIModelDirectMove(ApplicationModel.getInstance().myPlayer);
+		
 		return true;
 	}
 	
@@ -111,7 +117,12 @@ public class ApplicationController {
 		myModel.myPlayer.currentAction = newAction;
 	}
 
-	
+	public void processAIPhase() {
+		if (ApplicationModel.getInstance().myPlayer.currentAction == null) {
+			ApplicationModel.getInstance().myPlayer.planNextMove();
+		}
+			
+	}
 	
 	/*
 	 * Actions are intended before they are carried out.  This step processes all intended actions
@@ -148,6 +159,7 @@ public class ApplicationController {
 				if (!gameOver) {
 					processActions();
 					processEvents();
+					processAIPhase();
 					renderGraphics();
 				}
 			}

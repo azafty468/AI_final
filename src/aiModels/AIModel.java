@@ -1,5 +1,6 @@
 package aiModels;
 
+import gameObjects.GameObject;
 import actions.ActionMove;
 
 public abstract class AIModel {
@@ -11,7 +12,6 @@ public abstract class AIModel {
 	 * 
 	 * @return
 	 */
-	public ActionMove planNextMove() {
-		return null;
-	}
+	public abstract ActionMove planNextMove();
+	public void clearTarget(GameObject oldTarget) { return; }
 }

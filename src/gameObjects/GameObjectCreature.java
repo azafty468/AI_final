@@ -1,6 +1,7 @@
 package gameObjects;
 
 import actions.Action;
+import actions.ActionMove;
 import aiModels.AIModel;
 
 /**
@@ -34,5 +35,19 @@ public class GameObjectCreature extends GameObject {
 		tmpO.myAIModel = myAIModel;
 		
 		return tmpObject;
+	}
+	
+	public void planNextMove() {
+		if (myAIModel == null) {
+			return;
+		}
+		currentAction = myAIModel.planNextMove();
+	}
+	
+	public void clearTarget(GameObject target) {
+		if (myAIModel == null) {
+			return;
+		}
+		myAIModel.clearTarget(target);
 	}
 }
