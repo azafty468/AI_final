@@ -1,6 +1,7 @@
 package gameObjects;
 
 import actions.Action;
+import aiModels.AIModel;
 
 /**
  * Controls all aspects of GameObjects that are capable of independent action

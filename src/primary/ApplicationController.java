@@ -2,10 +2,12 @@ package primary;
 
 import java.awt.event.KeyEvent;
 import java.util.Random;
+import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import actions.ActionMove;
+import actions.Event;
 import primary.Point;
 
 import view.ApplicationView;
@@ -18,11 +20,15 @@ import view.ApplicationView;
 public class ApplicationController {
 	static Random generator = null;
 	static ApplicationController thisController = null;
+	public boolean gameOver;
 	private final Timer renderTimer;	// our time keeper
 	private TimerTask renderTask; // the main render and update task.
+	public Stack<Event> currentEvents;
 	
 	public ApplicationController() {
 		renderTimer = new Timer();
+		currentEvents = new Stack<Event>();
+		gameOver = false;
 	}
 	
 	public static Random getGenerator() {
@@ -122,11 +128,12 @@ public class ApplicationController {
 		
 	}
 	
-	/*
-	 * This step plans future actions
-	 */
-	public void planNextMoves() {
+	public void processEvents() {
+		while (!currentEvents.empty()) {
+			currentEvents.pop().processEvent();
+		}
 		
+		return;
 	}
 	
 	public void startGraphicTimer() {
@@ -137,24 +144,12 @@ public class ApplicationController {
 		renderTask = new TimerTask() {
 			@Override
 			public void run() {
-				processActions();
-				
-				renderGraphics();
-				
-				/* to be used once we need a repetitive message pump
-					//Process Moves
-					myController.processActions();
-					
-					//Process UI Requests.  <--- This part depends largely on the underlying draw methods as it can be asynchronous
-					
-					//Plan next AI action
-					myController.planNextMoves();
-					
-					//update screen <---- this also depends on the underlying graphics engine.  
-					myController.setCurrentGraphics();
-					myView.drawGraphics();
-				*/
-				
+				//TODO at some point we'll need to moderate the speed of this so that the game runs at a managed pace
+				if (!gameOver) {
+					processActions();
+					processEvents();
+					renderGraphics();
+				}
 			}
 		};
 		renderTimer.schedule(renderTask, 0, 16);

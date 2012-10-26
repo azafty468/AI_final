@@ -4,6 +4,7 @@ import view.ApplicationView;
 import gameObjects.*;
 import gameObjects.GameObject.GameObjectType;
 import actions.ActionMove;
+import actions.EventPickupToken;
 
 
 public class PhysicsEngine {
@@ -42,10 +43,7 @@ public class PhysicsEngine {
 			if ((tmp.getType() == GameObjectType.TOKEN) && (myAM.initiator.getType() == GameObjectType.PLAYER)) {
 				GameObjectPlayer tmpPlayer = (GameObjectPlayer) myAM.initiator;
 				GameObjectToken tmpToken = (GameObjectToken) tmp;
-				tmpPlayer.pointsGained += tmpToken.pointValue;
-				
-				myModel.myBoard.removeToken(tmpToken);
-				myView.displayMessage("Player '" + tmpPlayer.name + "' captured token '" + tmpToken.name + "'.  Player now has " + tmpPlayer.pointsGained + " points.");
+				ApplicationController.getInstance().currentEvents.push(new EventPickupToken(tmpPlayer, tmpToken));
 			}
 			
 			myAM.initiator.myLocation.x = targetX;

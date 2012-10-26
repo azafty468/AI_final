@@ -1,4 +1,4 @@
-package gameObjects;
+package aiModels;
 
 public class AIModelPlayer extends AIModel {
 

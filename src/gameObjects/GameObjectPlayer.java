@@ -1,5 +1,7 @@
 package gameObjects;
 
+import aiModels.AIModelPlayer;
+
 public class GameObjectPlayer extends GameObjectCreature {
 	public Board board;
 	public int pointsGained;
