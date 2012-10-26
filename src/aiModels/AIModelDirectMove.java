@@ -50,5 +50,4 @@ public class AIModelDirectMove extends AIModel {
 			myTarget = null;
 		}
 	}
-
 }

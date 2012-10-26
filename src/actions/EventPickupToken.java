@@ -27,7 +27,7 @@ public class EventPickupToken extends Event {
 		
 		if (ApplicationModel.getInstance().myBoard.myTokens.size() == 0) {
 			//TODO: end game reached.  What to print?
-			ApplicationView.getInstance().displayMessage("Congratulations, you have collected all the tokens.  The game is over!");
+			ApplicationView.getInstance().displayMessage("Congratulations, you have collected all the tokens in " + localPlayer.stepsTaken + " moves ending with " + localPlayer.pointsGained + " points.  The game is over!");
 			ApplicationController.getInstance().gameOver = true;
 		}
 

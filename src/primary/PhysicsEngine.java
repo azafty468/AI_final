@@ -48,6 +48,14 @@ public class PhysicsEngine {
 			
 			myAM.initiator.myLocation.x = targetX;
 			myAM.initiator.myLocation.y = targetY;
+			myAM.initiator.stepsTaken++;
+			
+			if ((myModel.myBoard.myGO[targetY][targetX].name.equals("Pit")) && (myAM.initiator.getType() == GameObjectType.PLAYER)) {
+				GameObjectPlayer tmpPlayer = (GameObjectPlayer) myAM.initiator;
+				tmpPlayer.pointsGained -= 100;
+				myView.displayMessage("Player '" + tmpPlayer.name + "' has fallen into a pit.  100 points have been deducted.");
+			}
+			
 		}
 
 		if ((myAM.initiator.myLocation.x == myAM.targetX) && (myAM.initiator.myLocation.y == myAM.targetY))

@@ -12,6 +12,7 @@ import aiModels.AIModel;
 public class GameObjectCreature extends GameObject {
 	public AIModel myAIModel;
 	public Action currentAction;
+	public int stepsTaken;
 	
 	public GameObjectCreature() {
 		super();
@@ -19,6 +20,7 @@ public class GameObjectCreature extends GameObject {
 		currentAction = null;
 		myAIModel = null;
 		myType = GameObjectType.CREATURE;
+		stepsTaken = 0;
 	}
 	
 	public GameObject generateClone(GameObject newObject) {

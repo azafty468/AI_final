@@ -9,7 +9,7 @@ import java.util.TimerTask;
 import actions.Action;
 import actions.ActionMove;
 import actions.Event;
-import aiModels.AIModelDirectMove;
+import aiModels.*;
 import primary.Point;
 
 import view.ApplicationView;
@@ -50,7 +50,8 @@ public class ApplicationController {
 	public boolean initialize(boolean automatePlayer) {
 		
 		if (automatePlayer)
-			ApplicationModel.getInstance().myPlayer.myAIModel = new AIModelDirectMove(ApplicationModel.getInstance().myPlayer);
+			//ApplicationModel.getInstance().myPlayer.myAIModel = new AIModelDirectMove(ApplicationModel.getInstance().myPlayer);
+			ApplicationModel.getInstance().myPlayer.myAIModel = new AIModelClosestMove(ApplicationModel.getInstance().myPlayer);
 		
 		return true;
 	}

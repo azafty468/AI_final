@@ -1,8 +1,5 @@
 package gameObjects;
 
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -23,6 +20,9 @@ public class Board {
 	public GameObjectBackground[][] myGO;
 	public ArrayList<GameObjectToken> myTokens;
 	private GameObjectToken templateStrawberryToken;
+	private GameObjectBackground templateBackgroundPit; 
+	private GameObjectBackground templateBoundaryWall;
+	private GameObjectBackground templateBoundaryOpen;
 	
 	public Board(int newWidth, int newHeight) {
 		height = newHeight;
@@ -41,19 +41,28 @@ public class Board {
 		
 		myTokens = new ArrayList<GameObjectToken>();
 		
-		GameObjectBackground boundaryWall = new GameObjectBackground();
-		GameObjectBackground boundaryOpen = new GameObjectBackground();
+		templateBoundaryWall = new GameObjectBackground();
+		templateBoundaryOpen = new GameObjectBackground();
+		
+		templateBackgroundPit = new GameObjectBackground();
+		templateBackgroundPit.name = "Pit";
+		templateBackgroundPit.canBlockMovement = false;
+		
 		templateStrawberryToken = new GameObjectToken();
 		templateStrawberryToken.name = "Strawberry";
 		templateStrawberryToken.pointValue = 100;
 		templateStrawberryToken.canBlockMovement = false;
 		try {
 			BufferedImage imgTemp = ImageIO.read(new File("images\\TestObstruction.bmp"));
-			boundaryWall.setGraphics(ApplicationView.convertImageToLocalSettings(imgTemp));
+			templateBoundaryWall.setGraphics(ApplicationView.convertImageToLocalSettings(imgTemp));
 			
 			imgTemp = ImageIO.read(new File("images\\BackgroundEmpty.bmp"));
-			boundaryOpen.setGraphics(ApplicationView.convertImageToLocalSettings(imgTemp));
-			boundaryOpen.canBlockMovement = false;
+			templateBoundaryOpen.setGraphics(ApplicationView.convertImageToLocalSettings(imgTemp));
+			templateBoundaryOpen.canBlockMovement = false;
+			
+			imgTemp = ImageIO.read(new File("images\\pit.bmp"));
+			templateBackgroundPit.setGraphics(ApplicationView.convertImageToLocalSettings(imgTemp));
+			templateBackgroundPit.canBlockMovement = false;
 			
 			imgTemp = ImageIO.read(new File("images\\strawberry.bmp"));
 			templateStrawberryToken.setGraphics(imgTemp);
@@ -67,21 +76,43 @@ public class Board {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				if ((x == 0) || (x == (width - 1)) || (y == 0) || (y == (height - 1))) {
-					cursor = (GameObjectBackground) boundaryWall.generateClone(null); 
+					cursor = (GameObjectBackground) templateBoundaryWall.generateClone(null); 
 				}
 				else {
-					cursor = (GameObjectBackground) boundaryOpen.generateClone(null); 
+					cursor = (GameObjectBackground) templateBoundaryOpen.generateClone(null); 
 				}
 				cursor.setXY(x,  y);
 				myGO[y][x] = cursor;
 			}
 		}
 		
-		int totalBerries =  ApplicationController.getGenerator().nextInt(15)+15;
-		for (int a = 0; a < totalBerries; a++) {
+		int totalBerries = ApplicationController.getGenerator().nextInt(15)+15;
+		int counter = 0;
+		while (counter < totalBerries) {
+			boolean safeToAdd = true;
 			GameObjectToken tempTok = (GameObjectToken) templateStrawberryToken.generateClone(null);
 			tempTok.setXY(ApplicationController.getGenerator().nextInt(width-2)+1, ApplicationController.getGenerator().nextInt(height-2)+1);
-			myTokens.add(tempTok);
+			
+			for (int i = 0; i < myTokens.size(); i++) 
+				if (myTokens.get(i).myLocation.equals(tempTok.myLocation))
+					safeToAdd = false;
+			
+			if (safeToAdd) {
+				myTokens.add(tempTok);
+				counter++;
+			}
+		}
+		
+		int totalPits = ApplicationController.getGenerator().nextInt(15)+15;
+		counter = 0;
+		while (counter < totalPits) {
+			GameObjectBackground tempBack = (GameObjectBackground) templateBackgroundPit.generateClone(null);
+			tempBack.setXY(ApplicationController.getGenerator().nextInt(width-2)+1, ApplicationController.getGenerator().nextInt(height-2)+1);
+
+			if (!(myGO[tempBack.myLocation.y][tempBack.myLocation.x].name.equals("Pit"))) {
+				myGO[tempBack.myLocation.y][tempBack.myLocation.x] = tempBack;
+				counter = counter + 1;
+			}
 		}
 	}
 	

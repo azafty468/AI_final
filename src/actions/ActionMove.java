@@ -3,6 +3,7 @@ package actions;
 import primary.PhysicsEngine;
 import primary.Point;
 import gameObjects.GameObject;
+import gameObjects.GameObjectCreature;
 
 /*
  * The action container for any Move action
@@ -10,9 +11,9 @@ import gameObjects.GameObject;
 public class ActionMove extends Action {
 	public int targetX;
 	public int targetY;
-	public GameObject initiator;
+	public GameObjectCreature initiator;
 	
-	public ActionMove(int newX, int newY, GameObject newInitiator) {
+	public ActionMove(int newX, int newY, GameObjectCreature newInitiator) {
 		super();
 		
 		targetX = newX;
@@ -20,7 +21,7 @@ public class ActionMove extends Action {
 		initiator = newInitiator;
 	}
 	
-	public ActionMove(Point targetLocation, GameObject newInitiator) {
+	public ActionMove(Point targetLocation, GameObjectCreature newInitiator) {
 		super();
 		
 		targetX = targetLocation.x;
