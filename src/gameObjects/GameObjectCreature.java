@@ -16,6 +16,7 @@ public class GameObjectCreature extends GameObject {
 		canBlockMovement = true;
 		currentAction = null;
 		myAIModel = null;
+		myType = GameObjectType.CREATURE;
 	}
 	
 	public GameObject generateClone(GameObject newObject) {

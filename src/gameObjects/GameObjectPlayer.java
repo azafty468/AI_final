@@ -1,17 +1,14 @@
 package gameObjects;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
 public class GameObjectPlayer extends GameObjectCreature {
 	public Board board;
+	public int pointsGained;
 	
 	public GameObjectPlayer() {
 		super();
 		this.myAIModel = new AIModelPlayer();
+		pointsGained = 0;
+		myType = GameObjectType.PLAYER;
 	}
 	
 	public GameObject generateClone(GameObject newObject) {
@@ -26,6 +23,7 @@ public class GameObjectPlayer extends GameObjectCreature {
 		
 		GameObjectPlayer tmpO = (GameObjectPlayer) tmpObject;
 		tmpO.board = board;
+		tmpO.pointsGained = pointsGained;
 		
 		return tmpObject;
 	}

@@ -1,9 +1,13 @@
 package gameObjects;
 
 public class GameObjectToken extends GameObject {
+	public int pointValue;
+	
 	GameObjectToken() {
 		super();
 		canBlockMovement = true;
+		myType = GameObjectType.TOKEN;
+		pointValue = 100;
 	}
 	
 	public GameObject generateClone(GameObject newObject) {
@@ -15,6 +19,9 @@ public class GameObjectToken extends GameObject {
 			tmpObject = newObject;
 		
 		tmpObject = super.generateClone(tmpObject);
+		GameObjectToken tmpO = (GameObjectToken) tmpObject;
+		
+		tmpO.pointValue = pointValue;
 		
 		return tmpObject;
 	}

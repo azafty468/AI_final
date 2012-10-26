@@ -12,6 +12,9 @@ import view.PrintListNode;
  * 	independent action, GameObjectBackground (objects which cannot move or act) and GameObject.... (something here that indicates a goal)
  */
 public class GameObject {
+	public static enum GameObjectType { GENERAL, BACKGROUND, CREATURE, PLAYER, TOKEN; }
+	
+	protected GameObjectType myType;
 	private BufferedImage myGraphics; //the actual display object.  Current a 32X32 pixel bitmap image
 	public Color baseColor;
 	public boolean overrideColor;
@@ -24,7 +27,10 @@ public class GameObject {
 		overrideColor = false;
 		myLocation = new Point(0, 0);
 		name = new String("Undefined");
+		myType = GameObjectType.GENERAL;
 	}
+	
+	public GameObjectType getType() { return myType; }
 	
 	public PrintListNode generateDisplayNode() {
 		return new PrintListNode(myGraphics, overrideColor, baseColor);
@@ -47,6 +53,7 @@ public class GameObject {
 			tempObject = newObject;
 		
 		tempObject.canBlockMovement = canBlockMovement;
+		tempObject.name = new String(name);
 		tempObject.setGraphics(myGraphics);
 		tempObject.baseColor = baseColor;
 		tempObject.overrideColor = overrideColor;

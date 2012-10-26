@@ -45,6 +45,7 @@ public class Board {
 		GameObjectBackground boundaryOpen = new GameObjectBackground();
 		templateStrawberryToken = new GameObjectToken();
 		templateStrawberryToken.name = "Strawberry";
+		templateStrawberryToken.pointValue = 100;
 		templateStrawberryToken.canBlockMovement = false;
 		try {
 			BufferedImage imgTemp = ImageIO.read(new File("images\\TestObstruction.bmp"));
@@ -82,5 +83,16 @@ public class Board {
 			tempTok.setXY(ApplicationController.getGenerator().nextInt(width-2)+1, ApplicationController.getGenerator().nextInt(height-2)+1);
 			myTokens.add(tempTok);
 		}
+	}
+	
+	public boolean removeToken(GameObjectToken removeTok) {
+		for (int i = 0; i < myTokens.size(); i++) {
+			if (myTokens.get(i).myLocation.equals(removeTok.myLocation)) {
+				myTokens.remove(i);
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }

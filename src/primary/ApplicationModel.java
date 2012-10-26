@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -23,7 +22,7 @@ import gameObjects.GameObjectToken;
  *
  */
 public class ApplicationModel {
-	private Board myBoard;
+	public Board myBoard;
 	public GameObjectPlayer myPlayer;
 	static ApplicationModel thisModel = null;
 	
