@@ -1,7 +1,6 @@
 package gameObjects;
 
 import actions.Action;
-import actions.ActionMove;
 import aiModels.AIModel;
 
 /**

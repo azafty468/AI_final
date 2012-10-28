@@ -2,11 +2,9 @@ package aiModels;
 
 import actions.ActionMove;
 
-public class AIModelPlayer extends AIModel {
-
+public class AIModelEnemy extends AIModel {
 	@Override
 	public ActionMove planNextMove() {
 		return null;
 	}
-
 }

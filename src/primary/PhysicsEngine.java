@@ -37,7 +37,12 @@ public class PhysicsEngine {
 		}
 		else if (tmp.canBlockMovement) {
 			myAM.setIsDone(true);
-			myView.displayMessage("Error, while moving '" + myAM.initiator.name + "' encountered a square blocked by '" + tmp.name + "'");
+			
+			if(myAM.initiator.name.contains("Ghost") && tmp.name.contains("Pac-man")) {
+				myView.displayMessage("Collision between Pac-man and a Ghost.");
+			}
+			else 
+				myView.displayMessage("Error, while moving '" + myAM.initiator.name + "' encountered a square blocked by '" + tmp.name + "'");
 		}
 		else {
 			if ((tmp.getType() == GameObjectType.TOKEN) && (myAM.initiator.getType() == GameObjectType.PLAYER)) {
@@ -54,6 +59,12 @@ public class PhysicsEngine {
 				GameObjectPlayer tmpPlayer = (GameObjectPlayer) myAM.initiator;
 				tmpPlayer.pointsGained -= 100;
 				myView.displayMessage("Player '" + tmpPlayer.name + "' has fallen into a pit.  100 points have been deducted.");
+			}
+			
+			if ((myModel.myBoard.myGO[targetY][targetX].name.equals("Red Ghost")) && (myAM.initiator.getType() == GameObjectType.PLAYER)) {
+				GameObjectPlayer tmpPlayer = (GameObjectPlayer) myAM.initiator;
+				tmpPlayer.pointsGained -= 100;
+				myView.displayMessage("Player '" + tmpPlayer.name + "' has been eaten by '" + myModel.myBoard.myGO[targetY][targetX].name + "'. 100 points have been deducted." );
 			}
 			
 		}

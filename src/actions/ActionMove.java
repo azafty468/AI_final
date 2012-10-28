@@ -2,7 +2,6 @@ package actions;
 
 import primary.PhysicsEngine;
 import primary.Point;
-import gameObjects.GameObject;
 import gameObjects.GameObjectCreature;
 
 /*

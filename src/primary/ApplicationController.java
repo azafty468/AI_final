@@ -6,7 +6,6 @@ import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import actions.Action;
 import actions.ActionMove;
 import actions.Event;
 import aiModels.*;
@@ -49,9 +48,12 @@ public class ApplicationController {
 	
 	public boolean initialize(boolean automatePlayer) {
 		
-		if (automatePlayer)
+		if (automatePlayer) {
 			//ApplicationModel.getInstance().myPlayer.myAIModel = new AIModelDirectMove(ApplicationModel.getInstance().myPlayer);
 			ApplicationModel.getInstance().myPlayer.myAIModel = new AIModelClosestMove(ApplicationModel.getInstance().myPlayer);
+		}
+		
+		ApplicationModel.getInstance().redGhost.myAIModel = new AIModelDijkstraAlgorithm(ApplicationModel.getInstance().redGhost);
 		
 		return true;
 	}
@@ -122,6 +124,10 @@ public class ApplicationController {
 		if (ApplicationModel.getInstance().myPlayer.currentAction == null) {
 			ApplicationModel.getInstance().myPlayer.planNextMove();
 		}
+		
+		if (ApplicationModel.getInstance().redGhost.currentAction == null) {
+			ApplicationModel.getInstance().redGhost.planNextMove();
+		}
 			
 	}
 	
@@ -136,6 +142,13 @@ public class ApplicationController {
 			
 			if (myModel.myPlayer.currentAction.getIsDone()) 
 				myModel.myPlayer.currentAction = null;
+		}
+		
+		if (myModel.redGhost.currentAction != null) {
+			myModel.redGhost.currentAction.processAction();
+			
+			if (myModel.redGhost.currentAction.getIsDone()) 
+				myModel.redGhost.currentAction = null;
 		}
 		
 	}

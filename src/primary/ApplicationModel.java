@@ -12,7 +12,7 @@ import view.PrintListNode;
 
 import gameObjects.Board;
 import gameObjects.GameObject;
-import gameObjects.GameObjectCreature;
+import gameObjects.GameObjectEnemy;
 import gameObjects.GameObjectPlayer;
 import gameObjects.GameObjectToken;
 
@@ -24,12 +24,15 @@ import gameObjects.GameObjectToken;
 public class ApplicationModel {
 	public Board myBoard;
 	public GameObjectPlayer myPlayer;
+	public GameObjectEnemy redGhost;
 	static ApplicationModel thisModel = null;
 	
 	public boolean initialize(int width, int height) {
 		myBoard = new Board(width, height);
 		myPlayer = new GameObjectPlayer();
 		myPlayer.setXY(5,  5);
+		redGhost = new GameObjectEnemy();
+		redGhost.setXY(10, 10);
 		
 		try {
 			BufferedImage imgBasePlayer = ImageIO.read(new File("images\\Pacman.bmp"));
@@ -37,9 +40,15 @@ public class ApplicationModel {
 			myPlayer.overrideColor = true;
 			myPlayer.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
 			myPlayer.name = "Pac-man";
+			
+			BufferedImage imgBaseRedGhost = ImageIO.read(new File("images\\RedGhost.bmp"));
+			redGhost.setGraphics(ApplicationView.convertImageToLocalSettings(imgBaseRedGhost));
+			redGhost.overrideColor = true;
+			redGhost.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
+			redGhost.name = "Red-Ghost";
 		}
 		catch (Exception e) {
-			System.out.println("Error while creating the base player");
+			System.out.println("Error while creating a character");
 			return false;
 		}
 				
@@ -80,7 +89,6 @@ public class ApplicationModel {
 	
 	public GameObject findGOByLocation(Point targetLocation) {
 		if ((targetLocation.x >= 0) && (targetLocation.x < myBoard.width) && (targetLocation.y >= 0) && (targetLocation.y < myBoard.height)) {
-			//go through each player...currently only one
 			if (myPlayer.myLocation.x == targetLocation.x && myPlayer.myLocation.y == targetLocation.y)
 				return myPlayer;
 			else {
