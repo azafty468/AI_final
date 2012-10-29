@@ -72,6 +72,8 @@ public class ApplicationModel {
 			for (int x = 0; x < width; x++) {
 				if ((x == myPlayer.myLocation.x) && (y == myPlayer.myLocation.y))
 					printList[y][x] = myPlayer.generateDisplayNode();
+				else if((x == redGhost.myLocation.x) && (y == redGhost.myLocation.y))
+					printList[y][x] = redGhost.generateDisplayNode();
 				else {
 					printList[y][x] = myBoard.myGO[y][x].generateDisplayNode();
 
