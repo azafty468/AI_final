@@ -4,7 +4,7 @@ import primary.ApplicationModel;
 import primary.Point;
 import gameObjects.Board;
 import gameObjects.GameObjectCreature;
-import gameObjects.GameObjectToken;
+import gameObjects.GameObjectPlayer;
 import actions.ActionMove;
 
 /**
@@ -12,47 +12,45 @@ import actions.ActionMove;
  */
 public class AIModelDijkstraAlgorithm extends AIModel {
 	GameObjectCreature enemy;
-	GameObjectToken[][] allTokens;
+	GameObjectPlayer player;
 	
+	//constructor to grab a reference to the red ghost
 	public AIModelDijkstraAlgorithm(GameObjectCreature enemy) {
 		this.enemy = enemy;
 	}
 
 	@Override
 	public ActionMove planNextMove() {
-		if (allTokens == null) { // select a new target
-			Board myBoard = ApplicationModel.getInstance().myBoard;
-			allTokens = new GameObjectToken[myBoard.height][myBoard.width];
-			
-			for(int y = 0; y < myBoard.height; y++)
-				for (int x = 0; x < myBoard.width; x++) {
-					allTokens[y][x] = null;
+		//grabs the board and the player objects
+		Board myBoard = ApplicationModel.getInstance().myBoard;
+		player = ApplicationModel.getInstance().myPlayer;
+		
+		//these are used to track where the enemy currently is
+		//and where the player currently is
+		GameObjectPlayer closestTarget = null;
+		Point myLocation = enemy.myLocation;
+		Point playerLocation = player.myLocation;
+		int closestDistance = -1;
+		
+		//This allows the enemy to follow the player around
+		for (int y = 0; y < myBoard.height; y++) {
+			for(int x = 0; x < myBoard.width; x++) {
+				if (playerLocation != null) {
+					if ((closestDistance < 0) || (closestDistance > 
+							Math.max(Math.abs(myLocation.x - playerLocation.x), 
+							Math.abs(myLocation.y - playerLocation.y)))) {
+						closestTarget = player;
+						closestDistance = Math.max(Math.abs(myLocation.x -playerLocation.x), Math.abs(myLocation.y - playerLocation.y));
+					}
 				}
-			
-			for (int i = 0; i < myBoard.myTokens.size(); i++) {
-				GameObjectToken tempToken = myBoard.myTokens.get(i);
-				allTokens[tempToken.myLocation.y][tempToken.myLocation.x]= tempToken; 
 			}
 		}
 		
-		GameObjectToken closestTarget = null;
-		Point myLocation = enemy.myLocation;
-		int closestDistance = -1;
-		
-		for (int y = 0; y < allTokens.length; y++) 
-			for(int x = 0; x < allTokens[y].length; x++)
-				if (allTokens[y][x] != null) {
-					if ((closestDistance < 0) || (closestDistance > 
-							Math.max(Math.abs(myLocation.x - allTokens[y][x].myLocation.x), 
-							Math.abs(myLocation.y - allTokens[y][x].myLocation.y)))) {
-						closestTarget = allTokens[y][x];
-						closestDistance = Math.max(Math.abs(myLocation.x - allTokens[y][x].myLocation.x), Math.abs(myLocation.y - allTokens[y][x].myLocation.y));
-					}
-				}
-		
+		//makes sure there is an actual player set up
 		if (closestTarget == null)
 			return null;
 		
+		//moves the enemy towards the player
 		int x, y;
 		x = enemy.myLocation.x;
 		y = enemy.myLocation.y;
