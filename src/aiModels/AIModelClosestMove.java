@@ -42,6 +42,7 @@ public class AIModelClosestMove extends AIModel {
 							Math.max(Math.abs(myLocation.x - allTokens[y][x].myLocation.x), 
 							Math.abs(myLocation.y - allTokens[y][x].myLocation.y)))) {
 						closestTarget = allTokens[y][x];
+						
 						closestDistance = Math.max(Math.abs(myLocation.x - allTokens[y][x].myLocation.x), Math.abs(myLocation.y - allTokens[y][x].myLocation.y));
 					}
 				}
@@ -54,7 +55,7 @@ public class AIModelClosestMove extends AIModel {
 		y = mySelf.myLocation.y;
 		if (x < closestTarget.myLocation.x)
 			x++;
-		if (x >closestTarget.myLocation.x)
+		if (x > closestTarget.myLocation.x)
 			x--;
 		if (y < closestTarget.myLocation.y)
 			y++;

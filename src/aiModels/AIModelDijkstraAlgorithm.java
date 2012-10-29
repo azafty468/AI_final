@@ -56,7 +56,7 @@ public class AIModelDijkstraAlgorithm extends AIModel {
 		y = enemy.myLocation.y;
 		if (x < closestTarget.myLocation.x)
 			x++;
-		if (x >closestTarget.myLocation.x)
+		if (x > closestTarget.myLocation.x)
 			x--;
 		if (y < closestTarget.myLocation.y)
 			y++;

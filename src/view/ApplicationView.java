@@ -4,6 +4,8 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
@@ -11,16 +13,20 @@ import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import primary.ApplicationController;
 
 
 /**
  * Manages all aspects of the View
- * @author Andrew
+ * @author Andrew and Trevor
  *
  */
-public class ApplicationView extends JFrame implements KeyListener, WindowListener {
+public class ApplicationView extends JFrame implements KeyListener, WindowListener, ActionListener {
 	private static final long serialVersionUID = 1L;
 	private GraphicsCanvas myGraphicCanvas;
 	private CommandOutJPanel commandOutArea;
@@ -30,6 +36,58 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 		super("FullScreen");
 		getContentPane().setPreferredSize( Toolkit.getDefaultToolkit().getScreenSize());
 	    setResizable(false);
+	    
+	    JMenuBar jmb = new JMenuBar();
+
+	    JMenu jmFile = new JMenu("File");
+	    JMenuItem jmiReset = new JMenuItem("New Game");
+	    JMenuItem jmiExit = new JMenuItem("Exit");
+	    jmFile.add(jmiReset);
+	    jmFile.addSeparator();
+	    jmFile.add(jmiExit);
+	    jmb.add(jmFile);
+
+	    JMenu jmHelp = new JMenu("Help");
+	    JMenuItem jmiAbout = new JMenuItem("About");
+	    jmHelp.add(jmiAbout);
+	    jmb.add(jmHelp);
+
+	    //reset the game
+	    jmiReset.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				resetGame();
+			}
+	    });
+	    
+	    //Exit the game
+	    jmiExit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				closeGame();
+			}
+	    });
+	    
+	    //Show info about the game
+	    jmiAbout.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(null, "This game was created by:\nAndrew Zafft\nTrevor Hodde\nJames Forkey");
+			}
+	    });
+
+	    this.setJMenuBar(jmb);
+	}
+	
+	//We can reset the game here
+	public void resetGame() {
+		this.dispose();
+	}
+	
+	//Exit the game
+	public void closeGame() {
+		this.dispose();
+		System.exit(0);
 	}
 	
 	public static ApplicationView getInstance() {
@@ -122,5 +180,9 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 
 	public static int getScreenWorkingHeight() {
 	    return java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
 	}
 }

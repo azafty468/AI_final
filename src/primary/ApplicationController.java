@@ -15,7 +15,7 @@ import view.ApplicationView;
 
 /**
  * Negotiates all interactions between the User, View and Model
- * @author Andrew
+ * @author Andrew and Trevor
  *
  */
 public class ApplicationController {
@@ -73,6 +73,10 @@ public class ApplicationController {
 			case KeyEvent.VK_NUMPAD7:
 			case KeyEvent.VK_NUMPAD8:
 			case KeyEvent.VK_NUMPAD9:
+			case KeyEvent.VK_UP:
+			case KeyEvent.VK_DOWN:
+			case KeyEvent.VK_RIGHT:
+			case KeyEvent.VK_LEFT:
 				moveCursor(e);
 				break;
 		
@@ -103,17 +107,29 @@ public class ApplicationController {
 			myLocation.x--;
 			myLocation.y--;
 		}
-		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD4) {
+		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD4) { //left
 			myLocation.x--;
 		}
-		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD6) {
+		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD6) { //right
 			myLocation.x++;
 		}
-		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD8) {
+		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD8) { //up
 			myLocation.y--;
 		}
-		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD2) {
+		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD2) { //down
 			myLocation.y++;
+		}
+		else if(e.getKeyCode() == KeyEvent.VK_UP) {
+			myLocation.y--;
+		}
+		else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+			myLocation.y++;
+		}
+		else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			myLocation.x++;
+		}
+		else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+			myLocation.x--;
 		}
 		
 		ActionMove newAction = new ActionMove(myLocation, myModel.myPlayer);
@@ -128,7 +144,6 @@ public class ApplicationController {
 		if (ApplicationModel.getInstance().redGhost.currentAction == null) {
 			ApplicationModel.getInstance().redGhost.planNextMove();
 		}
-			
 	}
 	
 	/*
