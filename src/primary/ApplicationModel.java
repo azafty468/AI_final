@@ -25,6 +25,7 @@ public class ApplicationModel {
 	public Board myBoard;
 	public GameObjectPlayer myPlayer;
 	public GameObjectEnemy redGhost;
+	public GameObjectEnemy blueGhost;
 	static ApplicationModel thisModel = null;
 	
 	public boolean initialize(int width, int height) {
@@ -33,6 +34,8 @@ public class ApplicationModel {
 		myPlayer.setXY(5,  5);
 		redGhost = new GameObjectEnemy();
 		redGhost.setXY(10, 10);
+		blueGhost = new GameObjectEnemy();
+		blueGhost.setXY(15, 15);
 		
 		try {
 			BufferedImage imgBasePlayer = ImageIO.read(new File("images\\Pacman.bmp"));
@@ -46,6 +49,12 @@ public class ApplicationModel {
 			redGhost.overrideColor = true;
 			redGhost.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
 			redGhost.name = "Red-Ghost";
+			
+			BufferedImage imgBaseBlueGhost = ImageIO.read(new File("images\\BlueGhost.bmp"));
+			blueGhost.setGraphics(ApplicationView.convertImageToLocalSettings(imgBaseBlueGhost));
+			blueGhost.overrideColor = true;
+			blueGhost.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
+			blueGhost.name = "Blue-Ghost";
 		}
 		catch (Exception e) {
 			System.out.println("Error while creating a character");
@@ -74,6 +83,8 @@ public class ApplicationModel {
 					printList[y][x] = myPlayer.generateDisplayNode();
 				else if((x == redGhost.myLocation.x) && (y == redGhost.myLocation.y))
 					printList[y][x] = redGhost.generateDisplayNode();
+				else if((x == blueGhost.myLocation.x) && (y == blueGhost.myLocation.y))
+					printList[y][x] = blueGhost.generateDisplayNode();
 				else {
 					printList[y][x] = myBoard.myGO[y][x].generateDisplayNode();
 

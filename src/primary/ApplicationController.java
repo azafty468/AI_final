@@ -54,6 +54,7 @@ public class ApplicationController {
 		}
 		
 		ApplicationModel.getInstance().redGhost.myAIModel = new AIModelDijkstraAlgorithm(ApplicationModel.getInstance().redGhost);
+		ApplicationModel.getInstance().blueGhost.myAIModel = new AIModelDirectMove(ApplicationModel.getInstance().blueGhost);
 		
 		return true;
 	}
@@ -144,6 +145,10 @@ public class ApplicationController {
 		if (ApplicationModel.getInstance().redGhost.currentAction == null) {
 			ApplicationModel.getInstance().redGhost.planNextMove();
 		}
+		
+		if (ApplicationModel.getInstance().blueGhost.currentAction == null) {
+			ApplicationModel.getInstance().blueGhost.planNextMove();
+		}
 	}
 	
 	/*
@@ -164,6 +169,13 @@ public class ApplicationController {
 			
 			if (myModel.redGhost.currentAction.getIsDone()) 
 				myModel.redGhost.currentAction = null;
+		}
+		
+		if (myModel.blueGhost.currentAction != null) {
+			myModel.blueGhost.currentAction.processAction();
+			
+			if (myModel.blueGhost.currentAction.getIsDone()) 
+				myModel.blueGhost.currentAction = null;
 		}
 		
 	}

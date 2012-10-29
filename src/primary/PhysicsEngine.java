@@ -6,7 +6,6 @@ import gameObjects.GameObject.GameObjectType;
 import actions.ActionMove;
 import actions.EventPickupToken;
 
-
 public class PhysicsEngine {
 
 	public static void moveCreature(ActionMove myAM) {
@@ -61,7 +60,13 @@ public class PhysicsEngine {
 				myView.displayMessage("Player '" + tmpPlayer.name + "' has fallen into a pit.  100 points have been deducted.");
 			}
 			
-			if ((myModel.myBoard.myGO[targetY][targetX].name.equals("Red Ghost")) && (myAM.initiator.getType() == GameObjectType.PLAYER)) {
+			if ((myModel.myBoard.myGO[targetY][targetX].name.equals("Red-Ghost")) && (myAM.initiator.getType() == GameObjectType.PLAYER)) {
+				GameObjectPlayer tmpPlayer = (GameObjectPlayer) myAM.initiator;
+				tmpPlayer.pointsGained -= 100;
+				myView.displayMessage("Player '" + tmpPlayer.name + "' has been eaten by '" + myModel.myBoard.myGO[targetY][targetX].name + "'. 100 points have been deducted." );
+			}
+			
+			if ((myModel.myBoard.myGO[targetY][targetX].name.equals("Blue-Ghost")) && (myAM.initiator.getType() == GameObjectType.PLAYER)) {
 				GameObjectPlayer tmpPlayer = (GameObjectPlayer) myAM.initiator;
 				tmpPlayer.pointsGained -= 100;
 				myView.displayMessage("Player '" + tmpPlayer.name + "' has been eaten by '" + myModel.myBoard.myGO[targetY][targetX].name + "'. 100 points have been deducted." );

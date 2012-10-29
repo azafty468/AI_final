@@ -19,6 +19,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import primary.ApplicationController;
+import primary.MainApplication;
 
 
 /**
@@ -82,6 +83,7 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	//We can reset the game here
 	public void resetGame() {
 		this.dispose();
+		MainApplication.startGame();
 	}
 	
 	//Exit the game

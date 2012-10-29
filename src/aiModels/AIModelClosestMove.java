@@ -8,6 +8,7 @@ import actions.ActionMove;
 public class AIModelClosestMove extends AIModel {	
 	GameObjectCreature mySelf;
 	GameObjectToken[][] allTokens;
+	GameObjectToken latestTarget;
 	
 	public AIModelClosestMove(GameObjectCreature newSelf) {
 		mySelf = newSelf;

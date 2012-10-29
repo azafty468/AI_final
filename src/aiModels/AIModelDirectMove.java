@@ -4,16 +4,19 @@ import primary.ApplicationModel;
 import gameObjects.Board;
 import gameObjects.GameObject;
 import gameObjects.GameObjectCreature;
+import gameObjects.GameObjectPlayer;
 import gameObjects.GameObjectToken;
 import actions.ActionMove;
 
 public class AIModelDirectMove extends AIModel {
 	GameObjectToken myTarget;
 	GameObjectCreature mySelf;
+	GameObjectPlayer player;
 	
 	public AIModelDirectMove(GameObjectCreature newSelf) {
 		myTarget = null;
 		mySelf = newSelf;
+		player = ApplicationModel.getInstance().myPlayer;
 	}
 	
 	@Override
@@ -23,7 +26,12 @@ public class AIModelDirectMove extends AIModel {
 			if (myBoard.myTokens.isEmpty()) 
 				return null;
 			
-			myTarget = myBoard.myTokens.get(0);
+			for(int i=0; i < myBoard.myTokens.size(); i++) {
+				myTarget = myBoard.myTokens.get(i);
+				if(myTarget == null) {
+					myTarget = myBoard.myTokens.get(i);
+				}
+			}
 		}
 		
 		int x, y;
@@ -38,7 +46,7 @@ public class AIModelDirectMove extends AIModel {
 		if (y > myTarget.myLocation.y)
 			y--;
 		
-		return new ActionMove(x, y, mySelf);
+		return new ActionMove(x-1, y, mySelf);
 	}
 	
 	@Override
