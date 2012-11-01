@@ -46,14 +46,14 @@ public class ApplicationModel {
 			
 			BufferedImage imgBaseRedGhost = ImageIO.read(new File("images\\RedGhost.bmp"));
 			redGhost.setGraphics(ApplicationView.convertImageToLocalSettings(imgBaseRedGhost));
-			redGhost.overrideColor = true;
-			redGhost.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
+			//redGhost.overrideColor = true;
+			//redGhost.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
 			redGhost.name = "Red-Ghost";
 			
 			BufferedImage imgBaseBlueGhost = ImageIO.read(new File("images\\BlueGhost.bmp"));
 			blueGhost.setGraphics(ApplicationView.convertImageToLocalSettings(imgBaseBlueGhost));
-			blueGhost.overrideColor = true;
-			blueGhost.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
+			//blueGhost.overrideColor = true;
+			//blueGhost.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
 			blueGhost.name = "Blue-Ghost";
 		}
 		catch (Exception e) {

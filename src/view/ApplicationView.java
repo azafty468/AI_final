@@ -31,6 +31,7 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	private static final long serialVersionUID = 1L;
 	private GraphicsCanvas myGraphicCanvas;
 	private CommandOutJPanel commandOutArea;
+	private VariableDisplayJPanel myVariableDisplay;
 	static ApplicationView thisView = null;
 	
 	ApplicationView() {
@@ -110,12 +111,15 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	    int width = getScreenWorkingWidth();
 		int height = getScreenWorkingHeight();
 
-	    myGraphicCanvas = new GraphicsCanvas(0, 0, width, (int)(height*0.8));
+	    myGraphicCanvas = new GraphicsCanvas(0, 0, (int)(width*0.8), (int)(height*0.8));
 	    myGraphicCanvas.setVisible(true);
 	    add(myGraphicCanvas);
 
-	    commandOutArea = new CommandOutJPanel(0, (int)(height*0.8), width, height - (int)(height*0.8));
+	    commandOutArea = new CommandOutJPanel(0, (int)(height*0.8), width, height - (int)(height*0.81));
 	    add(commandOutArea);
+	    
+		myVariableDisplay = new VariableDisplayJPanel((int)(width*0.8), 0, width - (int)(width*0.81), (int)(height*0.8));
+		add(myVariableDisplay);
 	    
 	    pack();
 	    repaint();
@@ -135,6 +139,7 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	 */
 	public void renderGraphics(PrintListNode[][] printList) {
 		myGraphicCanvas.render(printList);
+		myVariableDisplay.updateDisplay();
 	}	
 	
 	public static BufferedImage convertImageToLocalSettings(BufferedImage input) {

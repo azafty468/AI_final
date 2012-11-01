@@ -8,7 +8,7 @@ import actions.ActionMove;
 public class AIModelClosestMove extends AIModel {	
 	GameObjectCreature mySelf;
 	GameObjectToken[][] allTokens;
-	GameObjectToken latestTarget;
+	GameObjectToken latestTarget = null;
 	
 	public AIModelClosestMove(GameObjectCreature newSelf) {
 		mySelf = newSelf;
@@ -32,7 +32,7 @@ public class AIModelClosestMove extends AIModel {
 			}
 		}
 		
-		GameObjectToken closestTarget = null;
+		latestTarget = null;
 		Point myLocation = mySelf.myLocation;
 		int closestDistance = -1;
 		
@@ -42,25 +42,25 @@ public class AIModelClosestMove extends AIModel {
 					if ((closestDistance < 0) || (closestDistance > 
 							Math.max(Math.abs(myLocation.x - allTokens[y][x].myLocation.x), 
 							Math.abs(myLocation.y - allTokens[y][x].myLocation.y)))) {
-						closestTarget = allTokens[y][x];
+						latestTarget = allTokens[y][x];
 						
 						closestDistance = Math.max(Math.abs(myLocation.x - allTokens[y][x].myLocation.x), Math.abs(myLocation.y - allTokens[y][x].myLocation.y));
 					}
 				}
 		
-		if (closestTarget == null)
+		if (latestTarget == null)
 			return null;
 		
 		int x, y;
 		x = mySelf.myLocation.x;
 		y = mySelf.myLocation.y;
-		if (x < closestTarget.myLocation.x)
+		if (x < latestTarget.myLocation.x)
 			x++;
-		if (x > closestTarget.myLocation.x)
+		if (x > latestTarget.myLocation.x)
 			x--;
-		if (y < closestTarget.myLocation.y)
+		if (y < latestTarget.myLocation.y)
 			y++;
-		if (y > closestTarget.myLocation.y)
+		if (y > latestTarget.myLocation.y)
 			y--;
 		
 		return new ActionMove(x, y, mySelf);
@@ -69,5 +69,16 @@ public class AIModelClosestMove extends AIModel {
 	@Override
 	public void clearTarget(GameObject oldTarget) {
 		allTokens[oldTarget.myLocation.y][oldTarget.myLocation.x]= null; 
+	}	
+
+	@Override
+	public String describeActionPlan() {
+		String retval = "AIModelClosestMove - locate the Token with shortest distance.";
+		
+		if (latestTarget != null) 
+		  retval += "  Token: " + latestTarget.name + " at (" + latestTarget.myLocation.x + ", " + latestTarget.myLocation.y + ")";
+		
+		return retval;
 	}
+
 }

@@ -20,7 +20,6 @@ public class CommandOutJPanel extends JPanel {
 		setBounds(newLeft, newTop, newWidth, newHeight);
 		
 		myCommandWindow = new JTextArea();
-
 		myCommandWindow.setLineWrap(true);
 		myCommandWindow.setWrapStyleWord(true);
 		myCommandWindow.setEditable(false);
@@ -30,6 +29,8 @@ public class CommandOutJPanel extends JPanel {
 	    scrollPane = new JScrollPane(myCommandWindow); 
 	    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 	    add(BorderLayout.CENTER, scrollPane);
+	    
+	    
 	    
 	    currentLog = new String("Initialized Log");
 	    myCommandWindow.setText(currentLog);

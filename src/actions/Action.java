@@ -13,4 +13,6 @@ public abstract class Action {
 	public boolean getIsDone() { return isDone; }
 	public void setIsDone(boolean newValue) { isDone = newValue; }
 	public abstract void processAction();
+	
+	public abstract String describeAction();
 }

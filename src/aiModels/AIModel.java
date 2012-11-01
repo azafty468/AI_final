@@ -14,4 +14,5 @@ public abstract class AIModel {
 	 */
 	public abstract ActionMove planNextMove();
 	public void clearTarget(GameObject oldTarget) { return; }
+	public String describeActionPlan() { return "undefined"; }
 }

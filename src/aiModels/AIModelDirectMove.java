@@ -58,4 +58,14 @@ public class AIModelDirectMove extends AIModel {
 			myTarget = null;
 		}
 	}
+	
+	@Override
+	public String describeActionPlan() {
+		String retval = "AIModelDirectMove - Move to top token in Token ArrayList.";
+		
+		if (myTarget != null) 
+			retval += "  Token: " + myTarget.name + " at (" + myTarget.myLocation.x + ", " + myTarget.myLocation.y + ")";
+		
+		return retval;
+	}
 }

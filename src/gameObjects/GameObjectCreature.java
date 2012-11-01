@@ -51,4 +51,12 @@ public class GameObjectCreature extends GameObject {
 		}
 		myAIModel.clearTarget(target);
 	}
+	
+	public String describeAIState() {
+		if (myAIModel == null)
+			return "No AI model set";
+		else {
+			return myAIModel.describeActionPlan();
+		}
+	}
 }

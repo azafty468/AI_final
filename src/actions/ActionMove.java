@@ -27,9 +27,15 @@ public class ActionMove extends Action {
 		targetY = targetLocation.y;
 		initiator = newInitiator;
 	}
-	
+
 	public void processAction() {
 		PhysicsEngine.moveCreature(this);
+	}
+
+	@Override
+	public String describeAction() {
+		String retval = initiator.name + " moving to (" + targetX + ", " + targetY + ")";
+		return retval;
 	}
 
 }
