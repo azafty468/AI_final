@@ -25,11 +25,13 @@ public class ApplicationController {
 	private final Timer renderTimer;	// our time keeper
 	private TimerTask renderTask; // the main render and update task.
 	public Stack<Event> currentEvents;
+	public volatile boolean pauseGame;
 	
 	public ApplicationController() {
 		renderTimer = new Timer();
 		currentEvents = new Stack<Event>();
 		gameOver = false;
+		pauseGame = false;
 	}
 	
 	public static Random getGenerator() {
@@ -79,6 +81,10 @@ public class ApplicationController {
 			case KeyEvent.VK_RIGHT:
 			case KeyEvent.VK_LEFT:
 				moveCursor(e);
+				break;
+				
+			case KeyEvent.VK_P:
+				pauseGame = !pauseGame;
 				break;
 		
 			default: 
@@ -197,7 +203,7 @@ public class ApplicationController {
 			@Override
 			public void run() {
 				//TODO at some point we'll need to moderate the speed of this so that the game runs at a managed pace
-				if (!gameOver) {
+				if (!gameOver && !pauseGame) {
 					processActions();
 					processEvents();
 					processAIPhase();
