@@ -10,11 +10,8 @@ import javax.imageio.ImageIO;
 import view.ApplicationView;
 import view.PrintListNode;
 
-import gameObjects.Board;
-import gameObjects.GameObject;
-import gameObjects.GameObjectEnemy;
-import gameObjects.GameObjectPlayer;
-import gameObjects.GameObjectToken;
+import gameObjects.*;
+import gameObjects.GameObjectCreature.CreatureAlliance;
 
 /**
  * Controls all aspects of the Model objects
@@ -24,18 +21,21 @@ import gameObjects.GameObjectToken;
 public class ApplicationModel {
 	public Board myBoard;
 	public GameObjectPlayer myPlayer;
-	public GameObjectEnemy redGhost;
-	public GameObjectEnemy blueGhost;
+	public GameObjectCreature redGhost;
+	public GameObjectCreature blueGhost;
 	static ApplicationModel thisModel = null;
 	
 	public boolean initialize(int width, int height) {
 		myBoard = new Board(width, height);
 		myPlayer = new GameObjectPlayer();
-		myPlayer.setXY(5,  5);
-		redGhost = new GameObjectEnemy();
+		myPlayer.setXY(5, 5);
+		myPlayer.myAlliance = CreatureAlliance.PLAYER;
+		redGhost = new GameObjectCreature();
 		redGhost.setXY(10, 10);
-		blueGhost = new GameObjectEnemy();
+		myPlayer.myAlliance = CreatureAlliance.GHOST;
+		blueGhost = new GameObjectCreature();
 		blueGhost.setXY(15, 15);
+		myPlayer.myAlliance = CreatureAlliance.GHOST;
 		
 		try {
 			BufferedImage imgBasePlayer = ImageIO.read(new File("images\\Pacman.bmp"));

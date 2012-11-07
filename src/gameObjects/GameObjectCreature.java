@@ -12,14 +12,19 @@ public class GameObjectCreature extends GameObject {
 	public AIModel myAIModel;
 	public Action currentAction;
 	public int stepsTaken;
+	public int touchedByGhost;
+	public static enum CreatureAlliance { PLAYER, GHOST, UNDEFINED; }
+	public CreatureAlliance myAlliance;
 	
 	public GameObjectCreature() {
 		super();
-		canBlockMovement = true;
+		canBlockMovement = false;
 		currentAction = null;
 		myAIModel = null;
 		myType = GameObjectType.CREATURE;
 		stepsTaken = 0;
+		touchedByGhost = 0;
+		myAlliance = CreatureAlliance.UNDEFINED;
 	}
 	
 	public GameObject generateClone(GameObject newObject) {

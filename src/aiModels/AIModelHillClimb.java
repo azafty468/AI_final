@@ -1,7 +1,7 @@
 package aiModels;
 
 import gameObjects.Board;
-import gameObjects.GameObjectEnemy;
+import gameObjects.GameObjectCreature;
 import gameObjects.GameObjectPlayer;
 
 import primary.ApplicationModel;
@@ -29,13 +29,13 @@ class PotentialMove {
 public class AIModelHillClimb extends AIModelEnemy {
 	protected Board myBoard;
 	protected GameObjectPlayer player;
-	protected GameObjectEnemy enemy;
+	protected GameObjectCreature enemy;
 	protected Point playerLocation;
 	protected Point enemyLocation;
 	protected boolean foundBetterMove;
 	public enum testDirection { LEFT, UP, DOWN, RIGHT, UPLEFT, UPRIGHT, DOWNLEFT, DOWNRIGHT; } 
 	
-	public AIModelHillClimb(GameObjectEnemy enemy) {
+	public AIModelHillClimb(GameObjectCreature enemy) {
 		myBoard = ApplicationModel.getInstance().myBoard;
 		player = ApplicationModel.getInstance().myPlayer;
 		this.enemy = enemy;

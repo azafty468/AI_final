@@ -9,6 +9,7 @@ import java.util.TimerTask;
 import actions.ActionMove;
 import actions.Event;
 import aiModels.*;
+import primary.GamePlayTimeKeeper.PlayRate;
 import primary.Point;
 
 import view.ApplicationView;
@@ -21,17 +22,15 @@ import view.ApplicationView;
 public class ApplicationController {
 	static Random generator = null;
 	static ApplicationController thisController = null;
-	public boolean gameOver;
 	private final Timer renderTimer;	// our time keeper
 	private TimerTask renderTask; // the main render and update task.
 	public Stack<Event> currentEvents;
-	public volatile boolean pauseGame;
+	public GamePlayTimeKeeper myTimeKeeper;
 	
 	public ApplicationController() {
 		renderTimer = new Timer();
 		currentEvents = new Stack<Event>();
-		gameOver = false;
-		pauseGame = false;
+		myTimeKeeper = new GamePlayTimeKeeper(PlayRate.AIAUTOMATION);
 	}
 	
 	public static Random getGenerator() {
@@ -53,7 +52,10 @@ public class ApplicationController {
 		if (automatePlayer) {
 			//ApplicationModel.getInstance().myPlayer.myAIModel = new AIModelDirectMove(ApplicationModel.getInstance().myPlayer);
 			ApplicationModel.getInstance().myPlayer.myAIModel = new AIModelClosestMove(ApplicationModel.getInstance().myPlayer);
+			myTimeKeeper = new GamePlayTimeKeeper(PlayRate.AIAUTOMATION);
 		}
+		else
+			myTimeKeeper = new GamePlayTimeKeeper(PlayRate.HUMANPLAYER);
 		
 		ApplicationModel.getInstance().redGhost.myAIModel = new AIModelDijkstraAlgorithm(ApplicationModel.getInstance().redGhost);
 		ApplicationModel.getInstance().blueGhost.myAIModel = new AIModelDirectMove(ApplicationModel.getInstance().blueGhost);
@@ -84,8 +86,20 @@ public class ApplicationController {
 				break;
 				
 			case KeyEvent.VK_P:
-				pauseGame = !pauseGame;
+				myTimeKeeper.invertPause();
 				break;
+				
+			case KeyEvent.VK_ADD:
+			case KeyEvent.VK_PLUS:
+			case '+':
+				myTimeKeeper.alterDelayBetweenTurns(20);
+				break;
+				
+			case KeyEvent.VK_MINUS:
+			case KeyEvent.VK_SUBTRACT:
+				myTimeKeeper.alterDelayBetweenTurns(-20);
+				break;
+				
 		
 			default: 
 				String newMessage = new String("Error, unrecognized command: " + e.getKeyChar());
@@ -202,12 +216,11 @@ public class ApplicationController {
 		renderTask = new TimerTask() {
 			@Override
 			public void run() {
-				//TODO at some point we'll need to moderate the speed of this so that the game runs at a managed pace
-				if (!gameOver && !pauseGame) {
+				renderGraphics();
+				if (myTimeKeeper.isTimeForTurn()) {
 					processActions();
 					processEvents();
 					processAIPhase();
-					renderGraphics();
 				}
 			}
 		};

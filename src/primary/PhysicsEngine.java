@@ -3,8 +3,7 @@ package primary;
 import view.ApplicationView;
 import gameObjects.*;
 import gameObjects.GameObject.GameObjectType;
-import actions.ActionMove;
-import actions.EventPickupToken;
+import actions.*;
 
 public class PhysicsEngine {
 
@@ -36,12 +35,8 @@ public class PhysicsEngine {
 		}
 		else if (tmp.canBlockMovement) {
 			myAM.setIsDone(true);
-			
-			if(myAM.initiator.name.contains("Ghost") && tmp.name.contains("Pac-man")) {
-				myView.displayMessage("Collision between Pac-man and a Ghost.");
-			}
-			else 
-				myView.displayMessage("Error, while moving '" + myAM.initiator.name + "' encountered a square blocked by '" + tmp.name + "'");
+
+			myView.displayMessage("Error, while moving '" + myAM.initiator.name + "' encountered a square blocked by '" + tmp.name + "'");
 		}
 		else {
 			if ((tmp.getType() == GameObjectType.TOKEN) && (myAM.initiator.getType() == GameObjectType.PLAYER)) {
@@ -54,24 +49,26 @@ public class PhysicsEngine {
 			myAM.initiator.myLocation.y = targetY;
 			myAM.initiator.stepsTaken++;
 			
-			if ((myModel.myBoard.myGO[targetY][targetX].name.equals("Pit")) && (myAM.initiator.getType() == GameObjectType.PLAYER)) {
+			if (myModel.myBoard.myGO[targetY][targetX].name.equals("Pit"))
+				ApplicationController.getInstance().currentEvents.push(new EventFallenInPit(myAM.initiator));
+			
+			GameObjectCreature redGhost = myModel.redGhost;
+			
+			if ((myAM.initiator.myLocation.equals(redGhost.myLocation)) && (myAM.initiator.myAlliance != redGhost.myAlliance)) {
 				GameObjectPlayer tmpPlayer = (GameObjectPlayer) myAM.initiator;
-				tmpPlayer.pointsGained -= 100;
-				myView.displayMessage("Player '" + tmpPlayer.name + "' has fallen into a pit.  100 points have been deducted.");
+				ApplicationController.getInstance().currentEvents.push(new EventGhostTouchPlayer(myModel.redGhost, tmpPlayer));
 			}
 			
-			if ((myModel.myBoard.myGO[targetY][targetX].name.equals("Red-Ghost")) && (myAM.initiator.getType() == GameObjectType.PLAYER)) {
+			GameObjectCreature blueGhost = myModel.blueGhost;
+			if ((myAM.initiator.myLocation.equals(blueGhost.myLocation)) && (myAM.initiator.myAlliance != blueGhost.myAlliance)) {
 				GameObjectPlayer tmpPlayer = (GameObjectPlayer) myAM.initiator;
-				tmpPlayer.pointsGained -= 100;
-				myView.displayMessage("Player '" + tmpPlayer.name + "' has been eaten by '" + myModel.myBoard.myGO[targetY][targetX].name + "'. 100 points have been deducted." );
+				ApplicationController.getInstance().currentEvents.push(new EventGhostTouchPlayer(myModel.blueGhost, tmpPlayer));
 			}
 			
-			if ((myModel.myBoard.myGO[targetY][targetX].name.equals("Blue-Ghost")) && (myAM.initiator.getType() == GameObjectType.PLAYER)) {
-				GameObjectPlayer tmpPlayer = (GameObjectPlayer) myAM.initiator;
-				tmpPlayer.pointsGained -= 100;
-				myView.displayMessage("Player '" + tmpPlayer.name + "' has been eaten by '" + myModel.myBoard.myGO[targetY][targetX].name + "'. 100 points have been deducted." );
+			GameObjectPlayer myPlayer = myModel.myPlayer;
+			if ((myAM.initiator.myLocation.equals(myPlayer.myLocation)) && (myAM.initiator.myAlliance != myPlayer.myAlliance)) {
+				ApplicationController.getInstance().currentEvents.push(new EventGhostTouchPlayer(myAM.initiator, myPlayer));
 			}
-			
 		}
 
 		if ((myAM.initiator.myLocation.x == myAM.targetX) && (myAM.initiator.myLocation.y == myAM.targetY))

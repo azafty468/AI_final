@@ -31,10 +31,16 @@ public class MainApplication {
 			System.exit(0);		
 		}
 		
-		if(!ApplicationController.getInstance().initialize(true)) {
+		if(!ApplicationController.getInstance().initialize(false)) {
 			JOptionPane.showMessageDialog(null, "Error while initializating the base Application Controller.  Exiting.");
 			System.exit(0);				
 		}
+		
+		/*
+		if(!ApplicationController.getInstance().initialize(true)) {
+			JOptionPane.showMessageDialog(null, "Error while initializating the base Application Controller.  Exiting.");
+			System.exit(0);				
+		}*/
 
 		ApplicationController.getInstance().startGraphicTimer();
 		ApplicationView.getInstance().displayMessage(new String("Load complete"));
