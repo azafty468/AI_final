@@ -19,13 +19,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import primary.ApplicationController;
-import primary.MainApplication;
-
 
 /**
  * Manages all aspects of the View
  * @author Andrew and Trevor
- *
  */
 public class ApplicationView extends JFrame implements KeyListener, WindowListener, ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -84,7 +81,8 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	//We can reset the game here
 	public void resetGame() {
 		this.dispose();
-		MainApplication.startGame();
+		ShowStartupScreen startup = new ShowStartupScreen();
+		startup.setVisible(true);
 	}
 	
 	//Exit the game

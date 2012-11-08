@@ -10,14 +10,11 @@ public class MainApplication {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
-		if(!ShowStartupScreen.getInstance().initializeScreen()) {
-			JOptionPane.showMessageDialog(null, "Error while initializating the Startup View.  Exiting.");
-			System.exit(0);
-		}
+		ShowStartupScreen start = new ShowStartupScreen();
+		start.setVisible(true);
 	}
 	
-	public static void startGame() {
+	public static void startGame(boolean isHumanControlled) {
 		int boardWidth = getScreenWorkingWidth();
 		int boardHeight = getScreenWorkingHeight();
 		
@@ -31,17 +28,11 @@ public class MainApplication {
 			System.exit(0);		
 		}
 		
-		if(!ApplicationController.getInstance().initialize(false)) {
+		if(!ApplicationController.getInstance().initialize(isHumanControlled)) {
 			JOptionPane.showMessageDialog(null, "Error while initializating the base Application Controller.  Exiting.");
 			System.exit(0);				
 		}
 		
-		/*
-		if(!ApplicationController.getInstance().initialize(true)) {
-			JOptionPane.showMessageDialog(null, "Error while initializating the base Application Controller.  Exiting.");
-			System.exit(0);				
-		}*/
-
 		ApplicationController.getInstance().startGraphicTimer();
 		ApplicationView.getInstance().displayMessage(new String("Load complete"));
 	}

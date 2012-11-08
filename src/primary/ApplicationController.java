@@ -50,7 +50,6 @@ public class ApplicationController {
 	public boolean initialize(boolean automatePlayer) {
 		
 		if (automatePlayer) {
-			//ApplicationModel.getInstance().myPlayer.myAIModel = new AIModelDirectMove(ApplicationModel.getInstance().myPlayer);
 			ApplicationModel.getInstance().myPlayer.myAIModel = new AIModelClosestMove(ApplicationModel.getInstance().myPlayer);
 			myTimeKeeper = new GamePlayTimeKeeper(PlayRate.AIAUTOMATION);
 		}
