@@ -19,6 +19,9 @@ public class ShowStartupScreen extends JFrame {
 	JButton btnAIController;
 	JButton btnHumanController;
 	JButton btnExit;
+	ImageIcon strawberry;
+	ImageIcon blueGuy;
+	ImageIcon orangeGuy;
 	ImageIcon logo;
 
 	public ShowStartupScreen() {
@@ -37,19 +40,49 @@ public class ShowStartupScreen extends JFrame {
 		//this centers the frame on the screen
 		setLocationRelativeTo(null);
 	    
+		//displays the logo
 	    logo = new ImageIcon("images\\AI_Logo.png");
 	    JLabel imageContainer = new JLabel(logo);
 	    imageContainer.setBounds(0, 20, 800, 200);
 	    add(imageContainer);
 	    
+	    //displays a few berries to look cute
+	    strawberry = new ImageIcon("images\\berry.png");
+	    JLabel berry1 = new JLabel(strawberry);
+	    berry1.setBounds(100, 300, 50, 50);
+	    add(berry1);
+	    
+	    JLabel berry2 = new JLabel(strawberry);
+	    berry2.setBounds(500, 390, 50, 50);
+	    add(berry2);
+	    
+	    JLabel berry3 = new JLabel(strawberry);
+	    berry3.setBounds(600, 200, 50, 50);
+	    add(berry3);
+	    
+	    //displays the blue ghost for fun
+	    blueGuy = new ImageIcon("images\\blue.png");
+	    JLabel blue = new JLabel(blueGuy);
+	    blue.setBounds(30, 50, 50, 50);
+	    add(blue);
+	    
+	    //displays the orange ghost for fun
+	    orangeGuy = new ImageIcon("images\\orange.png");
+	    JLabel orange = new JLabel(orangeGuy);
+	    orange.setBounds(700, 50, 50, 50);
+	    add(orange);
+	    
+	    //adds a button to use the AI model for the player
 	    btnAIController = new JButton("AI Controller");
 	    btnAIController.setBounds(335, 230, 130, 50);
 	    add(btnAIController);
 	    
+	    //adds a button for a human controlled player
 	    btnHumanController = new JButton("Human Controller");
 	    btnHumanController.setBounds(335, 290, 130, 50);
 	    add(btnHumanController);
 	    
+	    //add a button so the user can exit
 	    btnExit = new JButton("Exit");
 	    btnExit.setBounds(335, 350, 130, 50);
 	    add(btnExit);

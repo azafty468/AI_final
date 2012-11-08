@@ -63,7 +63,8 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	    jmiExit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				closeGame();
+				dispose();
+				System.exit(0);
 			}
 	    });
 	    
@@ -83,12 +84,6 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 		this.dispose();
 		ShowStartupScreen startup = new ShowStartupScreen();
 		startup.setVisible(true);
-	}
-	
-	//Exit the game
-	public void closeGame() {
-		this.dispose();
-		System.exit(0);
 	}
 	
 	public static ApplicationView getInstance() {
@@ -118,6 +113,8 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	    
 		myVariableDisplay = new VariableDisplayJPanel((int)(width*0.8), 0, width - (int)(width*0.81), (int)(height*0.8));
 		add(myVariableDisplay);
+		
+		
 	    
 	    pack();
 	    repaint();
