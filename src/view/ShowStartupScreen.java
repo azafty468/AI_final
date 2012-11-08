@@ -22,15 +22,20 @@ public class ShowStartupScreen extends JFrame {
 	ImageIcon logo;
 
 	public ShowStartupScreen() {
+		//creates the JFrame and contentPane to hold everything
 		setTitle("AI Final Project");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setSize(800, 500);
+		//the sizes are all relative, so don't resize it
 		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		//the green matches the logo nicely
 		contentPane.setBackground(Color.GREEN);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		//this centers the frame on the screen
+		setLocationRelativeTo(null);
 	    
 	    logo = new ImageIcon("images\\AI_Logo.png");
 	    JLabel imageContainer = new JLabel(logo);
