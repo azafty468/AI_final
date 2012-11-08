@@ -24,29 +24,29 @@ public class ShowStartupScreen extends JFrame {
 	public ShowStartupScreen() {
 		setTitle("AI Final Project");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setSize(1000, 500);
+		setSize(800, 500);
 		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setBackground(Color.BLACK);
+		contentPane.setBackground(Color.GREEN);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 	    
 	    logo = new ImageIcon("images\\AI_Logo.png");
 	    JLabel imageContainer = new JLabel(logo);
-	    imageContainer.setBounds(40, 20, 900, 200);
+	    imageContainer.setBounds(0, 20, 800, 200);
 	    add(imageContainer);
 	    
 	    btnAIController = new JButton("AI Controller");
-	    btnAIController.setBounds(450, 200, 130, 50);
+	    btnAIController.setBounds(335, 230, 130, 50);
 	    add(btnAIController);
 	    
 	    btnHumanController = new JButton("Human Controller");
-	    btnHumanController.setBounds(450, 300, 130, 50);
+	    btnHumanController.setBounds(335, 290, 130, 50);
 	    add(btnHumanController);
 	    
 	    btnExit = new JButton("Exit");
-	    btnExit.setBounds(450, 400, 130, 50);
+	    btnExit.setBounds(335, 350, 130, 50);
 	    add(btnExit);
 	    
 	    //This starts the player AI model 
