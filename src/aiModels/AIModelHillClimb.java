@@ -35,12 +35,17 @@ public class AIModelHillClimb extends AIModelEnemy {
 	protected boolean foundBetterMove;
 	public enum testDirection { LEFT, UP, DOWN, RIGHT, UPLEFT, UPRIGHT, DOWNLEFT, DOWNRIGHT; } 
 	
-	public AIModelHillClimb(GameObjectCreature enemy) {
+	public AIModelHillClimb() {
 		myBoard = ApplicationModel.getInstance().myBoard;
 		player = ApplicationModel.getInstance().myPlayer;
-		this.enemy = enemy;
 		playerLocation = player.myLocation;
 		enemyLocation = enemy.myLocation;
+	}
+	
+	@Override
+	public void assignToCreature(GameObjectCreature newSelf) {
+		enemy = newSelf;
+		enemy.myAIModel = this;
 	}
 
 	public void populateHillValues(){

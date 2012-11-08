@@ -1,7 +1,9 @@
 package gameObjects;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -23,6 +25,7 @@ public class Board {
 	private GameObjectBackground templateBackgroundPit; 
 	private GameObjectBackground templateBoundaryWall;
 	private GameObjectBackground templateBoundaryOpen;
+	private static final String newline = "\r\n";
 	
 	public Board(int newWidth, int newHeight) {
 		height = newHeight;
@@ -125,5 +128,28 @@ public class Board {
 		}
 		
 		return false;
+	}
+	
+	public void writeToXMLFile(BufferedWriter outWR) {
+		try {
+			outWR.write("<Board height='" + height + "' width='" + width + "'>" + newline);
+			outWR.write("<Backgrounds>" + newline);
+			for (int y = 0; y < height; y++) 
+				for (int x = 0; x < width; x++) {
+					outWR.write("<Background x='" + myGO[y][x].myLocation.x + "' y='" + myGO[y][x].myLocation.y + "' name='" +
+							myGO[y][x].name +  "'/>" + newline);
+				}
+			outWR.write("</Backgrounds>" + newline); 
+			
+			outWR.write("<Tokens>" + newline);
+			for (int i = 0; i < myTokens.size(); i++) 
+				outWR.write("<Token x='" + myTokens.get(i).myLocation.x + "' y='" + myTokens.get(i).myLocation.x + 
+						"' name='" + myTokens.get(i).name + "' pointValue='" + myTokens.get(i).pointValue + "'/>" + newline);
+			outWR.write("</Tokens>" + newline);
+			outWR.write("</Board>");
+		} catch (IOException e) {
+			System.out.println("Error, cannot write to log file");
+			System.exit(0);
+		}
 	}
 }

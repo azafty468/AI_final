@@ -1,13 +1,23 @@
 package primary;
 
 import java.awt.event.KeyEvent;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.JOptionPane;
+
 import actions.ActionMove;
 import actions.Event;
+import actions.LoggableEvent;
 import aiModels.*;
 import primary.GamePlayTimeKeeper.PlayRate;
 import primary.Point;
@@ -22,13 +32,14 @@ import view.ApplicationView;
 public class ApplicationController {
 	static Random generator = null;
 	static ApplicationController thisController = null;
-	private final Timer renderTimer;	// our time keeper
+	private Timer renderTimer;	// our time keeper
 	private TimerTask renderTask; // the main render and update task.
 	public Stack<Event> currentEvents;
-	public GamePlayTimeKeeper myTimeKeeper;
+	private GamePlayTimeKeeper myTimeKeeper;
+	private String logFile;
+	public ArrayList<LoggableEvent> loggedEvents;
 	
 	public ApplicationController() {
-		renderTimer = new Timer();
 		currentEvents = new Stack<Event>();
 		myTimeKeeper = new GamePlayTimeKeeper(PlayRate.AIAUTOMATION);
 	}
@@ -40,6 +51,12 @@ public class ApplicationController {
 		return generator;
 	}
 	
+	public void finishGame() {
+		//TODO write out game events to log file
+		
+		myTimeKeeper.setGameOver();
+	}
+	
 	public static ApplicationController getInstance() {
 		if (thisController == null)
 			thisController = new ApplicationController();
@@ -47,23 +64,51 @@ public class ApplicationController {
 		return thisController;
 	}
 	
-	public boolean initialize(boolean automatePlayer) {
+	public boolean loadFromXMLFile(String xmlFile) {
 		
-		if (automatePlayer) {
-			ApplicationModel.getInstance().myPlayer.myAIModel = new AIModelClosestMove(ApplicationModel.getInstance().myPlayer);
-			myTimeKeeper = new GamePlayTimeKeeper(PlayRate.AIAUTOMATION);
+		return false;
+	}
+	
+	public boolean initialize(boolean automatePlayer, String loadFile) {
+		loggedEvents = new ArrayList<LoggableEvent>();
+		if (loadFile.equals("")) {
+			AIModel playerAI;
+			AIModel redAI;
+			AIModel blueAI;
+			int boardWidth = getScreenWorkingWidth();
+			int boardHeight = getScreenWorkingHeight();
+			
+			if (automatePlayer)
+				playerAI = new AIModelClosestMove();
+			else
+				playerAI = new AIModelPlayer();
+			
+			redAI = new AIModelDijkstraAlgorithm();
+			blueAI = new AIModelDirectMove();
+			
+			if(!ApplicationModel.getInstance().initialize(boardWidth, boardHeight, playerAI, redAI, blueAI)) {
+				JOptionPane.showMessageDialog(null, "Error while initializating the base Application Model.  Exiting.");
+				System.exit(0);		
+			}
+			writeInitialLog();
 		}
+		else {
+			if (!loadFromXMLFile(loadFile))
+				return false;
+		}
+		
+		if (automatePlayer)
+			myTimeKeeper = new GamePlayTimeKeeper(PlayRate.AIAUTOMATION);
 		else
 			myTimeKeeper = new GamePlayTimeKeeper(PlayRate.HUMANPLAYER);
-		
-		ApplicationModel.getInstance().redGhost.myAIModel = new AIModelDijkstraAlgorithm(ApplicationModel.getInstance().redGhost);
-		ApplicationModel.getInstance().blueGhost.myAIModel = new AIModelDirectMove(ApplicationModel.getInstance().blueGhost);
+
+		renderTimer = new Timer();
+		ApplicationView.getInstance().displayMessage("Starting Game.  Current State - PAUSED");
 		
 		return true;
 	}
 	
 	public void renderGraphics() {
-		//Ask the model for a list of all objects that need to be drawn and pass it along to the View for display
 		ApplicationView.getInstance().renderGraphics(ApplicationModel.getInstance().buildPrintList());
 	}
 	
@@ -99,11 +144,43 @@ public class ApplicationController {
 				myTimeKeeper.alterDelayBetweenTurns(-20);
 				break;
 				
+			case KeyEvent.VK_R:
+				renderTask.cancel();
+				renderTimer.cancel();
+				myTimeKeeper.setPause(true);
+				ApplicationView.getInstance().displayMessage("---Game Reset Command Received---");
+				initialize(false, logFile);
+				break;
+				
+			case KeyEvent.VK_V:
+				//TODO implement
+				myTimeKeeper.setPause(true);
+				ApplicationView.getInstance().displayMessage("View Detailed AI Planning");
+				ApplicationView.getInstance().displayMessage("Error, not currently implemented!");
+				break;
 		
 			default: 
 				String newMessage = new String("Error, unrecognized command: " + e.getKeyChar());
 				ApplicationView.getInstance().displayMessage(newMessage);
 				break;
+		}
+	}
+	
+	public void writeInitialLog() {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
+		Date date = new Date();
+		logFile = "logs\\Board_" + dateFormat.format(date) + ".xml";
+		
+		try {
+			BufferedWriter myOut = new BufferedWriter(new FileWriter(logFile));
+			myOut.write("<Game>");
+			ApplicationModel.getInstance().writeToXMLFile(myOut);
+			myOut.write("</Game>");
+			myOut.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Error while writing to log file: " + logFile);
+			System.exit(-1);
 		}
 	}
 
@@ -168,6 +245,15 @@ public class ApplicationController {
 		if (ApplicationModel.getInstance().blueGhost.currentAction == null) {
 			ApplicationModel.getInstance().blueGhost.planNextMove();
 		}
+	}
+
+	
+	public static int getScreenWorkingWidth() {
+	    return java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().width;
+	}
+
+	public static int getScreenWorkingHeight() {
+	    return java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height;
 	}
 	
 	/*

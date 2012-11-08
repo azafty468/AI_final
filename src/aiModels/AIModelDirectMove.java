@@ -13,10 +13,15 @@ public class AIModelDirectMove extends AIModel {
 	GameObjectCreature mySelf;
 	GameObjectPlayer player;
 	
-	public AIModelDirectMove(GameObjectCreature newSelf) {
+	public AIModelDirectMove() {
 		myTarget = null;
-		mySelf = newSelf;
 		player = ApplicationModel.getInstance().myPlayer;
+	}
+	
+	@Override
+	public void assignToCreature(GameObjectCreature newSelf) {
+		mySelf = newSelf;
+		mySelf.myAIModel = this;
 	}
 	
 	@Override

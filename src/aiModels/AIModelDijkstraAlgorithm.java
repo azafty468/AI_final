@@ -15,8 +15,13 @@ public class AIModelDijkstraAlgorithm extends AIModel {
 	GameObjectPlayer player;
 	
 	//constructor to grab a reference to the red ghost
-	public AIModelDijkstraAlgorithm(GameObjectCreature enemy) {
-		this.enemy = enemy;
+	public AIModelDijkstraAlgorithm() {
+	}
+	
+	@Override
+	public void assignToCreature(GameObjectCreature newSelf) {
+		enemy = newSelf;
+		enemy.myAIModel = this;
 	}
 
 	@Override

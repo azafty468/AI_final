@@ -10,8 +10,13 @@ public class AIModelClosestMove extends AIModel {
 	GameObjectToken[][] allTokens;
 	GameObjectToken latestTarget = null;
 	
-	public AIModelClosestMove(GameObjectCreature newSelf) {
+	public AIModelClosestMove() {
+	}
+	
+	@Override
+	public void assignToCreature(GameObjectCreature newSelf) {
 		mySelf = newSelf;
+		mySelf.myAIModel = this;
 	}
 	
 	@Override

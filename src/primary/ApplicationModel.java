@@ -2,10 +2,14 @@ package primary;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+
+import aiModels.AIModel;
 
 import view.ApplicationView;
 import view.PrintListNode;
@@ -25,35 +29,36 @@ public class ApplicationModel {
 	public GameObjectCreature blueGhost;
 	static ApplicationModel thisModel = null;
 	
-	public boolean initialize(int width, int height) {
+	public boolean initialize(int width, int height, AIModel playerAI, AIModel redAI, AIModel blueAI) {
 		myBoard = new Board(width, height);
 		myPlayer = new GameObjectPlayer();
 		myPlayer.setXY(5, 5);
 		myPlayer.myAlliance = CreatureAlliance.PLAYER;
+		playerAI.assignToCreature(myPlayer);
+		
 		redGhost = new GameObjectCreature();
 		redGhost.setXY(10, 10);
-		myPlayer.myAlliance = CreatureAlliance.GHOST;
+		redGhost.myAlliance = CreatureAlliance.GHOST;
+		redAI.assignToCreature(redGhost);
+		
 		blueGhost = new GameObjectCreature();
 		blueGhost.setXY(15, 15);
-		myPlayer.myAlliance = CreatureAlliance.GHOST;
+		blueGhost.myAlliance = CreatureAlliance.GHOST;
+		blueAI.assignToCreature(blueGhost);
 		
 		try {
 			BufferedImage imgBasePlayer = ImageIO.read(new File("images\\Pacman.bmp"));
 			myPlayer.setGraphics(ApplicationView.convertImageToLocalSettings(imgBasePlayer));
-			myPlayer.overrideColor = true;
-			myPlayer.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
+			//myPlayer.overrideColor = true;
+			//myPlayer.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
 			myPlayer.name = "Pac-man";
 			
 			BufferedImage imgBaseRedGhost = ImageIO.read(new File("images\\RedGhost.bmp"));
 			redGhost.setGraphics(ApplicationView.convertImageToLocalSettings(imgBaseRedGhost));
-			//redGhost.overrideColor = true;
-			//redGhost.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
 			redGhost.name = "Red-Ghost";
 			
 			BufferedImage imgBaseBlueGhost = ImageIO.read(new File("images\\BlueGhost.bmp"));
 			blueGhost.setGraphics(ApplicationView.convertImageToLocalSettings(imgBaseBlueGhost));
-			//blueGhost.overrideColor = true;
-			//blueGhost.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
 			blueGhost.name = "Blue-Ghost";
 		}
 		catch (Exception e) {
@@ -116,5 +121,16 @@ public class ApplicationModel {
 		}
 		
 		return null;
+	}
+
+	public void writeToXMLFile(BufferedWriter outWR) {
+		try {
+			outWR.write("<Model>\r\n");
+			myBoard.writeToXMLFile(outWR);
+			outWR.write("</Model>\r\n");
+		} catch (IOException e) {
+			System.out.println("Error, cannot write to log file");
+			System.exit(0);
+		}
 	}
 }

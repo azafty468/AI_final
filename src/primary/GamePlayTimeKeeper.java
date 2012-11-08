@@ -13,7 +13,7 @@ public class GamePlayTimeKeeper {
 	public GamePlayTimeKeeper(PlayRate gameRate) {
 		myPlayRate = gameRate;
 		gameOver = false;
-		isPaused = false;
+		isPaused = true;
 		lastTurnRun = new java.util.Date().getTime();
 		minimumTurnLengthinMS = 200;
 	}
@@ -58,4 +58,7 @@ public class GamePlayTimeKeeper {
 		ApplicationView.getInstance().displayMessage("Game Pause: " + isPaused);
 	}
 	
+	public void setPause(boolean value) {
+		isPaused = value;
+	}
 }

@@ -1,5 +1,6 @@
 package actions;
 
+import primary.ApplicationController;
 import view.ApplicationView;
 import gameObjects.*;
 
@@ -14,6 +15,7 @@ public class EventGhostTouchPlayer extends Event {
 
 	@Override
 	public void processEvent() {
+		ApplicationController.getInstance().loggedEvents.add(this);
 		touchee.touchedByGhost++;
 		ApplicationView.getInstance().displayMessage("Player '" + touchee.name + "' has been touched by '" + toucher.name + "'." );
 	}

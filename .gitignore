@@ -29,6 +29,7 @@
 *.log
 *.sql
 *.sqlite
+Board*.xml
 
 # OS generated files #
 ######################

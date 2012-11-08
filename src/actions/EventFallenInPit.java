@@ -1,5 +1,6 @@
 package actions;
 
+import primary.ApplicationController;
 import view.ApplicationView;
 import gameObjects.GameObjectCreature;
 import gameObjects.GameObjectPlayer;
@@ -13,6 +14,7 @@ public class EventFallenInPit extends Event {
 	
 	@Override
 	public void processEvent() {
+		ApplicationController.getInstance().loggedEvents.add(this);
 		if (targetCreature instanceof GameObjectPlayer) {
 			GameObjectPlayer tmpP = (GameObjectPlayer) targetCreature;
 			ApplicationView.getInstance().displayMessage("Player '" + tmpP.name + "' has fallen into a pit.  100 points have been deducted.");
