@@ -1,7 +1,9 @@
 package primary;
 
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -23,6 +25,7 @@ import primary.GamePlayTimeKeeper.PlayRate;
 import primary.Point;
 
 import view.ApplicationView;
+import xml.Message;
 
 /**
  * Negotiates all interactions between the User, View and Model
@@ -38,6 +41,7 @@ public class ApplicationController {
 	private GamePlayTimeKeeper myTimeKeeper;
 	private String logFile;
 	public ArrayList<LoggableEvent> loggedEvents;
+	private boolean automatePlayer;
 	
 	public ApplicationController() {
 		currentEvents = new Stack<Event>();
@@ -65,13 +69,47 @@ public class ApplicationController {
 	}
 	
 	public boolean loadFromXMLFile(String xmlFile) {
+		if (!Message.configure("logs\\Board.xsd")) { 
+			System.err.println("Error, cannot load Board XSD file");
+			System.exit(-1);
+		}
 		
-		return false;
+		Message inMessage = null;
+		
+		try {
+			String inFile = "";
+			BufferedReader inBR = new BufferedReader(new FileReader(xmlFile));
+
+			String inSegment = inBR.readLine();
+			while (inSegment != null) {
+				inFile += inSegment;
+				inSegment = inBR.readLine();
+			}
+			inBR.close();
+	
+			inMessage = new Message(inFile);
+		} catch (Exception e) {
+			System.err.println("Error while reading in XML file");
+			return false;
+		}
+		
+		if (inMessage == null) {
+			System.err.println("Error while reading in XML file");
+			return false;
+		}
+
+		if (inMessage.contents.getAttributes().getNamedItem("automatePlayer").getNodeValue().equals("true"))
+			automatePlayer = true;
+		else
+			automatePlayer = false;
+	
+		return ApplicationModel.getInstance().readFromXMLFile(inMessage.contents.getFirstChild());
 	}
 	
 	public boolean initialize(boolean automatePlayer, String loadFile) {
 		loggedEvents = new ArrayList<LoggableEvent>();
 		if (loadFile.equals("")) {
+			this.automatePlayer = automatePlayer;
 			AIModel playerAI;
 			AIModel redAI;
 			AIModel blueAI;
@@ -97,7 +135,7 @@ public class ApplicationController {
 				return false;
 		}
 		
-		if (automatePlayer)
+		if (this.automatePlayer)
 			myTimeKeeper = new GamePlayTimeKeeper(PlayRate.AIAUTOMATION);
 		else
 			myTimeKeeper = new GamePlayTimeKeeper(PlayRate.HUMANPLAYER);
@@ -149,7 +187,10 @@ public class ApplicationController {
 				renderTimer.cancel();
 				myTimeKeeper.setPause(true);
 				ApplicationView.getInstance().displayMessage("---Game Reset Command Received---");
-				initialize(false, logFile);
+				if (!initialize(automatePlayer, logFile)) {
+					System.err.println("Error while reseting environment");
+					System.exit(-1);
+				}
 				break;
 				
 			case KeyEvent.VK_V:
@@ -173,7 +214,7 @@ public class ApplicationController {
 		
 		try {
 			BufferedWriter myOut = new BufferedWriter(new FileWriter(logFile));
-			myOut.write("<Game>");
+			myOut.write("<Game automatePlayer='" + automatePlayer + "'>");
 			ApplicationModel.getInstance().writeToXMLFile(myOut);
 			myOut.write("</Game>");
 			myOut.close();

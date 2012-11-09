@@ -2,6 +2,7 @@ package primary;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -9,10 +10,13 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import aiModels.AIModel;
+import org.w3c.dom.Node;
+
+import aiModels.*;
 
 import view.ApplicationView;
 import view.PrintListNode;
+import xml.Message;
 
 import gameObjects.*;
 import gameObjects.GameObjectCreature.CreatureAlliance;
@@ -30,22 +34,31 @@ public class ApplicationModel {
 	static ApplicationModel thisModel = null;
 	
 	public boolean initialize(int width, int height, AIModel playerAI, AIModel redAI, AIModel blueAI) {
-		myBoard = new Board(width, height);
-		myPlayer = new GameObjectPlayer();
-		myPlayer.setXY(5, 5);
-		myPlayer.myAlliance = CreatureAlliance.PLAYER;
+		if(!setDefaultValues())
+			return false;
 		playerAI.assignToCreature(myPlayer);
-		
-		redGhost = new GameObjectCreature();
-		redGhost.setXY(10, 10);
-		redGhost.myAlliance = CreatureAlliance.GHOST;
 		redAI.assignToCreature(redGhost);
-		
-		blueGhost = new GameObjectCreature();
-		blueGhost.setXY(15, 15);
-		blueGhost.myAlliance = CreatureAlliance.GHOST;
 		blueAI.assignToCreature(blueGhost);
-		
+
+		myBoard = new Board();
+		myBoard.setDimensions(width, height);
+		myBoard.generateRandomMap();
+		myPlayer.setXY(5, 5);
+		redGhost.setXY(10, 10);
+		blueGhost.setXY(15, 15);
+		return true;
+	}
+	
+	private boolean setDefaultValues() {
+		myPlayer = new GameObjectPlayer();
+		myPlayer.myAlliance = CreatureAlliance.PLAYER;
+
+		redGhost = new GameObjectCreature();
+		redGhost.myAlliance = CreatureAlliance.GHOST;
+
+		blueGhost = new GameObjectCreature();
+		blueGhost.myAlliance = CreatureAlliance.GHOST;
+
 		try {
 			BufferedImage imgBasePlayer = ImageIO.read(new File("images\\Pacman.bmp"));
 			myPlayer.setGraphics(ApplicationView.convertImageToLocalSettings(imgBasePlayer));
@@ -65,7 +78,6 @@ public class ApplicationModel {
 			System.out.println("Error while creating a character");
 			return false;
 		}
-				
 		return true;
 	}
 	
@@ -122,10 +134,77 @@ public class ApplicationModel {
 		
 		return null;
 	}
+	
+	private AIModel readAIFromXML(String aiName) {
+		AIModel retVal = null;
+		
+		if (aiName.equals("class aiModels.AIModelClosestMove"))
+			retVal = new AIModelClosestMove();
+		else if (aiName.equals("class aiModels.AIModelDijkstraAlgorithm")) 
+			retVal = new AIModelDijkstraAlgorithm();
+		else if (aiName.equals("class aiModels.AIModelDirectMove")) 
+			retVal = new AIModelDirectMove();
+		else if (aiName.equals("class aiModels.AIModelEnemy")) 
+			retVal = new AIModelEnemy();
+		else if (aiName.equals("class aiModels.AIModelHillClimb")) 
+			retVal = new AIModelHillClimb();
+		else if (aiName.equals("class aiModels.AIModelPlayer")) 
+			retVal = new AIModelPlayer();
+		return retVal;
+	}
+	
+	public boolean readFromXMLFile(Node inMessage) {
+		if(!setDefaultValues())
+			return false;
+		
+		Node localNode = inMessage.getFirstChild();
+		
+		int readWidth;
+		int readHeight;
+		String readAI;
+		AIModel readModel;
+		
+		myPlayer.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
+		myPlayer.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
+				Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
+		readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
+		readModel = readAIFromXML(readAI);
+		readModel.assignToCreature(myPlayer);
+		
+		//localNode.getNextSibling();
+		localNode = inMessage.getChildNodes().item(1);
+		redGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
+		redGhost.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
+				Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
+		readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
+		readModel = readAIFromXML(readAI);
+		readModel.assignToCreature(redGhost);
+		
+		localNode = inMessage.getChildNodes().item(2);
+		//localNode.getNextSibling();
+		blueGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
+		blueGhost.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
+				Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
+		readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
+		readModel = readAIFromXML(readAI);
+		readModel.assignToCreature(blueGhost);
+		
+		localNode = inMessage.getChildNodes().item(3);
+		
+		myBoard = new Board();
+		return myBoard.loadFromXML(localNode);
+	}
 
 	public void writeToXMLFile(BufferedWriter outWR) {
 		try {
 			outWR.write("<Model>\r\n");
+			outWR.write("<Player name='" + myPlayer.name + "' x='" + myPlayer.myLocation.x + "' y='" + myPlayer.myLocation.y + 
+					"' AIModel='" + myPlayer.myAIModel.getClass().toString() + "'/>\r\n");
+			outWR.write("<RedGhost name='" + redGhost.name + "' x='" + redGhost.myLocation.x + "' y='" + redGhost.myLocation.y + 
+					"' AIModel='" + redGhost.myAIModel.getClass().toString() + "'/>\r\n");
+			outWR.write("<BlueGhost name='" + blueGhost.name + "' x='" + blueGhost.myLocation.x + "' y='" + blueGhost.myLocation.y + 
+					"' AIModel='" + blueGhost.myAIModel.getClass().toString() + "'/>\r\n");
+
 			myBoard.writeToXMLFile(outWR);
 			outWR.write("</Model>\r\n");
 		} catch (IOException e) {

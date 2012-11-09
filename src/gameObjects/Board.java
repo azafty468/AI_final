@@ -1,6 +1,7 @@
 package gameObjects;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -9,8 +10,13 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import primary.ApplicationController;
+import primary.Point;
 import view.ApplicationView;
+import xml.Message;
 
 /**
  * Holds all the GameObject Backgrounds that make up the game board.
@@ -27,7 +33,11 @@ public class Board {
 	private GameObjectBackground templateBoundaryOpen;
 	private static final String newline = "\r\n";
 	
-	public Board(int newWidth, int newHeight) {
+	public Board() {
+		
+	}
+	
+	public void setDimensions(int newWidth, int newHeight) {
 		height = newHeight;
 		width = newWidth;
 		
@@ -41,11 +51,12 @@ public class Board {
 		if (width > 40)
 			width = 40;
 		myGO = new GameObjectBackground[height][width];
-		
 		myTokens = new ArrayList<GameObjectToken>();
 		
 		templateBoundaryWall = new GameObjectBackground();
+		templateBoundaryWall.name = "Wall";
 		templateBoundaryOpen = new GameObjectBackground();
+		templateBoundaryOpen.name = "Open";
 		
 		templateBackgroundPit = new GameObjectBackground();
 		templateBackgroundPit.name = "Pit";
@@ -74,7 +85,9 @@ public class Board {
 		catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error while loading base graphics with exception: " + e.getMessage());
 		}
-		
+	}
+	
+	public boolean generateRandomMap() {
 		GameObjectBackground cursor;
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
@@ -117,6 +130,7 @@ public class Board {
 				counter = counter + 1;
 			}
 		}
+		return true;
 	}
 	
 	public boolean removeToken(GameObjectToken removeTok) {
@@ -130,7 +144,58 @@ public class Board {
 		return false;
 	}
 	
+	public boolean loadFromXML(Node inNode) {
+		int tempWidth;
+		int tempHeight;
+		
+		tempWidth = Integer.parseInt(inNode.getAttributes().getNamedItem("width").getNodeValue());
+		tempHeight = Integer.parseInt(inNode.getAttributes().getNamedItem("height").getNodeValue());
+		setDimensions(tempWidth, tempHeight);
+		
+		inNode = inNode.getFirstChild();
+		
+		NodeList childList = inNode.getChildNodes();
+		GameObjectBackground newGOB = null;
+		for (int i = 0; i < childList.getLength(); i++) {
+			Node child = childList.item(i);
+			
+			if (child.getAttributes().getNamedItem("name").getNodeValue().equals(templateBoundaryWall.name))
+				newGOB = (GameObjectBackground) templateBoundaryWall.generateClone(null);
+			else if (child.getAttributes().getNamedItem("name").getNodeValue().equals(templateBackgroundPit.name))
+				newGOB = (GameObjectBackground) templateBackgroundPit.generateClone(null);
+			else if (child.getAttributes().getNamedItem("name").getNodeValue().equals(templateBoundaryOpen.name))
+				newGOB = (GameObjectBackground) templateBoundaryOpen.generateClone(null);
+			else {
+				System.err.println("unrecognized Background name: " + child.getAttributes().getNamedItem("name").getNodeValue());
+				return false;
+			}
+			
+			newGOB.myLocation = new Point(Integer.parseInt(child.getAttributes().getNamedItem("x").getNodeValue()), 
+					Integer.parseInt(child.getAttributes().getNamedItem("y").getNodeValue()));
+			myGO[newGOB.myLocation.y][newGOB.myLocation.x]= newGOB; 
+		}
+		
+		inNode = inNode.getNextSibling();
+		childList = inNode.getChildNodes();
+		GameObjectToken newGOT = null;
+		for (int i = 0; i < childList.getLength(); i++) {
+			Node child = childList.item(i);
+			if (child.getAttributes().getNamedItem("name").getNodeValue().equals(templateStrawberryToken.name))
+				newGOT = (GameObjectToken) templateStrawberryToken.generateClone(null);
+			else
+				return false;
+			
+			newGOT.myLocation = new Point(Integer.parseInt(child.getAttributes().getNamedItem("x").getNodeValue()), 
+					Integer.parseInt(child.getAttributes().getNamedItem("y").getNodeValue()));
+			newGOT.pointValue = Integer.parseInt(child.getAttributes().getNamedItem("pointValue").getNodeValue());
+			myTokens.add(newGOT);
+		}
+		
+		return true;
+	}
+	
 	public void writeToXMLFile(BufferedWriter outWR) {
+		//TODO trouble here witht eh token value written out for the x's and y's
 		try {
 			outWR.write("<Board height='" + height + "' width='" + width + "'>" + newline);
 			outWR.write("<Backgrounds>" + newline);
@@ -143,7 +208,7 @@ public class Board {
 			
 			outWR.write("<Tokens>" + newline);
 			for (int i = 0; i < myTokens.size(); i++) 
-				outWR.write("<Token x='" + myTokens.get(i).myLocation.x + "' y='" + myTokens.get(i).myLocation.x + 
+				outWR.write("<Token x='" + myTokens.get(i).myLocation.x + "' y='" + myTokens.get(i).myLocation.y + 
 						"' name='" + myTokens.get(i).name + "' pointValue='" + myTokens.get(i).pointValue + "'/>" + newline);
 			outWR.write("</Tokens>" + newline);
 			outWR.write("</Board>");
