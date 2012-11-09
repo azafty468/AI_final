@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import primary.Constants;
 import primary.MainApplication;
 
 public class ShowStartupScreen extends JFrame {
@@ -23,6 +24,8 @@ public class ShowStartupScreen extends JFrame {
 	ImageIcon blueGuy;
 	ImageIcon orangeGuy;
 	ImageIcon logo;
+	JLabel pastRunsLabel;
+	PastRunsJPanel myPastRunsJPanel;
 
 	public ShowStartupScreen() {
 		//creates the JFrame and contentPane to hold everything
@@ -41,16 +44,18 @@ public class ShowStartupScreen extends JFrame {
 		setLocationRelativeTo(null);
 	    
 		//displays the logo
-	    logo = new ImageIcon("images\\AI_Logo.png");
+	    logo = new ImageIcon("images" + Constants.fileDelimiter + "AI_Logo.png");
 	    JLabel imageContainer = new JLabel(logo);
 	    imageContainer.setBounds(0, 20, 800, 200);
 	    add(imageContainer);
 	    
 	    //displays a few berries to look cute
-	    strawberry = new ImageIcon("images\\berry.png");
+	    strawberry = new ImageIcon("images" + Constants.fileDelimiter + "berry.png");
+	    /* Removed to clear up some room
 	    JLabel berry1 = new JLabel(strawberry);
 	    berry1.setBounds(100, 300, 50, 50);
 	    add(berry1);
+	    */
 	    
 	    JLabel berry2 = new JLabel(strawberry);
 	    berry2.setBounds(500, 390, 50, 50);
@@ -61,13 +66,13 @@ public class ShowStartupScreen extends JFrame {
 	    add(berry3);
 	    
 	    //displays the blue ghost for fun
-	    blueGuy = new ImageIcon("images\\blue.png");
+	    blueGuy = new ImageIcon("images" + Constants.fileDelimiter + "blue.png");
 	    JLabel blue = new JLabel(blueGuy);
 	    blue.setBounds(30, 50, 50, 50);
 	    add(blue);
 	    
 	    //displays the orange ghost for fun
-	    orangeGuy = new ImageIcon("images\\orange.png");
+	    orangeGuy = new ImageIcon("images" + Constants.fileDelimiter + "orange.png");
 	    JLabel orange = new JLabel(orangeGuy);
 	    orange.setBounds(700, 50, 50, 50);
 	    add(orange);
@@ -87,12 +92,20 @@ public class ShowStartupScreen extends JFrame {
 	    btnExit.setBounds(335, 350, 130, 50);
 	    add(btnExit);
 	    
+	    
+	    //The past runs document
+	    pastRunsLabel = new JLabel("Prior Runs:");
+	    pastRunsLabel.setBounds(25, 205, 400, 25);
+	    add(pastRunsLabel);
+	    myPastRunsJPanel = new PastRunsJPanel(25, 225, 200, 400);
+	    add(myPastRunsJPanel);
+	    
 	    //This starts the player AI model 
 	    btnAIController.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent a) {
 				dispose();
-				MainApplication.startGame(true);
+				MainApplication.startGame(true, myPastRunsJPanel.localList.getSelectedItem());
 			}
 	    });
 	    
@@ -101,7 +114,7 @@ public class ShowStartupScreen extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent a) {
 				dispose();
-				MainApplication.startGame(false);
+				MainApplication.startGame(false, myPastRunsJPanel.localList.getSelectedItem());
 			}
 	    });
 	    

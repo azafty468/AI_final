@@ -72,7 +72,7 @@ public class ApplicationController {
 		
 		try {
 			String inFile = "";
-			BufferedReader inBR = new BufferedReader(new FileReader(xmlFile));
+			BufferedReader inBR = new BufferedReader(new FileReader("logs" + Constants.fileDelimiter + xmlFile));
 
 			String inSegment = inBR.readLine();
 			while (inSegment != null) {
@@ -102,7 +102,7 @@ public class ApplicationController {
 	
 	public boolean initialize(boolean automatePlayer, String loadFile) {
 		loggedEvents = new ArrayList<LoggableEvent>();
-		if (loadFile.equals("")) {
+		if (loadFile == null) {
 			this.automatePlayer = automatePlayer;
 			AIModel playerAI;
 			AIModel redAI;
