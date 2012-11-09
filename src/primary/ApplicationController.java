@@ -107,8 +107,8 @@ public class ApplicationController {
 			AIModel playerAI;
 			AIModel redAI;
 			AIModel blueAI;
-			int boardWidth = getScreenWorkingWidth();
-			int boardHeight = getScreenWorkingHeight();
+			int boardWidth = (int) (getScreenWorkingWidth() * 0.8 / Constants.baseImageSize);
+			int boardHeight = (int) (getScreenWorkingHeight() * 0.8 / Constants.baseImageSize);
 			
 			if (automatePlayer)
 				playerAI = new AIModelClosestMove();
@@ -245,29 +245,17 @@ public class ApplicationController {
 			myLocation.x--;
 			myLocation.y--;
 		}
-		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD4) { //left
+		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD4 || e.getKeyCode() == KeyEvent.VK_LEFT) { //left
 			myLocation.x--;
 		}
-		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD6) { //right
+		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD6 || e.getKeyCode() == KeyEvent.VK_RIGHT) { //right
 			myLocation.x++;
 		}
-		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD8) { //up
+		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD8 || e.getKeyCode() == KeyEvent.VK_UP) { //up
 			myLocation.y--;
 		}
-		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD2) { //down
+		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD2 || e.getKeyCode() == KeyEvent.VK_DOWN) { //down
 			myLocation.y++;
-		}
-		else if(e.getKeyCode() == KeyEvent.VK_UP) {
-			myLocation.y--;
-		}
-		else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-			myLocation.y++;
-		}
-		else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			myLocation.x++;
-		}
-		else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-			myLocation.x--;
 		}
 		
 		ActionMove newAction = new ActionMove(myLocation, myModel.myPlayer);

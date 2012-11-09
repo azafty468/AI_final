@@ -5,6 +5,8 @@ import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 
+import primary.Constants;
+
 
 /*
  * Manages the drawing of the graphics screen
@@ -14,7 +16,6 @@ public class GraphicsCanvas extends Canvas {
 	private int height;
 	private int width;
 	private BufferStrategy myBufferStrategy;
-	public static final int baseImageSize = 32;
 	
 	public GraphicsCanvas(int newLeft, int newTop, int newWidth, int newHeight) {
 		super();
@@ -38,16 +39,16 @@ public class GraphicsCanvas extends Canvas {
 		bkG.fillRect(0, 0, getWidth(), getHeight());
 
 		if (printList != null) {
-			for (int y = 0; (y < printList.length) && (y*baseImageSize < height); y++) {
-				for (int x = 0; (x < printList[y].length) && (x*baseImageSize < width); x++) {
+			for (int y = 0; (y < printList.length) && (y*Constants.baseImageSize < height); y++) {
+				for (int x = 0; (x < printList[y].length) && (x*Constants.baseImageSize < width); x++) {
 					if (printList[y][x] != null) {
 						if (printList[y][x].overrideColor){
 							bkG.setXORMode(printList[y][x].baseColor);
-							bkG.drawImage(printList[y][x].myImage,  x*baseImageSize, y*baseImageSize, null);
+							bkG.drawImage(printList[y][x].myImage,  x*Constants.baseImageSize, y*Constants.baseImageSize, null);
 							bkG.setPaintMode();
 						}
 						else
-							bkG.drawImage(printList[y][x].myImage,  x*baseImageSize, y*baseImageSize, null); 
+							bkG.drawImage(printList[y][x].myImage,  x*Constants.baseImageSize, y*Constants.baseImageSize, null); 
 					}
 				}
 			}
