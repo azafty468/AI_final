@@ -16,22 +16,22 @@ public class GameObjectCreature extends GameObject {
 	public static enum CreatureAlliance { PLAYER, GHOST, UNDEFINED; }
 	public CreatureAlliance myAlliance;
 	
-	public GameObjectCreature() {
+	public GameObjectCreature(AIModel myAIModel) {
 		super();
 		canBlockMovement = false;
 		currentAction = null;
-		myAIModel = null;
+		myAIModel.assignToCreature(this);
 		myType = GameObjectType.CREATURE;
 		stepsTaken = 0;
 		touchedByGhost = 0;
-		myAlliance = CreatureAlliance.UNDEFINED;
+		myAlliance = CreatureAlliance.GHOST;
 	}
 	
-	public GameObject generateClone(GameObject newObject) {
+	public GameObject generateClone(GameObject newObject, AIModel newAIModel) {
 		GameObject tmpObject;
 		
 		if (newObject == null)
-			tmpObject = new GameObjectCreature();
+			tmpObject = new GameObjectCreature(newAIModel);
 		else
 			tmpObject = newObject;
 		

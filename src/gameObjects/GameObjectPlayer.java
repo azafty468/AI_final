@@ -1,23 +1,24 @@
 package gameObjects;
 
+import aiModels.AIModel;
 import aiModels.AIModelPlayer;
 
 public class GameObjectPlayer extends GameObjectCreature {
 	public Board board;
 	public int pointsGained;
 	
-	public GameObjectPlayer() {
-		super();
-		this.myAIModel = new AIModelPlayer();
+	public GameObjectPlayer(AIModel newModel) {
+		super(newModel);
 		pointsGained = 0;
 		myType = GameObjectType.PLAYER;
+		myAlliance = GameObjectCreature.CreatureAlliance.PLAYER;
 	}
 	
-	public GameObject generateClone(GameObject newObject) {
+	public GameObject generateClone(GameObject newObject, AIModel newModel) {
 		GameObject tmpObject;
 		
 		if (newObject == null)
-			tmpObject = new GameObjectPlayer();
+			tmpObject = new GameObjectPlayer(newModel);
 		else
 			tmpObject = newObject;
 		

@@ -55,12 +55,6 @@ public class ApplicationController {
 		return generator;
 	}
 	
-	public void finishGame() {
-		//TODO write out game events to log file
-		
-		myTimeKeeper.setGameOver();
-	}
-	
 	public static ApplicationController getInstance() {
 		if (thisController == null)
 			thisController = new ApplicationController();
@@ -68,8 +62,8 @@ public class ApplicationController {
 		return thisController;
 	}
 	
-	public boolean loadFromXMLFile(String xmlFile) {
-		if (!Message.configure("logs\\Board.xsd")) { 
+	private boolean loadFromXMLFile(String xmlFile) {
+		if (!Message.configure("logs" + Constants.fileDelimiter + "Board.xsd")) { 
 			System.err.println("Error, cannot load Board XSD file");
 			System.exit(-1);
 		}
@@ -103,7 +97,7 @@ public class ApplicationController {
 		else
 			automatePlayer = false;
 	
-		return ApplicationModel.getInstance().readFromXMLFile(inMessage.contents.getFirstChild());
+		return ApplicationModel.getInstance().initialize(inMessage.contents.getFirstChild());
 	}
 	
 	public boolean initialize(boolean automatePlayer, String loadFile) {
@@ -210,11 +204,11 @@ public class ApplicationController {
 	public void writeInitialLog() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
 		Date date = new Date();
-		logFile = "logs\\Board_" + dateFormat.format(date) + ".xml";
+		logFile = "logs" + Constants.fileDelimiter + "Board_" + dateFormat.format(date) + ".xml";
 		
 		try {
 			BufferedWriter myOut = new BufferedWriter(new FileWriter(logFile));
-			myOut.write("<Game automatePlayer='" + automatePlayer + "'>");
+			myOut.write("<Game automatePlayer='" + automatePlayer + "'>" + Constants.newline);
 			ApplicationModel.getInstance().writeToXMLFile(myOut);
 			myOut.write("</Game>");
 			myOut.close();
@@ -223,6 +217,12 @@ public class ApplicationController {
 			System.err.println("Error while writing to log file: " + logFile);
 			System.exit(-1);
 		}
+	}
+	
+	public void finishGame() {
+		//TODO write out game events to log file
+		
+		myTimeKeeper.setGameOver();
 	}
 
 	private void moveCursor(KeyEvent e) {
