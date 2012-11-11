@@ -42,6 +42,7 @@ public class ApplicationController {
 	private String logFile;
 	public ArrayList<LoggableEvent> loggedEvents;
 	private boolean automatePlayer;
+	public boolean advancedViewSetting;
 	
 	public ApplicationController() {
 		currentEvents = new Stack<Event>();
@@ -125,6 +126,7 @@ public class ApplicationController {
 			writeInitialLog();
 		}
 		else {
+			logFile = loadFile;
 			if (!loadFromXMLFile(loadFile))
 				return false;
 		}
@@ -136,7 +138,8 @@ public class ApplicationController {
 
 		renderTimer = new Timer();
 		ApplicationView.getInstance().displayMessage("Starting Game.  Current State - PAUSED");
-		
+
+		advancedViewSetting = false;
 		return true;
 	}
 	
@@ -177,9 +180,12 @@ public class ApplicationController {
 				break;
 				
 			case KeyEvent.VK_R:
-				renderTask.cancel();
-				renderTimer.cancel();
 				myTimeKeeper.setPause(true);
+				renderTimer.cancel();
+				//stop();
+				//renderTask = null;
+				//renderTimer = null;
+				ApplicationModel.getInstance().resetModel();
 				ApplicationView.getInstance().displayMessage("---Game Reset Command Received---");
 				if (!initialize(automatePlayer, logFile)) {
 					System.err.println("Error while reseting environment");
@@ -188,10 +194,9 @@ public class ApplicationController {
 				break;
 				
 			case KeyEvent.VK_V:
-				//TODO implement
 				myTimeKeeper.setPause(true);
-				ApplicationView.getInstance().displayMessage("View Detailed AI Planning");
-				ApplicationView.getInstance().displayMessage("Error, not currently implemented!");
+				ApplicationView.getInstance().displayMessage("Rotated Detailed AI view");
+				advancedViewSetting = !advancedViewSetting;
 				break;
 		
 			default: 
@@ -204,10 +209,10 @@ public class ApplicationController {
 	public void writeInitialLog() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
 		Date date = new Date();
-		logFile = "logs" + Constants.fileDelimiter + "Board_" + dateFormat.format(date) + ".xml";
+		logFile = "Board_" + dateFormat.format(date) + ".xml";
 		
 		try {
-			BufferedWriter myOut = new BufferedWriter(new FileWriter(logFile));
+			BufferedWriter myOut = new BufferedWriter(new FileWriter("logs" + Constants.fileDelimiter + logFile));
 			myOut.write("<Game automatePlayer='" + automatePlayer + "'>" + Constants.newline);
 			ApplicationModel.getInstance().writeToXMLFile(myOut);
 			myOut.write("</Game>");

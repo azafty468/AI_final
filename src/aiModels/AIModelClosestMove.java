@@ -3,6 +3,7 @@ package aiModels;
 import gameObjects.*;
 import primary.ApplicationModel;
 import primary.Point;
+import view.PrintListNode;
 import actions.ActionMove;
 
 public class AIModelClosestMove extends AIModel {	
@@ -84,6 +85,33 @@ public class AIModelClosestMove extends AIModel {
 		  retval += "  Token: " + latestTarget.name + " at (" + latestTarget.myLocation.x + ", " + latestTarget.myLocation.y + ")";
 		
 		return retval;
+	}
+	
+	@Override
+	public void setAdvancedView(PrintListNode[][] myPL) {
+		/* sample access method.  This normally would rely on internal variables, and not directly reference the board
+		Board myBoard = ApplicationModel.getInstance().myBoard;
+
+		for (int y = 0; y < myBoard.height; y++)
+			for (int x = 0; x < myBoard.width; x++)
+				if (!myBoard.myGO[y][x].name.equals("Wall"))
+				myPL[y][x].setUtilityValue(100);
+		 */
+		
+		if (allTokens == null)
+			return;
+		
+		for (int y = 0; y < allTokens.length; y++) 
+			for (int x = 0; x < allTokens[y].length; x++)
+				if (allTokens[y][x] != null) {
+					if (latestTarget == null) 
+						myPL[y][x].setUtilityValue(50);					
+					else if (allTokens[y][x].equals(latestTarget))
+						myPL[y][x].setUtilityValue(100);
+					else
+						myPL[y][x].setUtilityValue(50);
+				}
+				
 	}
 
 }

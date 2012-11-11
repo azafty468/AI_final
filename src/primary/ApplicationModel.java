@@ -29,6 +29,10 @@ public class ApplicationModel {
 	public GameObjectCreature blueGhost;
 	static ApplicationModel thisModel = null;
 	
+	private ApplicationModel() {
+		
+	}
+	
 	public boolean initialize(int width, int height, AIModel playerAI, AIModel redAI, AIModel blueAI) {
 		myPlayer = new GameObjectPlayer(playerAI);
 		myPlayer.name = "Pac-man";
@@ -45,6 +49,10 @@ public class ApplicationModel {
 		redGhost.setXY(10, 10);
 		blueGhost.setXY(15, 15);
 		return true;
+	}
+	
+	public void resetModel() {
+		thisModel = null;
 	}
 
 	public boolean initialize(Node inMessage) {
@@ -132,6 +140,11 @@ public class ApplicationModel {
 					}
 				}
 			}
+		}
+		
+		if (myPlayer != null && ApplicationController.getInstance().advancedViewSetting == true) {
+			if (myPlayer.myAIModel != null) 
+				myPlayer.myAIModel.setAdvancedView(printList);
 		}
 
 		return printList;

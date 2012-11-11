@@ -1,5 +1,6 @@
 package aiModels;
 
+import view.PrintListNode;
 import gameObjects.GameObject;
 import gameObjects.GameObjectCreature;
 import actions.ActionMove;
@@ -16,6 +17,14 @@ public abstract class AIModel {
 	public abstract ActionMove planNextMove();
 	public void clearTarget(GameObject oldTarget) { return; }
 	public String describeActionPlan() { return "undefined"; }
+	
+	/**
+	 * This sets the more advanced view features such as coloring and utility/heuristic values.  It is up to the 
+	 * child AIModel to determine how this is used.
+	 * 
+	 * @param myPL
+	 */
+	public void setAdvancedView(PrintListNode[][] myPL) { return; } 
 	
 	/**
 	 * This method assigns the AI model to the creature and creates any necessary linking back in the AI model
