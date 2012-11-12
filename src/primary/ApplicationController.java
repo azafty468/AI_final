@@ -1,8 +1,11 @@
 package primary;
 
+import gameObjects.GameObjectPlayer;
+
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,7 +22,6 @@ import javax.swing.JOptionPane;
 
 import actions.ActionMove;
 import actions.Event;
-import actions.LoggableEvent;
 import aiModels.*;
 import primary.GamePlayTimeKeeper.PlayRate;
 import primary.Point;
@@ -40,7 +42,7 @@ public class ApplicationController {
 	public Stack<Event> currentEvents;
 	private GamePlayTimeKeeper myTimeKeeper;
 	private String logFile;
-	public ArrayList<LoggableEvent> loggedEvents;
+	public ArrayList<String> loggedEvents;
 	private boolean automatePlayer;
 	public boolean advancedViewSetting;
 	public boolean advancedViewPolicySetting;
@@ -98,7 +100,7 @@ public class ApplicationController {
 	}
 	
 	public boolean initialize(boolean automatePlayer, String loadFile) {
-		loggedEvents = new ArrayList<LoggableEvent>();
+		loggedEvents = new ArrayList<String>();
 		if (loadFile == null) {
 			this.automatePlayer = automatePlayer;
 			AIModel playerAI;
@@ -242,9 +244,38 @@ public class ApplicationController {
 	}
 	
 	public void finishGame() {
-		//TODO write out game events to log file
-		
 		myTimeKeeper.setGameOver();
+
+		String runLog = logFile.replace(".xml", "") + "_Run_";
+		
+		int counter = 0;
+	    final File folder = new File("logs" + Constants.fileDelimiter);
+	    for (final File fileEntry : folder.listFiles())
+	        if (!(fileEntry.isDirectory()))
+	        	if (fileEntry.getName().contains(runLog))
+	        		counter++;
+		
+	    counter++;
+		runLog += counter + ".xml";
+		GameObjectPlayer myPlayer = ApplicationModel.getInstance().myPlayer;
+		try {
+			BufferedWriter myOut = new BufferedWriter(new FileWriter("logs" + Constants.fileDelimiter + runLog));
+			myOut.write("<GameRun Board='" + logFile + "' run='" + counter + "' " +
+					"availableBerries='" + ApplicationModel.getInstance().myBoard.startingBerries + "' " +
+					"finalScore='" + myPlayer.pointsGained + "' " +
+					"ghostTouches='" + myPlayer.touchedByGhost  + "' " +
+					"stepsTaken='" + myPlayer.stepsTaken  + "'>" + Constants.newline);
+			
+			for (int i = 0; i < loggedEvents.size(); i++)
+				myOut.write(loggedEvents.get(i) + Constants.newline);
+			myOut.write("</GameRun>");
+			myOut.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Error while writing to log file: " + logFile);
+			System.exit(-1);
+		}
+		loggedEvents.clear();
 	}
 
 	private void moveCursor(KeyEvent e) {

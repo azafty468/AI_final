@@ -11,6 +11,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import primary.ApplicationController;
+import primary.ApplicationModel;
 import primary.Constants;
 import primary.Point;
 import view.ApplicationView;
@@ -27,6 +28,7 @@ public class Board {
 	private GameObjectBackground templateBackgroundPit; 
 	private GameObjectBackground templateBoundaryWall;
 	private GameObjectBackground templateBoundaryOpen;
+	public int startingBerries;
 	
 	/**
 	 * Constructor for a randomly generated Board
@@ -105,6 +107,8 @@ public class Board {
 			newGOT.pointValue = Integer.parseInt(child.getAttributes().getNamedItem("pointValue").getNodeValue());
 			myTokens.add(newGOT);
 		}
+		
+		startingBerries = myTokens.size();
 	}
 	
 	private void setGameObjectTemplates() {
@@ -158,8 +162,21 @@ public class Board {
 			}
 		}
 		
-		int totalBerries = ApplicationController.getGenerator().nextInt(15)+15;
+		int totalPits = ApplicationController.getGenerator().nextInt(15)+15;
 		int counter = 0;
+		while (counter < totalPits) {
+			GameObjectBackground tempBack = (GameObjectBackground) templateBackgroundPit.generateClone(null);
+			tempBack.setXY(ApplicationController.getGenerator().nextInt(width-2)+1, ApplicationController.getGenerator().nextInt(height-2)+1);
+
+			if (!(myGO[tempBack.myLocation.y][tempBack.myLocation.x].name.equals("Pit")) && 
+					!tempBack.myLocation.equals(ApplicationModel.getInstance().myPlayer.myLocation)) {
+				myGO[tempBack.myLocation.y][tempBack.myLocation.x] = tempBack;
+				counter = counter + 1;
+			}
+		}
+		
+		int totalBerries = ApplicationController.getGenerator().nextInt(15)+15;
+		counter = 0;
 		while (counter < totalBerries) {
 			boolean safeToAdd = true;
 			GameObjectToken tempTok = (GameObjectToken) templateStrawberryToken.generateClone(null);
@@ -169,23 +186,16 @@ public class Board {
 				if (myTokens.get(i).myLocation.equals(tempTok.myLocation))
 					safeToAdd = false;
 			
+			if (myGO[tempTok.myLocation.y][tempTok.myLocation.x].name.equals("Pit"))
+					safeToAdd = false;
+			
 			if (safeToAdd) {
 				myTokens.add(tempTok);
 				counter++;
 			}
 		}
 		
-		int totalPits = ApplicationController.getGenerator().nextInt(15)+15;
-		counter = 0;
-		while (counter < totalPits) {
-			GameObjectBackground tempBack = (GameObjectBackground) templateBackgroundPit.generateClone(null);
-			tempBack.setXY(ApplicationController.getGenerator().nextInt(width-2)+1, ApplicationController.getGenerator().nextInt(height-2)+1);
-
-			if (!(myGO[tempBack.myLocation.y][tempBack.myLocation.x].name.equals("Pit"))) {
-				myGO[tempBack.myLocation.y][tempBack.myLocation.x] = tempBack;
-				counter = counter + 1;
-			}
-		}
+		startingBerries = myTokens.size();
 		return true;
 	}
 	

@@ -1,7 +1,11 @@
 package actions;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+
 import primary.ApplicationController;
 import primary.ApplicationModel;
+import primary.Constants;
 import view.ApplicationView;
 import gameObjects.*;
 
@@ -18,7 +22,7 @@ public class EventPickupToken extends Event {
 	public void processEvent() {
 		localPlayer.pointsGained += localToken.pointValue;
 		
-		ApplicationController.getInstance().loggedEvents.add(this);
+		ApplicationController.getInstance().loggedEvents.add(writeLogString());
 		
 		ApplicationModel.getInstance().myBoard.removeToken(localToken);
 		ApplicationView.getInstance().displayMessage("Player '" + localPlayer.name + "' captured token '" + 
@@ -35,6 +39,14 @@ public class EventPickupToken extends Event {
 			ApplicationController.getInstance().finishGame();
 		}
 
+	}
+
+	@Override
+	public String writeLogString() {
+		return "<EventPickupToken player='" + localPlayer.name + "' points='" + localToken.pointValue + "' " +
+					"tokenName='" + localToken.name + "' " +
+					"location='(" + localToken.myLocation.x + "," + localToken.myLocation.y + ")' " +
+					"/>";
 	}
 
 }

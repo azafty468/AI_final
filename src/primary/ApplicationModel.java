@@ -44,10 +44,10 @@ public class ApplicationModel {
 		loadTemplates();
 
 		myBoard = new Board(width, height);
-		myBoard.generateRandomMap();
 		myPlayer.setXY(5, 5);
 		redGhost.setXY(10, 10);
 		blueGhost.setXY(15, 15);
+		myBoard.generateRandomMap();
 		return true;
 	}
 	

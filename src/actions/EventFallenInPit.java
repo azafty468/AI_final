@@ -14,7 +14,7 @@ public class EventFallenInPit extends Event {
 	
 	@Override
 	public void processEvent() {
-		ApplicationController.getInstance().loggedEvents.add(this);
+		ApplicationController.getInstance().loggedEvents.add(writeLogString());
 		if (targetCreature instanceof GameObjectPlayer) {
 			GameObjectPlayer tmpP = (GameObjectPlayer) targetCreature;
 			ApplicationView.getInstance().displayMessage("Player '" + tmpP.name + "' has fallen into a pit.  100 points have been deducted.");
@@ -24,6 +24,12 @@ public class EventFallenInPit extends Event {
 			ApplicationView.getInstance().displayMessage("Creature '" + targetCreature.name + "' has fallen into a pit.");
 		
 		targetCreature.currentAction = new ActionStuckInPit();
+	}
+
+	@Override
+	public String writeLogString() {
+		return "<EventFallIntoPit creature='" + targetCreature.name + "' " +
+				"location='(" + targetCreature.myLocation.x + "," + targetCreature.myLocation.y + ")' " + "/>";
 	}
 
 }
