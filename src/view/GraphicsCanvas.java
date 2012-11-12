@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
@@ -52,8 +53,10 @@ public class GraphicsCanvas extends Canvas {
 						else
 							bkG.drawImage(printList[y][x].myImage,  x*Constants.baseImageSize, y*Constants.baseImageSize, null);
 						
-						if (printList[y][x].hasUtilityValue)
+						if (printList[y][x].hasUtilityValue) {
+							bkG.setColor(Color.LIGHT_GRAY);
 							bkG.drawString(String.valueOf(printList[y][x].utilityValue), x*Constants.baseImageSize+12, y*Constants.baseImageSize+24);
+						}
 					}
 				}
 			}

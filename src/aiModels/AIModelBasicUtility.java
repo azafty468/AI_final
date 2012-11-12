@@ -77,6 +77,11 @@ public class AIModelBasicUtility extends AIModel {
 		mySelf.currentAction = null;
 	}	
 	
+	@Override
+	public String describeActionPlan() { 
+		return "Simple Utility-based AI"; 
+	}
+	
 	private Point getDirectionOfPolicy(PolicyMove myDirection) {
 		Point myPoint = new Point(mySelf.myLocation);
 
@@ -174,11 +179,11 @@ public class AIModelBasicUtility extends AIModel {
 				else if (localGO.name.equals("Wall")) {
 					myPolicies[y][x].utilityFixed = true;
 					myPolicies[y][x].unreachableSquare = true;
-					myPolicies[y][x].utility = 50;
+					myPolicies[y][x].utility = 0;
 				}
 			}
 		
-		//TODO how many times should I do this?.  Right now it is set to the maximum of the board size
+		//how many times should I do this?.  Right now it is set to the maximum of the board size
 		for (int i = 0; i < maxIterations; i++)
 			iteratePolicies();
 	}
@@ -258,8 +263,6 @@ public class AIModelBasicUtility extends AIModel {
 		
 		localPI.count = 1;
 	}
-
-
 	
 	@Override
 	public void setAdvancedView(PrintListNode[][] myPL) {
@@ -268,9 +271,9 @@ public class AIModelBasicUtility extends AIModel {
 		
 		for (int y = 0; y < myPolicies.length; y++) 
 			for (int x = 0; x < myPolicies[y].length; x++)
-				if (myPolicies[y][x] != null) {
-					myPL[y][x].setUtilityValue(myPolicies[y][x].utility);
-				}
+				if (myPolicies[y][x] != null)
+					if (!myPolicies[y][x].unreachableSquare)
+						myPL[y][x].setUtilityValue(myPolicies[y][x].utility);
 	}
 
 }
