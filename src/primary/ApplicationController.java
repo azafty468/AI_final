@@ -43,6 +43,7 @@ public class ApplicationController {
 	public ArrayList<LoggableEvent> loggedEvents;
 	private boolean automatePlayer;
 	public boolean advancedViewSetting;
+	public boolean advancedViewPolicySetting;
 	
 	public ApplicationController() {
 		currentEvents = new Stack<Event>();
@@ -88,11 +89,6 @@ public class ApplicationController {
 			return false;
 		}
 		
-		if (inMessage == null) {
-			System.err.println("Error while reading in XML file");
-			return false;
-		}
-
 		if (inMessage.contents.getAttributes().getNamedItem("automatePlayer").getNodeValue().equals("true"))
 			automatePlayer = true;
 		else
@@ -141,6 +137,7 @@ public class ApplicationController {
 		ApplicationView.getInstance().displayMessage("Starting Game.  Current State - PAUSED");
 
 		advancedViewSetting = false;
+		advancedViewPolicySetting = false;
 		return true;
 	}
 	
@@ -185,6 +182,12 @@ public class ApplicationController {
 				myTimeKeeper.alterDelayBetweenTurns(-20);
 				break;
 				
+			case KeyEvent.VK_H:
+				String tmpStr = "(H) help, (P) pause, (V) view detailed AI, (B) more detailed AI, (+) increase game speed" + 
+						" (-) decrease game speed, (space) step forward one round, (arrow keys) move character";
+				ApplicationView.getInstance().displayMessage(tmpStr);
+				break;
+				
 			case KeyEvent.VK_R:
 				myTimeKeeper.setPause(true);
 				renderTimer.cancel();
@@ -201,8 +204,16 @@ public class ApplicationController {
 				
 			case KeyEvent.VK_V:
 				myTimeKeeper.setPause(true);
-				ApplicationView.getInstance().displayMessage("Rotated Detailed AI view");
+				ApplicationView.getInstance().displayMessage("Rotating Detailed AI View");
 				advancedViewSetting = !advancedViewSetting;
+				advancedViewPolicySetting = false;
+				break;
+				
+			case KeyEvent.VK_B:
+				myTimeKeeper.setPause(true);
+				ApplicationView.getInstance().displayMessage("Rotating Policy AI View");
+				advancedViewPolicySetting = !advancedViewPolicySetting;
+				advancedViewSetting = false;
 				break;
 		
 			default: 

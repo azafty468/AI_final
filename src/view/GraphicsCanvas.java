@@ -4,10 +4,13 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.Toolkit;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferStrategy;
 
 import primary.Constants;
+import primary.Constants.PolicyMove;
 
 
 /*
@@ -57,6 +60,9 @@ public class GraphicsCanvas extends Canvas {
 							bkG.setColor(Color.LIGHT_GRAY);
 							bkG.drawString(String.valueOf(printList[y][x].utilityValue), x*Constants.baseImageSize+12, y*Constants.baseImageSize+24);
 						}
+						else if (printList[y][x].hasPolicyMove) {
+							drawArrow(bkG, printList[y][x].myPolicyMove, x, y);
+						}
 					}
 				}
 			}
@@ -64,6 +70,82 @@ public class GraphicsCanvas extends Canvas {
 		bkG.dispose();
 		myBufferStrategy.show();
 		Toolkit.getDefaultToolkit().sync();
+	}
+	
+	private void drawArrow(Graphics2D bkG, PolicyMove direction, int x, int y) {
+		bkG.setColor(Color.blue);
+		int startX, startY, endX, endY;
+		int[] polyX;
+		int[] polyY;
+		if (direction == PolicyMove.RIGHT) {
+			startX = x*Constants.baseImageSize+9;
+			startY = y*Constants.baseImageSize+16;
+			endX = startX + 10;
+			endY = startY;
+			polyX = new int[] { endX, 	endX+3,	endX} ;
+			polyY = new int[] { endY+3,	endY, 	endY-3} ;
+		}
+		else if (direction == PolicyMove.LEFT) {
+			startX = x*Constants.baseImageSize+9;
+			startY = y*Constants.baseImageSize+16;
+			endX = startX + 10;
+			endY = startY;
+			polyX = new int[] { startX, startX-3, startX} ;
+			polyY = new int[] { startY+3, startY, startY-3} ;
+		}
+		else if (direction == PolicyMove.DOWN) {
+			startX = x*Constants.baseImageSize+16;
+			startY = y*Constants.baseImageSize+10;
+			endX = startX;
+			endY = startY+10;
+			polyX = new int[] { endX-3, endX, endX+3} ;
+			polyY = new int[] { endY, endY+3, endY} ;
+		}
+		else if (direction == PolicyMove.UP) {
+			startX = x*Constants.baseImageSize+16;
+			startY = y*Constants.baseImageSize+10;
+			endX = startX;
+			endY = startY+10;
+			polyX = new int[] { startX-3, startX, startX+3} ;
+			polyY = new int[] { startY, startY-3, startY} ;
+		}
+		else if (direction == PolicyMove.UPLEFT) {
+			startX = x*Constants.baseImageSize+9;
+			startY = y*Constants.baseImageSize+10;
+			endX = startX+10;
+			endY = startY+10;
+			polyX = new int[] { startX-3, startX+2, startX-3} ;
+			polyY = new int[] { startY-3, startY-3, startY+2} ;
+		}
+		else if (direction == PolicyMove.DOWNRIGHT) {
+			startX = x*Constants.baseImageSize+9;
+			startY = y*Constants.baseImageSize+10;
+			endX = startX+10;
+			endY = startY+10;
+			polyX = new int[] { endX+3, endX-2, endX+3} ;
+			polyY = new int[] { endY+3, endY+3, endY-2} ;
+		}
+		else if (direction == PolicyMove.UPRIGHT) {
+			startX = x*Constants.baseImageSize+23;
+			startY = y*Constants.baseImageSize+10;
+			endX = startX-10;
+			endY = startY+10;
+			polyX = new int[] { startX+3, startX-2, startX+3} ;
+			polyY = new int[] { startY-3, startY-3, startY+2} ;
+		}
+		else if (direction == PolicyMove.DOWNLEFT) {
+			startX = x*Constants.baseImageSize+19;
+			startY = y*Constants.baseImageSize+10;
+			endX = startX-10;
+			endY = startY+10;
+			polyX = new int[] { endX-3, endX+2, endX-3} ;
+			polyY = new int[] { endY+3, endY+3, endY-2} ;
+		}
+		else
+			return;
+
+		bkG.draw(new Line2D.Double(startX, startY, endX, endY));
+		bkG.draw(new Polygon(polyX, polyY, polyX.length));
 	}
 
 }

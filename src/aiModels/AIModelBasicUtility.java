@@ -4,9 +4,9 @@ import primary.*;
 import view.PrintListNode;
 import gameObjects.*;
 import actions.ActionMove;
+import primary.Constants.PolicyMove;
 
 public class AIModelBasicUtility extends AIModel {
-	private enum PolicyMove {UP, UPLEFT, LEFT, DOWNLEFT, DOWN, DOWNRIGHT, RIGHT, UPRIGHT, UNKNOWN; }
 	private class PolicyInterim {
 		public int utility;
 		public int count;
@@ -276,4 +276,16 @@ public class AIModelBasicUtility extends AIModel {
 						myPL[y][x].setUtilityValue(myPolicies[y][x].utility);
 	}
 
+	@Override
+	public void setPolicyView(PrintListNode[][] myPL) { 
+		if (myPolicies == null) 
+			return;
+		
+		for (int y = 0; y < myPolicies.length; y++) 
+			for (int x = 0; x < myPolicies[y].length; x++)
+				if (myPolicies[y][x] != null)
+					if (!myPolicies[y][x].unreachableSquare)
+						myPL[y][x].setPolicyValue(myPolicies[y][x].myPolicy);
+	} 
+	
 }

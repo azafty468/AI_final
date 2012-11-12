@@ -27,6 +27,15 @@ public abstract class AIModel {
 	public void setAdvancedView(PrintListNode[][] myPL) { return; } 
 	
 	/**
+	 * This sets the more advanced view features for policies.  This is only implemented on models that actually 
+	 * do some level of policy determination.  It is up to the child AIModel to determine how this is used.  This guy
+	 * should be overridden second to the setAdvancedView function above.
+	 * 
+	 * @param myPL
+	 */
+	public void setPolicyView(PrintListNode[][] myPL) { return; } 
+	
+	/**
 	 * This method assigns the AI model to the creature and creates any necessary linking back in the AI model
 	 * UPDATE (11/8/12): This is a change from the old code.  This replaces the multiple different constructors we were
 	 * using.  This is set up so that we can create the AI model before the creature is created.

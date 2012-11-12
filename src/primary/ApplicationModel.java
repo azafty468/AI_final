@@ -146,6 +146,12 @@ public class ApplicationModel {
 			if (myPlayer.myAIModel != null) 
 				myPlayer.myAIModel.setAdvancedView(printList);
 		}
+		
+		if (myPlayer != null && ApplicationController.getInstance().advancedViewPolicySetting == true) {
+			if (myPlayer.myAIModel != null) 
+				myPlayer.myAIModel.setPolicyView(printList);
+		}
+		
 
 		return printList;
 	}
@@ -183,8 +189,8 @@ public class ApplicationModel {
 			retVal = new AIModelHillClimb();
 		else if (aiName.equals("class aiModels.AIModelPlayer")) 
 			retVal = new AIModelPlayer();
-		else if (aiName.equals("class aiModels.AIModelBasicUtility")) 
-			retVal = new AIModelPlayer();
+		else if (aiName.equals("class aiModels.AIModelBasicUtility"))
+			retVal = new AIModelBasicUtility();
 		return retVal;
 	}
 	
