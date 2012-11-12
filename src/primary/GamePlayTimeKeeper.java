@@ -9,6 +9,7 @@ public class GamePlayTimeKeeper {
 	private boolean gameOver;
 	private long lastTurnRun;
 	private long minimumTurnLengthinMS;
+	public boolean stepOneRound;
 	
 	public GamePlayTimeKeeper(PlayRate gameRate) {
 		myPlayRate = gameRate;
@@ -16,10 +17,19 @@ public class GamePlayTimeKeeper {
 		isPaused = true;
 		lastTurnRun = new java.util.Date().getTime();
 		minimumTurnLengthinMS = 200;
+		stepOneRound = false;
 	}
 	
 	public boolean isTimeForTurn() {
-		if (gameOver || isPaused) 
+		if (gameOver) 
+			return false;
+		
+		if (stepOneRound) {
+			stepOneRound = false;
+			return true;
+		}
+
+		if (isPaused) 
 			return false;
 		
 		if (myPlayRate == PlayRate.HUMANPLAYER) {

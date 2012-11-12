@@ -183,6 +183,8 @@ public class ApplicationModel {
 			retVal = new AIModelHillClimb();
 		else if (aiName.equals("class aiModels.AIModelPlayer")) 
 			retVal = new AIModelPlayer();
+		else if (aiName.equals("class aiModels.AIModelBasicUtility")) 
+			retVal = new AIModelPlayer();
 		return retVal;
 	}
 	

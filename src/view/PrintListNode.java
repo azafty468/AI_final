@@ -15,6 +15,7 @@ public class PrintListNode {
 		overrideColor = overrideBase;
 		baseColor = newColor;
 		hasUtilityValue = false;
+		utilityValue = 0;
 	}
 	
 	public void setUtilityValue(int newUtility) {

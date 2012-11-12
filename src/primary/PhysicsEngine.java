@@ -6,10 +6,20 @@ import gameObjects.GameObject.GameObjectType;
 import actions.*;
 
 public class PhysicsEngine {
+	//change this for non-deterministic worlds
+	public static boolean deterministicMovement = true;
+	
+	//the overall multiplier for non-deterministic worlds.  the forward location is at [1][2].  Array values must add up to 1
+	public static double movementModifier[][] = { {0, 0, 0}, {0, 0, 1}, {0, 0, 0}};
 
 	public static void moveCreature(ActionMove myAM) {
 		int targetX = myAM.initiator.myLocation.x;
 		int targetY = myAM.initiator.myLocation.y;
+
+		if (deterministicMovement) {
+			targetX = myAM.initiator.myLocation.x;
+			targetY = myAM.initiator.myLocation.y;
+		}
 		
 		if (targetX < myAM.targetX) {
 			targetX++;

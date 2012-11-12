@@ -112,7 +112,8 @@ public class ApplicationController {
 			int boardHeight = (int) (getScreenWorkingHeight() * 0.8 / Constants.baseImageSize);
 			
 			if (automatePlayer)
-				playerAI = new AIModelClosestMove();
+				playerAI = new AIModelBasicUtility();
+				//playerAI = new AIModelClosestMove();
 			else
 				playerAI = new AIModelPlayer();
 			
@@ -166,6 +167,11 @@ public class ApplicationController {
 				
 			case KeyEvent.VK_P:
 				myTimeKeeper.invertPause();
+				break;
+				
+			case KeyEvent.VK_SPACE:
+				myTimeKeeper.stepOneRound = true;
+				ApplicationView.getInstance().displayMessage("---Stepping forward one round---");
 				break;
 				
 			case KeyEvent.VK_ADD:
