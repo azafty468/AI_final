@@ -186,7 +186,8 @@ public class ApplicationController {
 				
 			case KeyEvent.VK_H:
 				String tmpStr = "(H) help, (P) pause, (V) view detailed AI, (B) more detailed AI, (+) increase game speed" + 
-						" (-) decrease game speed, (space) step forward one round, (arrow keys) move character";
+						" (-) decrease game speed, (space) step forward one round, (arrow keys) move character, " +
+						"(A) abort game with unspecified error, (S) abort game due to unwinnable, (D) abort game due to error in game ";
 				ApplicationView.getInstance().displayMessage(tmpStr);
 				break;
 				
@@ -202,6 +203,21 @@ public class ApplicationController {
 					System.err.println("Error while reseting environment");
 					System.exit(-1);
 				}
+				break;
+				
+			case KeyEvent.VK_A:
+				ApplicationView.getInstance().displayMessage("Aborting game for undefined reason");
+				finishGame("unknown reason");
+				break;
+			
+			case KeyEvent.VK_S:
+				finishGame("unwinnable");
+				ApplicationView.getInstance().displayMessage("Aborting game because it is deemed unwinnable");
+				break;
+				
+			case KeyEvent.VK_D:
+				ApplicationView.getInstance().displayMessage("Aborting game due to an error in the game");
+				finishGame("error in game");
 				break;
 				
 			case KeyEvent.VK_V:
@@ -243,7 +259,7 @@ public class ApplicationController {
 		}
 	}
 	
-	public void finishGame() {
+	public void finishGame(String terminateReason) {
 		myTimeKeeper.setGameOver();
 
 		String runLog = logFile.replace(".xml", "") + "_Run_";
@@ -260,11 +276,16 @@ public class ApplicationController {
 		GameObjectPlayer myPlayer = ApplicationModel.getInstance().myPlayer;
 		try {
 			BufferedWriter myOut = new BufferedWriter(new FileWriter("logs" + Constants.fileDelimiter + runLog));
-			myOut.write("<GameRun Board='" + logFile + "' run='" + counter + "' " +
-					"availableBerries='" + ApplicationModel.getInstance().myBoard.startingBerries + "' " +
-					"finalScore='" + myPlayer.pointsGained + "' " +
-					"ghostTouches='" + myPlayer.touchedByGhost  + "' " +
-					"stepsTaken='" + myPlayer.stepsTaken  + "'>" + Constants.newline);
+			myOut.write("<GameRun Board='" + logFile + "' run='" + counter + "' ");
+			if (terminateReason.isEmpty())
+				myOut.write("finish='success' ");
+			else
+				myOut.write("finish='abort' reason='" + terminateReason + "' ");
+
+			myOut.write("availableBerries='" + ApplicationModel.getInstance().myBoard.startingBerries + "' " +
+				"finalScore='" + myPlayer.pointsGained + "' " +
+				"ghostTouches='" + myPlayer.touchedByGhost  + "' " +
+				"stepsTaken='" + myPlayer.stepsTaken  + "'>" + Constants.newline);
 			
 			for (int i = 0; i < loggedEvents.size(); i++)
 				myOut.write(loggedEvents.get(i) + Constants.newline);
