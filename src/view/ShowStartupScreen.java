@@ -14,12 +14,22 @@ import javax.swing.border.EmptyBorder;
 import primary.Constants;
 import primary.GameConfiguration;
 import primary.MainApplication;
+import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+
+import aiModels.AIModelClosestMove;
+import aiModels.AIModelDijkstraAlgorithm;
+import aiModels.AIModelDirectMove;
+import aiModels.AIModelEnemy;
+import aiModels.AIModelHillClimb;
+import aiModels.AIModelPlayer;
+import java.awt.Font;
 
 public class ShowStartupScreen extends JFrame {
 	static final long serialVersionUID = 1L;
 	JPanel contentPane;
-	JButton btnAIController;
-	JButton btnHumanController;
+	JButton btnStartContoller;
 	JButton btnExit;
 	ImageIcon strawberry;
 	ImageIcon blueGuy;
@@ -27,7 +37,8 @@ public class ShowStartupScreen extends JFrame {
 	ImageIcon logo;
 	JLabel pastRunsLabel;
 	PastRunsJPanel myPastRunsJPanel;
-	GameConfiguration myLoadConfiguration;
+	JCheckBox chckbxInteriorWalls, chckbxFullyVisibleWorld, chckbxRedGhost, chckbxBlueGhost, chckbxDeterministicMove;
+	JComboBox redGhostAICombo, blueGhostAICombo, playerAICombo;
 
 	public ShowStartupScreen() {
 		//creates the JFrame and contentPane to hold everything
@@ -49,85 +60,124 @@ public class ShowStartupScreen extends JFrame {
 	    logo = new ImageIcon("images" + Constants.fileDelimiter + "AI_Logo.png");
 	    JLabel imageContainer = new JLabel(logo);
 	    imageContainer.setBounds(0, 20, 800, 200);
-	    add(imageContainer);
+	    getContentPane().add(imageContainer);
 	    
 	    //displays a few berries to look cute
 	    strawberry = new ImageIcon("images" + Constants.fileDelimiter + "berry.png");
-	    /* Removed to clear up some room
-	    JLabel berry1 = new JLabel(strawberry);
-	    berry1.setBounds(100, 300, 50, 50);
-	    add(berry1);
-	    */
-	    
-	    JLabel berry2 = new JLabel(strawberry);
-	    berry2.setBounds(500, 390, 50, 50);
-	    add(berry2);
 	    
 	    JLabel berry3 = new JLabel(strawberry);
-	    berry3.setBounds(600, 200, 50, 50);
-	    add(berry3);
+	    berry3.setBounds(500, 313, 50, 50);
+	    getContentPane().add(berry3);
 	    
 	    //displays the blue ghost for fun
 	    blueGuy = new ImageIcon("images" + Constants.fileDelimiter + "blue.png");
 	    JLabel blue = new JLabel(blueGuy);
 	    blue.setBounds(30, 50, 50, 50);
-	    add(blue);
+	    getContentPane().add(blue);
 	    
 	    //displays the orange ghost for fun
 	    orangeGuy = new ImageIcon("images" + Constants.fileDelimiter + "orange.png");
 	    JLabel orange = new JLabel(orangeGuy);
 	    orange.setBounds(700, 50, 50, 50);
-	    add(orange);
+	    getContentPane().add(orange);
 	    
 	    //adds a button to use the AI model for the player
-	    btnAIController = new JButton("AI Controller");
-	    btnAIController.setBounds(335, 230, 130, 50);
-	    add(btnAIController);
-	    
-	    //adds a button for a human controlled player
-	    btnHumanController = new JButton("Human Controller");
-	    btnHumanController.setBounds(335, 290, 130, 50);
-	    add(btnHumanController);
+	    btnStartContoller = new JButton("Start");
+	    btnStartContoller.setBounds(335, 289, 130, 50);
+	    getContentPane().add(btnStartContoller);
 	    
 	    //add a button so the user can exit
 	    btnExit = new JButton("Exit");
 	    btnExit.setBounds(335, 350, 130, 50);
-	    add(btnExit);
+	    getContentPane().add(btnExit);
 	    
 	    
 	    //The past runs document
 	    pastRunsLabel = new JLabel("Prior Runs:");
 	    pastRunsLabel.setBounds(25, 205, 400, 25);
-	    add(pastRunsLabel);
+	    getContentPane().add(pastRunsLabel);
 	    myPastRunsJPanel = new PastRunsJPanel(25, 225, 200, 400);
-	    add(myPastRunsJPanel);
-		myLoadConfiguration = new GameConfiguration(true, "class aiModels.AIModelPlayer", true, false);
-		myLoadConfiguration.setRedGhostAI("class aiModels.AIModelDijkstraAlgorithm");
-		myLoadConfiguration.setBlueGhostAI("class aiModels.AIModelDirectMove");
+	    getContentPane().add(myPastRunsJPanel);
+	    
+	    chckbxInteriorWalls = new JCheckBox("Interior Walls");
+	    chckbxInteriorWalls.setFont(new Font("Tahoma", Font.PLAIN, 10));
+	    chckbxInteriorWalls.setBounds(581, 356, 116, 23);
+	    chckbxInteriorWalls.setSelected(true);
+	    contentPane.add(chckbxInteriorWalls);
+	    
+	    chckbxFullyVisibleWorld = new JCheckBox("Visible World");
+	    chckbxFullyVisibleWorld.setFont(new Font("Tahoma", Font.PLAIN, 10));
+	    chckbxFullyVisibleWorld.setBounds(581, 330, 116, 23);
+	    chckbxFullyVisibleWorld.setSelected(true);
+	    contentPane.add(chckbxFullyVisibleWorld);
+	    
+	    chckbxRedGhost = new JCheckBox("Red Ghost");
+	    chckbxRedGhost.setBounds(520, 227, 97, 23);
+	    chckbxRedGhost.setSelected(true);
+	    contentPane.add(chckbxRedGhost);
+	    
+	    chckbxBlueGhost = new JCheckBox("Blue Ghost");
+	    chckbxBlueGhost.setBounds(520, 257, 97, 23);
+	    chckbxBlueGhost.setSelected(true);
+	    contentPane.add(chckbxBlueGhost);
+	    
+	    chckbxDeterministicMove = new JCheckBox("Deterministic Move");
+	    chckbxDeterministicMove.setFont(new Font("Tahoma", Font.PLAIN, 10));
+	    chckbxDeterministicMove.setBounds(581, 304, 116, 23);
+	    chckbxDeterministicMove.setSelected(true);
+	    contentPane.add(chckbxDeterministicMove);
+	    
+	    redGhostAICombo = new JComboBox();
+	    redGhostAICombo.setFont(new Font("Tahoma", Font.PLAIN, 10));
+	    redGhostAICombo.setBounds(623, 228, 145, 20);
+	    redGhostAICombo.addItem("AIModelClosestMove");
+	    redGhostAICombo.addItem("AIModelDijkstraAlgorithm");
+	    redGhostAICombo.addItem("AIModelDirectMove");
+	    redGhostAICombo.addItem("AIModelEnemy");
+	    redGhostAICombo.addItem("AIModelHillClimb");
+	    redGhostAICombo.addItem("AIModelPlayer");
+	    redGhostAICombo.addItem("AIModelBasicUtility");
+	    redGhostAICombo.setSelectedIndex(1);
+	    contentPane.add(redGhostAICombo);
+	    
+	    blueGhostAICombo = new JComboBox();
+	    blueGhostAICombo.setFont(new Font("Tahoma", Font.PLAIN, 10));
+	    blueGhostAICombo.setBounds(623, 258, 145, 20);
+	    blueGhostAICombo.addItem("AIModelClosestMove");
+	    blueGhostAICombo.addItem("AIModelDijkstraAlgorithm");
+	    blueGhostAICombo.addItem("AIModelDirectMove");
+	    blueGhostAICombo.addItem("AIModelEnemy");
+	    blueGhostAICombo.addItem("AIModelHillClimb");
+	    blueGhostAICombo.addItem("AIModelPlayer");
+	    blueGhostAICombo.addItem("AIModelBasicUtility");
+	    blueGhostAICombo.setSelectedIndex(2);
+	    contentPane.add(blueGhostAICombo);
+	    
+	    JLabel lblPlayersAi = new JLabel("Players AI Model");
+	    lblPlayersAi.setFont(new Font("Tahoma", Font.PLAIN, 10));
+	    lblPlayersAi.setBounds(500, 405, 86, 14);
+	    contentPane.add(lblPlayersAi);
+	    
+	    playerAICombo = new JComboBox();
+	    playerAICombo.setFont(new Font("Tahoma", Font.PLAIN, 10));
+	    playerAICombo.setBounds(593, 402, 145, 20);
+	    playerAICombo.addItem("AIModelClosestMove");
+	    playerAICombo.addItem("AIModelDijkstraAlgorithm");
+	    playerAICombo.addItem("AIModelDirectMove");
+	    playerAICombo.addItem("AIModelEnemy");
+	    playerAICombo.addItem("AIModelHillClimb");
+	    playerAICombo.addItem("AIModelPlayer");
+	    playerAICombo.addItem("AIModelBasicUtility");
+	    playerAICombo.setSelectedIndex(6);
+	    contentPane.add(playerAICombo);
 			    
 	    //This starts the player AI model 
-	    btnAIController.addActionListener(new ActionListener() {
+	    btnStartContoller.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent a) {
 				dispose();
-				
-				myLoadConfiguration.setPlayerAI("class aiModels.AIModelBasicUtility");
-				myLoadConfiguration.setInitialBoard(myPastRunsJPanel.localList.getSelectedItem());
-				
-				MainApplication.startGame(myLoadConfiguration);
-			}
-	    });
-	    
-	    //This starts the human controlled player object
-	    btnHumanController.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent a) {
-				dispose();
-
-				myLoadConfiguration.setPlayerAI("class aiModels.AIModelPlayer");
-				myLoadConfiguration.setInitialBoard(myPastRunsJPanel.localList.getSelectedItem());
-				MainApplication.startGame(myLoadConfiguration);
-				//MainApplication.startGame(false, myPastRunsJPanel.localList.getSelectedItem());
+								
+				MainApplication.startGame(getConfiguration());
 			}
 	    });
 	    
@@ -139,5 +189,26 @@ public class ShowStartupScreen extends JFrame {
 				System.exit(0);
 			}
 	    });
+	}
+	
+	private GameConfiguration getConfiguration() {
+		boolean hasVisibleWorld = chckbxFullyVisibleWorld.isSelected();
+		boolean hasDeterministicWorld = chckbxDeterministicMove.isSelected();
+		boolean hasInformativeZones = true;		//TODO implement this
+		boolean hasInternalWalls = chckbxInteriorWalls.isSelected();
+		
+		GameConfiguration retVal = new GameConfiguration(hasVisibleWorld, hasDeterministicWorld, hasInformativeZones, hasInternalWalls);
+		
+		if (chckbxRedGhost.isSelected())
+			retVal.setRedGhostAI("class aiModels." +  (String)redGhostAICombo.getSelectedItem());
+		
+		if (chckbxBlueGhost.isSelected())
+			retVal.setBlueGhostAI("class aiModels." +  (String)blueGhostAICombo.getSelectedItem());
+		
+		retVal.setPlayerAI("class aiModels." +  (String)playerAICombo.getSelectedItem());
+		
+		retVal.setInitialBoard(myPastRunsJPanel.localList.getSelectedItem());
+		
+		return retVal;
 	}
 }

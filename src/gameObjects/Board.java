@@ -233,4 +233,93 @@ public class Board {
 			System.exit(0);
 		}
 	}
+	
+	public void generateInternalWalls() {
+		int wallSections = ApplicationController.getGenerator().nextInt(20) + 10;
+		int wallLength;
+		int startX, startY, endX, endY, direction;
+		boolean safeToAdd;
+		
+		for (int i = 0; i < wallSections; ) {
+			safeToAdd = false;
+			wallLength = ApplicationController.getGenerator().nextInt(8) + 3;
+			startX = ApplicationController.getGenerator().nextInt(width - 2)  + 1;
+			startY = ApplicationController.getGenerator().nextInt(height - 2)  + 1;
+			direction = ApplicationController.getGenerator().nextInt(2);
+			
+			if (direction == 0) { // RIGHT
+				safeToAdd = true;
+				endY = startY;
+				endX = startX + wallLength;
+				
+				if (endX > (width-1))
+					safeToAdd = false;
+				else
+					for (int xTest = startX; xTest < endX; xTest++) {
+						Point testPoint = new Point(xTest, startY);
+						GameObject tmpGO = ApplicationModel.getInstance().findGOByLocation(testPoint);
+						if (tmpGO.name.equals(templateBoundaryWall.name) || tmpGO.name.equals(templateBackgroundPit.name) ||
+								tmpGO.name.equals(templateStrawberryToken.name))
+							safeToAdd = false;
+	
+						if (ApplicationModel.getInstance().myPlayer != null)
+							if (ApplicationModel.getInstance().myPlayer.myLocation.equals(testPoint))
+								safeToAdd = false;
+	
+						if (ApplicationModel.getInstance().redGhost != null)
+							if (ApplicationModel.getInstance().redGhost.myLocation.equals(testPoint))
+								safeToAdd = false;
+	
+						if (ApplicationModel.getInstance().blueGhost != null)
+							if (ApplicationModel.getInstance().blueGhost.myLocation.equals(testPoint))
+								safeToAdd = false;
+					}
+				
+				if (safeToAdd) {
+					for (int xTest = startX; xTest < endX; xTest++) {
+						myGO[startY][xTest] = (GameObjectBackground) templateBoundaryWall.generateClone(null);
+						myGO[startY][xTest].myLocation = new Point(xTest, startY);
+					}
+				}
+			}
+			else if (direction == 1) { // DOWN
+				safeToAdd = true;
+				endX = startX;
+				endY = startY + wallLength;
+				
+				if (endY > (height - 1)) 
+					safeToAdd = false;
+				else
+					for (int yTest = startY; yTest < endY; yTest++) {
+						Point testPoint = new Point(startX, yTest);
+						GameObject tmpGO = ApplicationModel.getInstance().findGOByLocation(testPoint);
+						if (tmpGO.name.equals(templateBoundaryWall.name) || tmpGO.name.equals(templateBackgroundPit.name) ||
+								tmpGO.name.equals(templateStrawberryToken.name))
+							safeToAdd = false;
+	
+						if (ApplicationModel.getInstance().myPlayer != null)
+							if (ApplicationModel.getInstance().myPlayer.myLocation.equals(testPoint))
+								safeToAdd = false;
+	
+						if (ApplicationModel.getInstance().redGhost != null)
+							if (ApplicationModel.getInstance().redGhost.myLocation.equals(testPoint))
+								safeToAdd = false;
+	
+						if (ApplicationModel.getInstance().blueGhost != null)
+							if (ApplicationModel.getInstance().blueGhost.myLocation.equals(testPoint))
+								safeToAdd = false;
+					}
+				if (safeToAdd) {
+					for (int yTest = startY; yTest < endY; yTest++) {
+						myGO[yTest][startX] = (GameObjectBackground) templateBoundaryWall.generateClone(null);
+						myGO[yTest][startX].myLocation = new Point(startX, yTest);
+					}
+				}
+			}
+			
+			if (safeToAdd) { 
+				i++;
+			}
+		}
+	}
 }

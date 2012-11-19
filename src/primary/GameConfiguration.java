@@ -13,7 +13,8 @@ public class GameConfiguration {
 	public boolean randomlyGenerateWorld;
 	public String preexistingBoard;
 	public boolean informativeZones; // these are the areas around a pit and/or a strawberry that indicate something is near
-	public boolean isHumanControlled; 
+	public boolean isHumanControlled;
+	public boolean hasInternalWalls;
 	
 	/**
 	 * 
@@ -22,14 +23,14 @@ public class GameConfiguration {
 	 * @param hasDeterministicWorld
 	 * @param hasInformativeZones
 	 */
-	public GameConfiguration(boolean hasVisibleWorld, String playerAIName, boolean hasDeterministicWorld, boolean hasInformativeZones) {
+	public GameConfiguration(boolean hasVisibleWorld, boolean hasDeterministicWorld, boolean hasInformativeZones, boolean hasInternalWalls) {
 		visibleWorld = hasVisibleWorld;
 		deterministicWorld = hasDeterministicWorld;
 		randomlyGenerateWorld = true;
 		hasRedGhost = false;
 		hasBlueGhost = false;
 		informativeZones = hasInformativeZones;
-		setPlayerAI(playerAIName);
+		this.hasInternalWalls = hasInternalWalls; 
 	}
 	
 	public static AIModel getAIModel(String aiName) {

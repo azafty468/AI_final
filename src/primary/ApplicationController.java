@@ -126,6 +126,10 @@ public class ApplicationController {
 				JOptionPane.showMessageDialog(null, "Error while initializating the base Application Model.  Exiting.");
 				System.exit(0);		
 			}
+
+			if (myLoadConfiguration.hasInternalWalls) 
+				ApplicationModel.getInstance().myBoard.generateInternalWalls();
+			
 			writeInitialLog();
 		}
 		else {
