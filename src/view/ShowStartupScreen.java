@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import primary.Constants;
+import primary.GameConfiguration;
 import primary.MainApplication;
 
 public class ShowStartupScreen extends JFrame {
@@ -26,6 +27,7 @@ public class ShowStartupScreen extends JFrame {
 	ImageIcon logo;
 	JLabel pastRunsLabel;
 	PastRunsJPanel myPastRunsJPanel;
+	GameConfiguration myLoadConfiguration;
 
 	public ShowStartupScreen() {
 		//creates the JFrame and contentPane to hold everything
@@ -99,13 +101,20 @@ public class ShowStartupScreen extends JFrame {
 	    add(pastRunsLabel);
 	    myPastRunsJPanel = new PastRunsJPanel(25, 225, 200, 400);
 	    add(myPastRunsJPanel);
-	    
+		myLoadConfiguration = new GameConfiguration(true, "class aiModels.AIModelPlayer", true, false);
+		myLoadConfiguration.setRedGhostAI("class aiModels.AIModelDijkstraAlgorithm");
+		myLoadConfiguration.setBlueGhostAI("class aiModels.AIModelDirectMove");
+			    
 	    //This starts the player AI model 
 	    btnAIController.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent a) {
 				dispose();
-				MainApplication.startGame(true, myPastRunsJPanel.localList.getSelectedItem());
+				
+				myLoadConfiguration.setPlayerAI("class aiModels.AIModelBasicUtility");
+				myLoadConfiguration.setInitialBoard(myPastRunsJPanel.localList.getSelectedItem());
+				
+				MainApplication.startGame(myLoadConfiguration);
 			}
 	    });
 	    
@@ -114,7 +123,11 @@ public class ShowStartupScreen extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent a) {
 				dispose();
-				MainApplication.startGame(false, myPastRunsJPanel.localList.getSelectedItem());
+
+				myLoadConfiguration.setPlayerAI("class aiModels.AIModelPlayer");
+				myLoadConfiguration.setInitialBoard(myPastRunsJPanel.localList.getSelectedItem());
+				MainApplication.startGame(myLoadConfiguration);
+				//MainApplication.startGame(false, myPastRunsJPanel.localList.getSelectedItem());
 			}
 	    });
 	    

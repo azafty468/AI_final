@@ -16,14 +16,14 @@ public class MainApplication {
 		start.setVisible(true);
 	}
 	
-	public static void startGame(boolean isHumanControlled, String loadFile) {
+	public static void startGame(GameConfiguration loadConfiguration) {
 		
 		if (!ApplicationView.getInstance().initializeScreen()) {
 			JOptionPane.showMessageDialog(null, "Error while initializating the base Application View.  Exiting.");
 			System.exit(0);
 		}
-		
-		if(!ApplicationController.getInstance().initialize(isHumanControlled, loadFile)) {
+				
+		if(!ApplicationController.getInstance().initialize(loadConfiguration)) {
 			JOptionPane.showMessageDialog(null, "Error while initializating the base Application Controller.  Exiting.");
 			System.exit(0);				
 		}

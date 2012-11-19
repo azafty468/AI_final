@@ -41,11 +41,11 @@ public class ApplicationController {
 	private TimerTask renderTask; // the main render and update task.
 	public Stack<Event> currentEvents;
 	private GamePlayTimeKeeper myTimeKeeper;
-	private String logFile;
+	//private String logFile;
 	public ArrayList<String> loggedEvents;
-	private boolean automatePlayer;
 	public boolean advancedViewSetting;
 	public boolean advancedViewPolicySetting;
+	private GameConfiguration myLoadConfiguration;
 	
 	public ApplicationController() {
 		currentEvents = new Stack<Event>();
@@ -71,7 +71,7 @@ public class ApplicationController {
 			System.err.println("Error, cannot load Board XSD file");
 			System.exit(-1);
 		}
-		
+				
 		Message inMessage = null;
 		
 		try {
@@ -90,33 +90,36 @@ public class ApplicationController {
 			System.err.println("Error while reading in XML file");
 			return false;
 		}
-		
+
+		/* I believe this is set later anyways
 		if (inMessage.contents.getAttributes().getNamedItem("automatePlayer").getNodeValue().equals("true"))
-			automatePlayer = true;
-		else
-			automatePlayer = false;
+			myLoadConfiguration.playerAIModel = "class aiModels.AIModelPlayer"
+			*/
 	
 		return ApplicationModel.getInstance().initialize(inMessage.contents.getFirstChild());
 	}
 	
-	public boolean initialize(boolean automatePlayer, String loadFile) {
+	public boolean initialize(GameConfiguration newLoadConfiguration) {
+		myLoadConfiguration = newLoadConfiguration;
 		loggedEvents = new ArrayList<String>();
-		if (loadFile == null) {
-			this.automatePlayer = automatePlayer;
+		if (myLoadConfiguration.randomlyGenerateWorld) {
 			AIModel playerAI;
 			AIModel redAI;
 			AIModel blueAI;
 			int boardWidth = (int) (getScreenWorkingWidth() * 0.8 / Constants.baseImageSize);
 			int boardHeight = (int) (getScreenWorkingHeight() * 0.8 / Constants.baseImageSize);
 			
-			if (automatePlayer)
-				playerAI = new AIModelBasicUtility();
-				//playerAI = new AIModelClosestMove();
-			else
-				playerAI = new AIModelPlayer();
+			playerAI = GameConfiguration.getAIModel(myLoadConfiguration.playerAIModel);
 			
-			redAI = new AIModelDijkstraAlgorithm();
-			blueAI = new AIModelDirectMove();
+			if (myLoadConfiguration.hasRedGhost) 
+				redAI =  GameConfiguration.getAIModel(myLoadConfiguration.redGhostAIModel);
+			else
+				redAI = null;
+			
+			if (myLoadConfiguration.hasBlueGhost) 
+				blueAI =  GameConfiguration.getAIModel(myLoadConfiguration.blueGhostAIModel);
+			else
+				blueAI = null;
 			
 			if(!ApplicationModel.getInstance().initialize(boardWidth, boardHeight, playerAI, redAI, blueAI)) {
 				JOptionPane.showMessageDialog(null, "Error while initializating the base Application Model.  Exiting.");
@@ -125,15 +128,14 @@ public class ApplicationController {
 			writeInitialLog();
 		}
 		else {
-			logFile = loadFile;
-			if (!loadFromXMLFile(loadFile))
+			if (!loadFromXMLFile(myLoadConfiguration.preexistingBoard))
 				return false;
 		}
 		
-		if (this.automatePlayer)
-			myTimeKeeper = new GamePlayTimeKeeper(PlayRate.AIAUTOMATION);
-		else
+		if (myLoadConfiguration.isHumanControlled)
 			myTimeKeeper = new GamePlayTimeKeeper(PlayRate.HUMANPLAYER);
+		else
+			myTimeKeeper = new GamePlayTimeKeeper(PlayRate.AIAUTOMATION);
 
 		renderTimer = new Timer();
 		ApplicationView.getInstance().displayMessage("Starting Game.  Current State - PAUSED");
@@ -199,7 +201,7 @@ public class ApplicationController {
 				//renderTimer = null;
 				ApplicationModel.getInstance().resetModel();
 				ApplicationView.getInstance().displayMessage("---Game Reset Command Received---");
-				if (!initialize(automatePlayer, logFile)) {
+				if (!initialize(myLoadConfiguration)) {
 					System.err.println("Error while reseting environment");
 					System.exit(-1);
 				}
@@ -212,7 +214,7 @@ public class ApplicationController {
 			
 			case KeyEvent.VK_S:
 				finishGame("unwinnable");
-				ApplicationView.getInstance().displayMessage("Aborting game because it is deemed unwinnable");
+				ApplicationView.getInstance().displayMessage("Aborting game because it has been deemed unwinnable");
 				break;
 				
 			case KeyEvent.VK_D:
@@ -241,20 +243,20 @@ public class ApplicationController {
 		}
 	}
 	
-	public void writeInitialLog() {
+	private void writeInitialLog() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
 		Date date = new Date();
-		logFile = "Board_" + dateFormat.format(date) + ".xml";
+		myLoadConfiguration.setInitialBoard("Board_" + dateFormat.format(date) + ".xml");
 		
 		try {
-			BufferedWriter myOut = new BufferedWriter(new FileWriter("logs" + Constants.fileDelimiter + logFile));
-			myOut.write("<Game automatePlayer='" + automatePlayer + "'>" + Constants.newline);
+			BufferedWriter myOut = new BufferedWriter(new FileWriter("logs" + Constants.fileDelimiter + myLoadConfiguration.preexistingBoard));
+			myOut.write("<Game automatePlayer='" + (!myLoadConfiguration.isHumanControlled) + "'>" + Constants.newline);
 			ApplicationModel.getInstance().writeToXMLFile(myOut);
 			myOut.write("</Game>");
 			myOut.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.err.println("Error while writing to log file: " + logFile);
+			System.err.println("Error while writing to log file: " + myLoadConfiguration.preexistingBoard);
 			System.exit(-1);
 		}
 	}
@@ -262,7 +264,7 @@ public class ApplicationController {
 	public void finishGame(String terminateReason) {
 		myTimeKeeper.setGameOver();
 
-		String runLog = logFile.replace(".xml", "") + "_Run_";
+		String runLog = myLoadConfiguration.preexistingBoard.replace(".xml", "") + "_Run_";
 		
 		int counter = 0;
 	    final File folder = new File("logs" + Constants.fileDelimiter);
@@ -276,7 +278,7 @@ public class ApplicationController {
 		GameObjectPlayer myPlayer = ApplicationModel.getInstance().myPlayer;
 		try {
 			BufferedWriter myOut = new BufferedWriter(new FileWriter("logs" + Constants.fileDelimiter + runLog));
-			myOut.write("<GameRun Board='" + logFile + "' run='" + counter + "' ");
+			myOut.write("<GameRun Board='" + myLoadConfiguration.preexistingBoard + "' run='" + counter + "' ");
 			if (terminateReason.isEmpty())
 				myOut.write("finish='success' ");
 			else
@@ -293,7 +295,7 @@ public class ApplicationController {
 			myOut.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.err.println("Error while writing to log file: " + logFile);
+			System.err.println("Error while writing to log file: " + myLoadConfiguration.preexistingBoard);
 			System.exit(-1);
 		}
 		loggedEvents.clear();
@@ -341,12 +343,16 @@ public class ApplicationController {
 			ApplicationModel.getInstance().myPlayer.planNextMove();
 		}
 		
-		if (ApplicationModel.getInstance().redGhost.currentAction == null) {
-			ApplicationModel.getInstance().redGhost.planNextMove();
+		if (ApplicationModel.getInstance().redGhost != null) {
+			if (ApplicationModel.getInstance().redGhost.currentAction == null) {
+				ApplicationModel.getInstance().redGhost.planNextMove();
+			}
 		}
-		
-		if (ApplicationModel.getInstance().blueGhost.currentAction == null) {
-			ApplicationModel.getInstance().blueGhost.planNextMove();
+
+		if (ApplicationModel.getInstance().blueGhost != null) {
+			if (ApplicationModel.getInstance().blueGhost.currentAction == null) {
+				ApplicationModel.getInstance().blueGhost.planNextMove();
+			}
 		}
 	}
 
@@ -372,20 +378,25 @@ public class ApplicationController {
 				myModel.myPlayer.currentAction = null;
 		}
 		
-		if (myModel.redGhost.currentAction != null) {
-			myModel.redGhost.currentAction.processAction();
-			
-			if (myModel.redGhost.currentAction.getIsDone()) 
-				myModel.redGhost.currentAction = null;
+		
+		if (myModel.redGhost != null) {
+			if (myModel.redGhost.currentAction != null) {
+				myModel.redGhost.currentAction.processAction();
+				
+				if (myModel.redGhost.currentAction.getIsDone()) 
+					myModel.redGhost.currentAction = null;
+			}
 		}
 		
-		if (myModel.blueGhost.currentAction != null) {
-			myModel.blueGhost.currentAction.processAction();
-			
-			if (myModel.blueGhost.currentAction.getIsDone()) 
-				myModel.blueGhost.currentAction = null;
-		}
 		
+		if (myModel.blueGhost != null) {
+			if (myModel.blueGhost.currentAction != null) {
+				myModel.blueGhost.currentAction.processAction();
+				
+				if (myModel.blueGhost.currentAction.getIsDone()) 
+					myModel.blueGhost.currentAction = null;
+			}
+		}
 	}
 	
 	public void processEvents() {

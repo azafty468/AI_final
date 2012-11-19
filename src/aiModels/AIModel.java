@@ -42,5 +42,5 @@ public abstract class AIModel {
 	 * 
 	 * @param newSelf
 	 */
-	public void assignToCreature(GameObjectCreature newSelf) { ; }
+	public void assignToCreature(GameObjectCreature newSelf) { newSelf.myAIModel = this; }
 }

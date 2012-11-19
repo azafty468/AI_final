@@ -8,18 +8,18 @@ import primary.Constants.PolicyMove;
 
 public class AIModelBasicUtility extends AIModel {
 	private class PolicyInterim {
-		public int utility;
+		public double utility;
 		public int count;
 	}
 	
 	private class PolicyNode {
-		public int utility;
+		public double utility;
 		public PolicyMove myPolicy;
 		public boolean utilityFixed;
 		public boolean unreachableSquare;
 		
 		PolicyNode() {
-			utility = 0;
+			utility = 0.0;
 			myPolicy = PolicyMove.UNKNOWN;
 			utilityFixed = false;
 			unreachableSquare = false;
@@ -118,7 +118,7 @@ public class AIModelBasicUtility extends AIModel {
 		for (int y = 0; y < myPolicies.length; y++) 
 			for (int x = 0; x < myPolicies[y].length; x++) {
 				myPolicies[y][x].myPolicy = PolicyMove.UNKNOWN;
-				int bestValue = -1;
+				double bestValue = -1;
 				
 				if (y > 0)
 					if (myPolicies[y-1][x].utility > bestValue && !myPolicies[y-1][x].unreachableSquare) {
@@ -259,7 +259,7 @@ public class AIModelBasicUtility extends AIModel {
 			return;
 		
 		if ((testPN.utility * 0.9) > localPI.utility)
-			localPI.utility = (int) (testPN.utility * 0.9);
+			localPI.utility = (testPN.utility * 0.9);
 		
 		localPI.count = 1;
 	}
@@ -273,7 +273,7 @@ public class AIModelBasicUtility extends AIModel {
 			for (int x = 0; x < myPolicies[y].length; x++)
 				if (myPolicies[y][x] != null)
 					if (!myPolicies[y][x].unreachableSquare)
-						myPL[y][x].setUtilityValue(myPolicies[y][x].utility);
+						myPL[y][x].setUtilityValue((int)myPolicies[y][x].utility);
 	}
 
 	@Override

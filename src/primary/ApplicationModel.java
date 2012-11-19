@@ -61,7 +61,7 @@ public class ApplicationModel {
 		AIModel readModel;
 		
 		readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
-		readModel = readAIFromXML(readAI);
+		readModel = GameConfiguration.getAIModel(readAI);
 		myPlayer = new GameObjectPlayer(readModel);
 		myPlayer.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
 		myPlayer.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
@@ -69,7 +69,7 @@ public class ApplicationModel {
 		
 		localNode = inMessage.getChildNodes().item(1);
 		readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
-		readModel = readAIFromXML(readAI);
+		readModel = GameConfiguration.getAIModel(readAI);
 		redGhost = new GameObjectCreature(readModel);
 		redGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
 		redGhost.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
@@ -77,7 +77,7 @@ public class ApplicationModel {
 		
 		localNode = inMessage.getChildNodes().item(2);
 		readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
-		readModel = readAIFromXML(readAI);
+		readModel = GameConfiguration.getAIModel(readAI);
 		blueGhost = new GameObjectCreature(readModel);
 		blueGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
 		blueGhost.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
@@ -172,26 +172,6 @@ public class ApplicationModel {
 		}
 		
 		return null;
-	}
-	
-	private AIModel readAIFromXML(String aiName) {
-		AIModel retVal = null;
-		
-		if (aiName.equals("class aiModels.AIModelClosestMove"))
-			retVal = new AIModelClosestMove();
-		else if (aiName.equals("class aiModels.AIModelDijkstraAlgorithm")) 
-			retVal = new AIModelDijkstraAlgorithm();
-		else if (aiName.equals("class aiModels.AIModelDirectMove")) 
-			retVal = new AIModelDirectMove();
-		else if (aiName.equals("class aiModels.AIModelEnemy")) 
-			retVal = new AIModelEnemy();
-		else if (aiName.equals("class aiModels.AIModelHillClimb")) 
-			retVal = new AIModelHillClimb();
-		else if (aiName.equals("class aiModels.AIModelPlayer")) 
-			retVal = new AIModelPlayer();
-		else if (aiName.equals("class aiModels.AIModelBasicUtility"))
-			retVal = new AIModelBasicUtility();
-		return retVal;
 	}
 	
 	public void writeToXMLFile(BufferedWriter outWR) {
