@@ -36,17 +36,22 @@ public class ApplicationModel {
 	public boolean initialize(int width, int height, AIModel playerAI, AIModel redAI, AIModel blueAI) {
 		myPlayer = new GameObjectPlayer(playerAI);
 		myPlayer.name = "Pac-man";
-		redGhost = new GameObjectCreature(redAI);
-		redGhost.name = "Red-Ghost";
-		blueGhost = new GameObjectCreature(blueAI);
-		blueGhost.name = "Blue-Ghost";
+		
+		if (redAI != null) {
+			redGhost = new GameObjectCreature(redAI);
+			redGhost.name = "Red-Ghost";
+			redGhost.setXY(10, 10);
+		}
+		if (blueAI != null) {
+			blueGhost = new GameObjectCreature(blueAI);
+			blueGhost.name = "Blue-Ghost";
+			blueGhost.setXY(15, 15);
+		}
 
 		loadTemplates();
 
 		myBoard = new Board(width, height);
 		myPlayer.setXY(5, 5);
-		redGhost.setXY(10, 10);
-		blueGhost.setXY(15, 15);
 		myBoard.generateRandomMap();
 		return true;
 	}
@@ -60,33 +65,37 @@ public class ApplicationModel {
 		String readAI;
 		AIModel readModel;
 		
-		readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
-		readModel = GameConfiguration.getAIModel(readAI);
-		myPlayer = new GameObjectPlayer(readModel);
-		myPlayer.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
-		myPlayer.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
-				Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
-		
-		localNode = inMessage.getChildNodes().item(1);
-		readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
-		readModel = GameConfiguration.getAIModel(readAI);
-		redGhost = new GameObjectCreature(readModel);
-		redGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
-		redGhost.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
-				Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
-		
-		localNode = inMessage.getChildNodes().item(2);
-		readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
-		readModel = GameConfiguration.getAIModel(readAI);
-		blueGhost = new GameObjectCreature(readModel);
-		blueGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
-		blueGhost.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
-				Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
-		
-		loadTemplates();
-		
-		localNode = inMessage.getChildNodes().item(3);
-		myBoard = new Board(localNode);
+		for (int i = 0; i < inMessage.getChildNodes().getLength(); i++) {
+			localNode = inMessage.getChildNodes().item(i);
+			if (inMessage.getChildNodes().item(i).getLocalName().equals("Player")) {
+				readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
+				readModel = GameConfiguration.getAIModel(readAI);
+				myPlayer = new GameObjectPlayer(readModel);
+				myPlayer.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
+				myPlayer.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
+						Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
+			}
+			else if (inMessage.getChildNodes().item(i).getLocalName().equals("RedGhost")) {
+				readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
+				readModel = GameConfiguration.getAIModel(readAI);
+				redGhost = new GameObjectPlayer(readModel);
+				redGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
+				redGhost.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
+						Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
+			}
+			else if (inMessage.getChildNodes().item(i).getLocalName().equals("BlueGhost")) {
+				readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
+				readModel = GameConfiguration.getAIModel(readAI);
+				blueGhost = new GameObjectPlayer(readModel);
+				blueGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
+				blueGhost.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
+						Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
+			}
+			else if (inMessage.getChildNodes().item(i).getLocalName().equals("Board")) {
+				loadTemplates();
+				myBoard = new Board(localNode);
+			}
+		}
 		return true;
 	}
 
@@ -97,11 +106,15 @@ public class ApplicationModel {
 			//myPlayer.overrideColor = true;
 			//myPlayer.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
 			
-			BufferedImage imgBaseRedGhost = ImageIO.read(new File("images" + Constants.fileDelimiter + "RedGhost.bmp"));
-			redGhost.setGraphics(ApplicationView.convertImageToLocalSettings(imgBaseRedGhost));
+			if (redGhost != null) {
+				BufferedImage imgBaseRedGhost = ImageIO.read(new File("images" + Constants.fileDelimiter + "RedGhost.bmp"));
+				redGhost.setGraphics(ApplicationView.convertImageToLocalSettings(imgBaseRedGhost));
+			}
 			
-			BufferedImage imgBaseBlueGhost = ImageIO.read(new File("images" + Constants.fileDelimiter + "BlueGhost.bmp"));
-			blueGhost.setGraphics(ApplicationView.convertImageToLocalSettings(imgBaseBlueGhost));
+			if (blueGhost != null) {
+				BufferedImage imgBaseBlueGhost = ImageIO.read(new File("images" + Constants.fileDelimiter + "BlueGhost.bmp"));
+				blueGhost.setGraphics(ApplicationView.convertImageToLocalSettings(imgBaseBlueGhost));
+			}
 		}
 		catch (Exception e) {
 			System.err.println("Error while creating a character");
@@ -129,9 +142,9 @@ public class ApplicationModel {
 			for (int x = 0; x < width; x++) {
 				if ((x == myPlayer.myLocation.x) && (y == myPlayer.myLocation.y))
 					printList[y][x] = myPlayer.generateDisplayNode();
-				else if((x == redGhost.myLocation.x) && (y == redGhost.myLocation.y))
+				else if(redGhost != null && (x == redGhost.myLocation.x && y == redGhost.myLocation.y))
 					printList[y][x] = redGhost.generateDisplayNode();
-				else if((x == blueGhost.myLocation.x) && (y == blueGhost.myLocation.y))
+				else if(blueGhost != null && (x == blueGhost.myLocation.x && y == blueGhost.myLocation.y))
 					printList[y][x] = blueGhost.generateDisplayNode();
 				else {
 					printList[y][x] = myBoard.myGO[y][x].generateDisplayNode();
@@ -182,10 +195,13 @@ public class ApplicationModel {
 			outWR.write("<Model>" + Constants.newline);
 			outWR.write("<Player name='" + myPlayer.name + "' x='" + myPlayer.myLocation.x + "' y='" + myPlayer.myLocation.y + 
 					"' AIModel='" + myPlayer.myAIModel.getClass().toString() + "'/>" + Constants.newline);
-			outWR.write("<RedGhost name='" + redGhost.name + "' x='" + redGhost.myLocation.x + "' y='" + redGhost.myLocation.y + 
-					"' AIModel='" + redGhost.myAIModel.getClass().toString() + "'/>" + Constants.newline);
-			outWR.write("<BlueGhost name='" + blueGhost.name + "' x='" + blueGhost.myLocation.x + "' y='" + blueGhost.myLocation.y + 
-					"' AIModel='" + blueGhost.myAIModel.getClass().toString() + "'/>" + Constants.newline);
+			if (redGhost != null)
+				outWR.write("<RedGhost name='" + redGhost.name + "' x='" + redGhost.myLocation.x + "' y='" + redGhost.myLocation.y + 
+						"' AIModel='" + redGhost.myAIModel.getClass().toString() + "'/>" + Constants.newline);
+
+				if (blueGhost != null) 
+				outWR.write("<BlueGhost name='" + blueGhost.name + "' x='" + blueGhost.myLocation.x + "' y='" + blueGhost.myLocation.y + 
+						"' AIModel='" + blueGhost.myAIModel.getClass().toString() + "'/>" + Constants.newline);
 
 			myBoard.writeToXMLFile(outWR);
 			outWR.write("</Model>" + Constants.newline);

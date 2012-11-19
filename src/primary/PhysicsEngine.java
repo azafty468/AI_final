@@ -65,17 +65,18 @@ public class PhysicsEngine {
 				ApplicationController.getInstance().currentEvents.push(new EventFallenInPit(myAM.initiator));
 			
 			GameObjectCreature redGhost = myModel.redGhost;
-			
-			if ((myAM.initiator.myLocation.equals(redGhost.myLocation)) && (myAM.initiator.myAlliance != redGhost.myAlliance)) {
-				GameObjectPlayer tmpPlayer = (GameObjectPlayer) myAM.initiator;
-				ApplicationController.getInstance().currentEvents.push(new EventGhostTouchPlayer(myModel.redGhost, tmpPlayer));
-			}
+			if (redGhost != null)
+				if ((myAM.initiator.myLocation.equals(redGhost.myLocation)) && (myAM.initiator.myAlliance != redGhost.myAlliance)) {
+					GameObjectPlayer tmpPlayer = (GameObjectPlayer) myAM.initiator;
+					ApplicationController.getInstance().currentEvents.push(new EventGhostTouchPlayer(myModel.redGhost, tmpPlayer));
+				}
 			
 			GameObjectCreature blueGhost = myModel.blueGhost;
-			if ((myAM.initiator.myLocation.equals(blueGhost.myLocation)) && (myAM.initiator.myAlliance != blueGhost.myAlliance)) {
-				GameObjectPlayer tmpPlayer = (GameObjectPlayer) myAM.initiator;
-				ApplicationController.getInstance().currentEvents.push(new EventGhostTouchPlayer(myModel.blueGhost, tmpPlayer));
-			}
+			if (blueGhost != null)
+		if ((myAM.initiator.myLocation.equals(blueGhost.myLocation)) && (myAM.initiator.myAlliance != blueGhost.myAlliance)) {
+			GameObjectPlayer tmpPlayer = (GameObjectPlayer) myAM.initiator;
+			ApplicationController.getInstance().currentEvents.push(new EventGhostTouchPlayer(myModel.blueGhost, tmpPlayer));
+		}
 			
 			GameObjectPlayer myPlayer = myModel.myPlayer;
 			if ((myAM.initiator.myLocation.equals(myPlayer.myLocation)) && (myAM.initiator.myAlliance != myPlayer.myAlliance)) {

@@ -29,15 +29,6 @@ public class VariableDisplayJPanel extends JPanel {
 		primaryCreatureLabel.setText("Primary Creature: ");
 		add(primaryCreatureLabel);
 		
-		blueGhostLabel = new JTextArea();
-		blueGhostLabel.setLineWrap(true);
-		blueGhostLabel.setWrapStyleWord(true);
-		blueGhostLabel.setEditable(false);
-		blueGhostLabel.setVisible(true);
-		blueGhostLabel.setFocusable(false);
-		blueGhostLabel.setText("Blue Ghost");
-		add(blueGhostLabel);
-		
 		redGhostLabel = new JTextArea();
 		redGhostLabel.setLineWrap(true);
 		redGhostLabel.setWrapStyleWord(true);
@@ -46,6 +37,15 @@ public class VariableDisplayJPanel extends JPanel {
 		redGhostLabel.setFocusable(false);
 		redGhostLabel.setText("Red Ghost");
 		add(redGhostLabel);
+		
+		blueGhostLabel = new JTextArea();
+		blueGhostLabel.setLineWrap(true);
+		blueGhostLabel.setWrapStyleWord(true);
+		blueGhostLabel.setEditable(false);
+		blueGhostLabel.setVisible(true);
+		blueGhostLabel.setFocusable(false);
+		blueGhostLabel.setText("Blue Ghost");
+		add(blueGhostLabel);
 		
 	}
 	
@@ -65,32 +65,40 @@ public class VariableDisplayJPanel extends JPanel {
 		else
 			primaryCreatureLabel.setText("");
 
-		tmpC = myModel.blueGhost;
-		if(tmpC != null) {
-			outLine = "Name: " + tmpC.name + newline + "AI Model: " + tmpC.describeAIState();
-			
-			if (tmpC.currentAction != null) {
-				outLine += newline + "Current Action: " + tmpC.currentAction.describeAction();
+		
+		if (myModel.redGhost != null) {
+			tmpC = myModel.redGhost;
+			if(tmpC != null) {
+				outLine = "Name: " + tmpC.name + newline + "AI Model: " + tmpC.describeAIState();
+				
+				if (tmpC.currentAction != null) {
+					outLine += newline + "Current Action: " + tmpC.currentAction.describeAction();
+				}
+				
+				redGhostLabel.setText(outLine);
 			}
-			
-			blueGhostLabel.setText(outLine);
-		}
-		else
-			blueGhostLabel.setText("");
-
-		tmpC = myModel.redGhost;
-		if(tmpC != null) {
-			outLine = "Name: " + tmpC.name + newline + "AI Model: " + tmpC.describeAIState();
-			
-			if (tmpC.currentAction != null) {
-				outLine += newline + "Current Action: " + tmpC.currentAction.describeAction();
-			}
-			
-			redGhostLabel.setText(outLine);
+			else
+				redGhostLabel.setText("");
 		}
 		else
 			redGhostLabel.setText("");
+
 		
-		
+		if (myModel.blueGhost != null) {
+			tmpC = myModel.blueGhost;
+			if(tmpC != null) {
+				outLine = "Name: " + tmpC.name + newline + "AI Model: " + tmpC.describeAIState();
+				
+				if (tmpC.currentAction != null) {
+					outLine += newline + "Current Action: " + tmpC.currentAction.describeAction();
+				}
+				
+				blueGhostLabel.setText(outLine);
+			}
+			else
+				blueGhostLabel.setText("");
+		}
+		else
+			blueGhostLabel.setText("");
 	}
 }

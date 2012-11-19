@@ -30,8 +30,12 @@ public class EventPickupToken extends Event {
 		
 		//TODO there is a better mechanism than this
 		ApplicationModel.getInstance().myPlayer.clearTarget(localToken);
-		ApplicationModel.getInstance().blueGhost.clearTarget(localToken);
-		ApplicationModel.getInstance().redGhost.clearTarget(localToken);
+		
+		if (ApplicationModel.getInstance().blueGhost != null)
+			ApplicationModel.getInstance().blueGhost.clearTarget(localToken);
+		
+		if (ApplicationModel.getInstance().redGhost != null)
+			ApplicationModel.getInstance().redGhost.clearTarget(localToken);
 		
 		if (ApplicationModel.getInstance().myBoard.myTokens.size() == 0) {
 			//TODO: end game reached.  What to print?
