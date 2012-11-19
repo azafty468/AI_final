@@ -133,6 +133,8 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	 * @param printList
 	 */
 	public void renderGraphics(PrintListNode[][] printList) {
+		if (printList == null) 
+			return;
 		myGraphicCanvas.render(printList);
 		myVariableDisplay.updateDisplay();
 	}	

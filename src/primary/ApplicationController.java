@@ -46,6 +46,7 @@ public class ApplicationController {
 	public boolean advancedViewSetting;
 	public boolean advancedViewPolicySetting;
 	private GameConfiguration myLoadConfiguration;
+	private boolean resettingGame;
 	
 	public ApplicationController() {
 		currentEvents = new Stack<Event>();
@@ -142,6 +143,7 @@ public class ApplicationController {
 
 		advancedViewSetting = false;
 		advancedViewPolicySetting = false;
+		resettingGame = false;
 		return true;
 	}
 	
@@ -194,8 +196,9 @@ public class ApplicationController {
 				break;
 				
 			case KeyEvent.VK_R:
+				resettingGame = true;
 				myTimeKeeper.setPause(true);
-				renderTimer.cancel();
+				//renderTimer.cancel();
 				//stop();
 				//renderTask = null;
 				//renderTimer = null;
@@ -339,8 +342,10 @@ public class ApplicationController {
 	}
 
 	public void processAIPhase() {
-		if (ApplicationModel.getInstance().myPlayer.currentAction == null) {
-			ApplicationModel.getInstance().myPlayer.planNextMove();
+		if (ApplicationModel.getInstance().myPlayer != null) {
+			if (ApplicationModel.getInstance().myPlayer.currentAction == null) {
+				ApplicationModel.getInstance().myPlayer.planNextMove();
+			}
 		}
 		
 		if (ApplicationModel.getInstance().redGhost != null) {
@@ -371,13 +376,14 @@ public class ApplicationController {
 	public void processActions() {
 		ApplicationModel myModel = ApplicationModel.getInstance();
 		
-		if (myModel.myPlayer.currentAction != null) {
-			myModel.myPlayer.currentAction.processAction();
-			
-			if (myModel.myPlayer.currentAction.getIsDone()) 
-				myModel.myPlayer.currentAction = null;
-		}
-		
+		if (myModel.myPlayer != null) {
+			if (myModel.myPlayer.currentAction != null) {
+				myModel.myPlayer.currentAction.processAction();
+				
+				if (myModel.myPlayer.currentAction.getIsDone()) 
+					myModel.myPlayer.currentAction = null;
+			}
+		}		
 		
 		if (myModel.redGhost != null) {
 			if (myModel.redGhost.currentAction != null) {
@@ -415,11 +421,13 @@ public class ApplicationController {
 		renderTask = new TimerTask() {
 			@Override
 			public void run() {
-				renderGraphics();
-				if (myTimeKeeper.isTimeForTurn()) {
-					processActions();
-					processEvents();
-					processAIPhase();
+				if (!resettingGame) {
+					renderGraphics();
+					if (myTimeKeeper.isTimeForTurn()) {
+						processActions();
+						processEvents();
+						processAIPhase();
+					}
 				}
 			}
 		};

@@ -117,6 +117,9 @@ public class ApplicationModel {
 	}
 	
 	public PrintListNode[][] buildPrintList() {
+		if (myBoard == null) 
+			return null;
+		
 		int height = myBoard.height;
 		int width = myBoard.width;
 
