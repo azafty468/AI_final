@@ -69,6 +69,7 @@ public class ApplicationModel {
 			localNode = inMessage.getChildNodes().item(i);
 			if (inMessage.getChildNodes().item(i).getLocalName().equals("Player")) {
 				readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
+				ApplicationController.getInstance().myLoadConfiguration.setPlayerAI(readAI);
 				readModel = GameConfiguration.getAIModel(readAI);
 				myPlayer = new GameObjectPlayer(readModel);
 				myPlayer.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
@@ -77,6 +78,7 @@ public class ApplicationModel {
 			}
 			else if (inMessage.getChildNodes().item(i).getLocalName().equals("RedGhost")) {
 				readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
+				ApplicationController.getInstance().myLoadConfiguration.setRedGhostAI(readAI);
 				readModel = GameConfiguration.getAIModel(readAI);
 				redGhost = new GameObjectPlayer(readModel);
 				redGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
@@ -85,6 +87,7 @@ public class ApplicationModel {
 			}
 			else if (inMessage.getChildNodes().item(i).getLocalName().equals("BlueGhost")) {
 				readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
+				ApplicationController.getInstance().myLoadConfiguration.setBlueGhostAI(readAI);
 				readModel = GameConfiguration.getAIModel(readAI);
 				blueGhost = new GameObjectPlayer(readModel);
 				blueGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
@@ -93,6 +96,7 @@ public class ApplicationModel {
 			}
 			else if (inMessage.getChildNodes().item(i).getLocalName().equals("Board")) {
 				loadTemplates();
+				//localNode = inMessage.getChildNodes().item(i);
 				myBoard = new Board(localNode);
 			}
 		}

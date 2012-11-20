@@ -63,6 +63,14 @@ public class GraphicsCanvas extends Canvas {
 						else if (printList[y][x].hasPolicyMove) {
 							drawArrow(bkG, printList[y][x].myPolicyMove, x, y);
 						}
+						else if (printList[y][x].hasInformationZone) {
+							bkG.setFont(new Font( "SansSerif", Font.BOLD, 7));
+							bkG.setColor(Color.CYAN);
+							if (printList[y][x].isBreezy)
+								bkG.drawString("Breezy", x*Constants.baseImageSize+2, y*Constants.baseImageSize+12);
+							if (printList[y][x].isPungent)
+								bkG.drawString("Pungent", x*Constants.baseImageSize+2, y*Constants.baseImageSize+24);
+						}
 					}
 				}
 			}

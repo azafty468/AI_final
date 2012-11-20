@@ -86,7 +86,10 @@
     <xs:sequence>
       <xs:element ref="Model" maxOccurs="1" minOccurs="1" />
     </xs:sequence>
-    <xs:attribute type="xs:string" name="automatePlayer"/>
+    <xs:attribute type="xs:boolean" name="automatePlayer"/>
+    <xs:attribute type="xs:boolean" name="deterministic"/>
+    <xs:attribute type="xs:boolean" name="visible"/>
+    <xs:attribute type="xs:boolean" name="informationZones"/>
   </xs:complexType>
 </xs:element>
 

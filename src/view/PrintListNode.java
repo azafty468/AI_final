@@ -12,7 +12,10 @@ public class PrintListNode {
 	public int utilityValue;
 	public boolean hasUtilityValue;
 	public boolean hasPolicyMove;
+	public boolean hasInformationZone;
 	public PolicyMove myPolicyMove;
+	public boolean isBreezy;
+	public boolean isPungent;
 	
 	public PrintListNode(BufferedImage newImage, boolean overrideBase, Color newColor) {
 		myImage = newImage;
@@ -21,16 +24,30 @@ public class PrintListNode {
 		hasUtilityValue = false;
 		utilityValue = 0;
 		hasPolicyMove = false;
+		hasInformationZone = false;
+		isBreezy = false;
+		isPungent = false;
+	}
+	
+	public void setInformationZone(boolean breezy, boolean pungent) {
+		hasPolicyMove = false;
+		hasUtilityValue = false;
+		hasInformationZone = true;
+		isBreezy = breezy;
+		isPungent = pungent;
+		
 	}
 	
 	public void setUtilityValue(int newUtility) {
+		hasPolicyMove = false;
+		hasInformationZone = false;
 		hasUtilityValue = true;
 		utilityValue = newUtility;
-		hasPolicyMove = false;
 	}
 	
 	public void setPolicyValue(PolicyMove newPolicy) {
 		hasUtilityValue = false;
+		hasInformationZone = false;
 		hasPolicyMove = true;
 		myPolicyMove = newPolicy;
 	}

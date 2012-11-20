@@ -3,6 +3,7 @@ package gameObjects;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
+import primary.ApplicationController;
 import primary.Point;
 
 import view.PrintListNode;
@@ -21,6 +22,8 @@ public class GameObject {
 	public boolean canBlockMovement;
 	public Point myLocation;
 	public String name;
+	public boolean isBreezy;
+	public boolean isPungent;
 	
 	public GameObject() {
 		myGraphics = null;
@@ -28,12 +31,22 @@ public class GameObject {
 		myLocation = new Point(0, 0);
 		name = new String("Undefined");
 		myType = GameObjectType.GENERAL;
+		isBreezy = false;
+		isPungent = false;
 	}
 	
 	public GameObjectType getType() { return myType; }
 	
 	public PrintListNode generateDisplayNode() {
-		return new PrintListNode(myGraphics, overrideColor, baseColor);
+		if (ApplicationController.getInstance().advancedViewInformationZones) {
+			PrintListNode retVal = new PrintListNode(myGraphics, overrideColor, baseColor);
+			
+			if (isBreezy || isPungent) 
+				retVal.setInformationZone(isBreezy,  isPungent);
+			return retVal;
+		}
+		else
+			return new PrintListNode(myGraphics, overrideColor, baseColor);
 	}
 	
 	public void setXY(int newX, int newY) {

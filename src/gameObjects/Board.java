@@ -109,6 +109,9 @@ public class Board {
 		}
 		
 		startingBerries = myTokens.size();
+		
+		if (ApplicationController.getInstance().myLoadConfiguration.informativeZones)
+			setInformationZones();
 	}
 	
 	private void setGameObjectTemplates() {
@@ -196,17 +199,72 @@ public class Board {
 		}
 		
 		startingBerries = myTokens.size();
+		
+		if (ApplicationController.getInstance().myLoadConfiguration.informativeZones)
+			setInformationZones();
+		
 		return true;
+	}
+	
+	/**
+	 * This method is responsible for setting the Breezy and Pungent zones that indicate a nearby pit or strawberry
+	 */
+	public void setInformationZones() {
+		//reset all designations
+		for (int y = 0; y < height; y++) 
+			for (int x = 0; x < width; x++) {
+				myGO[y][x].isBreezy = false;
+				myGO[y][x].isPungent = false;
+			}
+		for (int i = 0; i < myTokens.size(); i++) {
+			myTokens.get(i).isBreezy = false;
+			myTokens.get(i).isPungent = false;
+		}
+		
+		// first set pungent
+		for (int i = 0; i < myTokens.size(); i++)
+			setBreezyPungent(myTokens.get(i).myLocation, false, true);
+		
+		//and then set breezy
+		for (int y = 0; y < height; y++) 
+			for (int x = 0; x < width; x++) 
+				if (myGO[y][x].name.equals(templateBackgroundPit.name))
+					setBreezyPungent(new Point(x, y), true, false);
+	}
+	
+	/**
+	 * This function just simplifies the duplication of code I use in setInformationZones() above
+	 * This sets the appropriate breezy/pungent flag for all elements around a center square, ignoring the center square
+	 * 
+	 */
+	private void setBreezyPungent(Point centerPoint, boolean setBreezy, boolean setPungent) {
+		Point testP;
+		GameObject searchSq;
+
+		for (int y = centerPoint.y - 1; y <= (centerPoint.y + 1); y++)
+			for (int x = centerPoint.x - 1; x <= (centerPoint.x + 1); x++) {
+				testP = new Point(x, y);
+				
+				if (y >= 0 && y < height && x >= 0 && x < width && !testP.equals(centerPoint)) {
+					searchSq = myGO[y][x];
+					if (searchSq.name.equals(templateBoundaryOpen.name)) {
+						if (setPungent)
+							searchSq.isPungent = true;
+						if (setBreezy)
+							searchSq.isBreezy = true;
+					}
+				}
+			}
 	}
 	
 	public boolean removeToken(GameObjectToken removeTok) {
 		for (int i = 0; i < myTokens.size(); i++) {
 			if (myTokens.get(i).myLocation.equals(removeTok.myLocation)) {
 				myTokens.remove(i);
+				setInformationZones();
 				return true;
 			}
 		}
-		
 		return false;
 	}
 	

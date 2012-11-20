@@ -31,7 +31,6 @@ import xml.Message;
 
 /**
  * Negotiates all interactions between the User, View and Model
- * @author Andrew and Trevor
  *
  */
 public class ApplicationController {
@@ -45,7 +44,8 @@ public class ApplicationController {
 	public ArrayList<String> loggedEvents;
 	public boolean advancedViewSetting;
 	public boolean advancedViewPolicySetting;
-	private GameConfiguration myLoadConfiguration;
+	public boolean advancedViewInformationZones;
+	public GameConfiguration myLoadConfiguration;
 	private boolean resettingGame;
 	
 	public ApplicationController() {
@@ -92,11 +92,13 @@ public class ApplicationController {
 			return false;
 		}
 
-		/* I believe this is set later anyways
-		if (inMessage.contents.getAttributes().getNamedItem("automatePlayer").getNodeValue().equals("true"))
-			myLoadConfiguration.playerAIModel = "class aiModels.AIModelPlayer"
-			*/
-	
+		boolean hasInformativeZones = Boolean.parseBoolean(inMessage.contents.getAttributes().getNamedItem("informationZones").getNodeValue());
+		boolean hasVisibleWorld = Boolean.parseBoolean(inMessage.contents.getAttributes().getNamedItem("visible").getNodeValue());
+		boolean hasDeterministicWorld = Boolean.parseBoolean(inMessage.contents.getAttributes().getNamedItem("deterministic").getNodeValue());
+		boolean hasInternalWalls = false;
+		myLoadConfiguration = new GameConfiguration(hasVisibleWorld, hasDeterministicWorld, hasInformativeZones, hasInternalWalls);
+		myLoadConfiguration.setInitialBoard(xmlFile);
+		
 		return ApplicationModel.getInstance().initialize(inMessage.contents.getFirstChild());
 	}
 	
@@ -195,8 +197,17 @@ public class ApplicationController {
 			case KeyEvent.VK_H:
 				String tmpStr = "(H) help, (P) pause, (V) view detailed AI, (B) more detailed AI, (+) increase game speed" + 
 						" (-) decrease game speed, (space) step forward one round, (arrow keys) move character, " +
-						"(A) abort game with unspecified error, (S) abort game due to unwinnable, (D) abort game due to error in game ";
+						"(A) abort game with unspecified error, (S) abort game due to unwinnable, (D) abort game due to error in game, " +
+						"(N) - view information zones";
 				ApplicationView.getInstance().displayMessage(tmpStr);
+				break;
+				
+			case KeyEvent.VK_N:
+				myTimeKeeper.setPause(true);
+				ApplicationView.getInstance().displayMessage("Rotating Information Zones");
+				advancedViewInformationZones = !advancedViewInformationZones;
+				advancedViewPolicySetting = false;
+				advancedViewSetting = false;
 				break;
 				
 			case KeyEvent.VK_R:
@@ -234,6 +245,7 @@ public class ApplicationController {
 				ApplicationView.getInstance().displayMessage("Rotating Detailed AI View");
 				advancedViewSetting = !advancedViewSetting;
 				advancedViewPolicySetting = false;
+				advancedViewInformationZones = false;
 				break;
 				
 			case KeyEvent.VK_B:
@@ -241,6 +253,7 @@ public class ApplicationController {
 				ApplicationView.getInstance().displayMessage("Rotating Policy AI View");
 				advancedViewPolicySetting = !advancedViewPolicySetting;
 				advancedViewSetting = false;
+				advancedViewInformationZones = false;
 				break;
 		
 			default: 
@@ -257,7 +270,10 @@ public class ApplicationController {
 		
 		try {
 			BufferedWriter myOut = new BufferedWriter(new FileWriter("logs" + Constants.fileDelimiter + myLoadConfiguration.preexistingBoard));
-			myOut.write("<Game automatePlayer='" + (!myLoadConfiguration.isHumanControlled) + "'>" + Constants.newline);
+			myOut.write("<Game automatePlayer='" + (!myLoadConfiguration.isHumanControlled) + "' " +
+					"deterministic='" + myLoadConfiguration.deterministicWorld + "' " +
+					"visible='" + myLoadConfiguration.visibleWorld + "' " +
+					"informationZones='" + myLoadConfiguration.informativeZones + "'>" + Constants.newline);
 			ApplicationModel.getInstance().writeToXMLFile(myOut);
 			myOut.write("</Game>");
 			myOut.close();
