@@ -149,6 +149,7 @@ public class ApplicationController {
 
 		advancedViewSetting = false;
 		advancedViewPolicySetting = false;
+		advancedViewInformationZones = false;
 		resettingGame = false;
 		return true;
 	}
@@ -195,10 +196,9 @@ public class ApplicationController {
 				break;
 				
 			case KeyEvent.VK_H:
-				String tmpStr = "(H) help, (P) pause, (V) view detailed AI, (B) more detailed AI, (+) increase game speed" + 
-						" (-) decrease game speed, (space) step forward one round, (arrow keys) move character, " +
-						"(A) abort game with unspecified error, (S) abort game due to unwinnable, (D) abort game due to error in game, " +
-						"(N) - view information zones";
+				String tmpStr = "(H) help, (P) pause, (V) view detailed AI, (B) more detailed AI, (N) view information zones, " +
+						" (+) increase game speed, (-) decrease game speed, (space) step forward one round, (arrow keys) move character, " +
+						"(A) abort game with unspecified error, (S) abort game due to unwinnable, (D) abort game due to error in game";
 				ApplicationView.getInstance().displayMessage(tmpStr);
 				break;
 				
@@ -213,10 +213,6 @@ public class ApplicationController {
 			case KeyEvent.VK_R:
 				resettingGame = true;
 				myTimeKeeper.setPause(true);
-				//renderTimer.cancel();
-				//stop();
-				//renderTask = null;
-				//renderTimer = null;
 				ApplicationModel.getInstance().resetModel();
 				ApplicationView.getInstance().displayMessage("---Game Reset Command Received---");
 				if (!initialize(myLoadConfiguration)) {
@@ -310,6 +306,7 @@ public class ApplicationController {
 			myOut.write("availableBerries='" + ApplicationModel.getInstance().myBoard.startingBerries + "' " +
 				"finalScore='" + myPlayer.pointsGained + "' " +
 				"ghostTouches='" + myPlayer.touchedByGhost  + "' " +
+				"pitFalls='" + myPlayer.pitFalls + "' " + 
 				"stepsTaken='" + myPlayer.stepsTaken  + "'>" + Constants.newline);
 			
 			for (int i = 0; i < loggedEvents.size(); i++)

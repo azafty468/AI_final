@@ -80,7 +80,7 @@ public class ApplicationModel {
 				readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
 				ApplicationController.getInstance().myLoadConfiguration.setRedGhostAI(readAI);
 				readModel = GameConfiguration.getAIModel(readAI);
-				redGhost = new GameObjectPlayer(readModel);
+				redGhost = new GameObjectCreature(readModel);
 				redGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
 				redGhost.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
 						Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
@@ -89,7 +89,7 @@ public class ApplicationModel {
 				readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
 				ApplicationController.getInstance().myLoadConfiguration.setBlueGhostAI(readAI);
 				readModel = GameConfiguration.getAIModel(readAI);
-				blueGhost = new GameObjectPlayer(readModel);
+				blueGhost = new GameObjectCreature(readModel);
 				blueGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
 				blueGhost.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
 						Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));

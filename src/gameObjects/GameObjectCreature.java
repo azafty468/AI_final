@@ -14,7 +14,8 @@ public class GameObjectCreature extends GameObject {
 	public int stepsTaken;
 	public int touchedByGhost;
 	public static enum CreatureAlliance { PLAYER, GHOST, UNDEFINED; }
-	public CreatureAlliance myAlliance;
+	public CreatureAlliance myAlliance;	
+	public int pitFalls;
 	
 	public GameObjectCreature(AIModel myAIModel) {
 		super();
@@ -24,6 +25,7 @@ public class GameObjectCreature extends GameObject {
 		myType = GameObjectType.CREATURE;
 		stepsTaken = 0;
 		touchedByGhost = 0;
+		pitFalls = 0;
 		myAlliance = CreatureAlliance.GHOST;
 	}
 	

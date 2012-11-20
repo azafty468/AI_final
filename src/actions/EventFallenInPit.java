@@ -23,6 +23,7 @@ public class EventFallenInPit extends Event {
 		else
 			ApplicationView.getInstance().displayMessage("Creature '" + targetCreature.name + "' has fallen into a pit.");
 		
+		targetCreature.pitFalls++;
 		targetCreature.currentAction = new ActionStuckInPit();
 	}
 
