@@ -144,39 +144,52 @@ public class ApplicationModel {
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				if ((x == myPlayer.myLocation.x) && (y == myPlayer.myLocation.y))
-					printList[y][x] = myPlayer.generateDisplayNode();
-				else if(redGhost != null && (x == redGhost.myLocation.x && y == redGhost.myLocation.y))
-					printList[y][x] = redGhost.generateDisplayNode();
-				else if(blueGhost != null && (x == blueGhost.myLocation.x && y == blueGhost.myLocation.y))
-					printList[y][x] = blueGhost.generateDisplayNode();
-				else {
-					printList[y][x] = myBoard.myGO[y][x].generateDisplayNode();
-
-					ArrayList<GameObjectToken> tempList = myBoard.myTokens;
-					for (int i = 0; i < tempList.size(); i++) {
-						if (tempList.get(i).myLocation.equals(new Point(x, y)))
-							printList[y][x] = tempList.get(i).generateDisplayNode();
+				if (myBoard.myGO[y][x].hasBeenSeen) {
+					if ((x == myPlayer.myLocation.x) && (y == myPlayer.myLocation.y))
+						printList[y][x] = myPlayer.generateDisplayNode();
+					else if(redGhost != null && (x == redGhost.myLocation.x && y == redGhost.myLocation.y))
+						printList[y][x] = redGhost.generateDisplayNode();
+					else if(blueGhost != null && (x == blueGhost.myLocation.x && y == blueGhost.myLocation.y))
+						printList[y][x] = blueGhost.generateDisplayNode();
+					else {
+						printList[y][x] = myBoard.myGO[y][x].generateDisplayNode();
+	
+						ArrayList<GameObjectToken> tempList = myBoard.myTokens;
+						for (int i = 0; i < tempList.size(); i++) {
+							if (tempList.get(i).myLocation.equals(new Point(x, y)))
+								printList[y][x] = tempList.get(i).generateDisplayNode();
+						}
 					}
 				}
+				else
+					printList[y][x] = myBoard.templateBoundaryHidden.generateDisplayNode();
 			}
 		}
 		
-		if (myPlayer != null && ApplicationController.getInstance().advancedViewSetting == true) {
+		if (myPlayer != null && ApplicationController.getInstance().myGameView == ApplicationController.GameView.UTILITY) {
 			if (myPlayer.myAIModel != null) 
 				myPlayer.myAIModel.setAdvancedView(printList);
 		}
 		
-		if (myPlayer != null && ApplicationController.getInstance().advancedViewPolicySetting == true) {
+		if (myPlayer != null && ApplicationController.getInstance().myGameView == ApplicationController.GameView.POLICY) {
 			if (myPlayer.myAIModel != null) 
 				myPlayer.myAIModel.setPolicyView(printList);
 		}
-		
 
 		return printList;
 	}
 	
+	/*
+	 * TODO repair this hack
+	 * This is a hack for several reasons.  First, there should be a way to get the underlying object, regardless of whether a token, 
+	 * player or ghost is on top of it.  Next, there should be a function that gets the topmost object, which would grab the
+	 * creature/token at that time.  Finally, it should incorporate hidden maps.  
+	 * 
+	 */
 	public GameObject findGOByLocation(Point targetLocation) {
+		if (myBoard == null)
+			return null;
+		
 		if ((targetLocation.x >= 0) && (targetLocation.x < myBoard.width) && (targetLocation.y >= 0) && (targetLocation.y < myBoard.height)) {
 			if (myPlayer.myLocation.x == targetLocation.x && myPlayer.myLocation.y == targetLocation.y)
 				return myPlayer;
@@ -214,4 +227,5 @@ public class ApplicationModel {
 			System.exit(0);
 		}
 	}
+	
 }
