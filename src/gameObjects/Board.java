@@ -25,10 +25,12 @@ public class Board {
 	public GameObjectBackground[][] myGO;
 	public ArrayList<GameObjectToken> myTokens;
 	private GameObjectToken templateStrawberryToken;
-	private GameObjectBackground templateBackgroundPit; 
+	private GameObjectBackground templateBackgroundPit;
 	private GameObjectBackground templateBoundaryWall;
 	private GameObjectBackground templateBoundaryOpen;
+	public GameObjectBackground templateBoundaryHidden;
 	public int startingBerries;
+	public static final int INFORMATIONDISTANCE = 1;
 	
 	/**
 	 * Constructor for a randomly generated Board
@@ -119,6 +121,8 @@ public class Board {
 		templateBoundaryWall.name = "Wall";
 		templateBoundaryOpen = new GameObjectBackground();
 		templateBoundaryOpen.name = "Open";
+		templateBoundaryHidden = new GameObjectBackground();
+		templateBoundaryHidden.name = "Hidden";
 		
 		templateBackgroundPit = new GameObjectBackground();
 		templateBackgroundPit.name = "Pit";
@@ -135,6 +139,10 @@ public class Board {
 			imgTemp = ImageIO.read(new File("images"+ Constants.fileDelimiter + "BackgroundEmpty.bmp"));
 			templateBoundaryOpen.setGraphics(ApplicationView.convertImageToLocalSettings(imgTemp));
 			templateBoundaryOpen.canBlockMovement = false;
+			
+			imgTemp = ImageIO.read(new File("images"+ Constants.fileDelimiter + "BackgroundHidden.bmp"));
+			templateBoundaryHidden.setGraphics(ApplicationView.convertImageToLocalSettings(imgTemp));
+			templateBoundaryHidden.canBlockMovement = false;
 			
 			imgTemp = ImageIO.read(new File("images"+ Constants.fileDelimiter + "pit.bmp"));
 			templateBackgroundPit.setGraphics(ApplicationView.convertImageToLocalSettings(imgTemp));
@@ -241,8 +249,8 @@ public class Board {
 		Point testP;
 		GameObject searchSq;
 
-		for (int y = centerPoint.y - 1; y <= (centerPoint.y + 1); y++)
-			for (int x = centerPoint.x - 1; x <= (centerPoint.x + 1); x++) {
+		for (int y = centerPoint.y - INFORMATIONDISTANCE; y <= (centerPoint.y + INFORMATIONDISTANCE); y++)
+			for (int x = centerPoint.x - INFORMATIONDISTANCE; x <= (centerPoint.x + INFORMATIONDISTANCE); x++) {
 				testP = new Point(x, y);
 				
 				if (y >= 0 && y < height && x >= 0 && x < width && !testP.equals(centerPoint)) {
@@ -379,5 +387,19 @@ public class Board {
 				i++;
 			}
 		}
+	}
+	
+	public void setVisibleSquares(Point centerPoint) {
+		if (ApplicationController.getInstance().myLoadConfiguration.visibleWorld)
+			return;
+		
+		int sightRange = ApplicationController.VISIBILITYRANGE;
+		
+		for (int y = centerPoint.y - sightRange; y <= (centerPoint.y + sightRange); y++)
+			for (int x = centerPoint.x - sightRange; x <= (centerPoint.x + sightRange); x++) {
+				if (x >= 0 && x < width && y >= 0 && y < height) {
+					myGO[y][x].hasBeenSeen = true;
+				}
+			}
 	}
 }

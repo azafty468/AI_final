@@ -56,20 +56,28 @@ public class GraphicsCanvas extends Canvas {
 						else
 							bkG.drawImage(printList[y][x].myImage,  x*Constants.baseImageSize, y*Constants.baseImageSize, null);
 						
-						if (printList[y][x].hasUtilityValue) {
-							bkG.setColor(Color.LIGHT_GRAY);
-							bkG.drawString(String.valueOf(printList[y][x].utilityValue), x*Constants.baseImageSize+12, y*Constants.baseImageSize+24);
-						}
-						else if (printList[y][x].hasPolicyMove) {
-							drawArrow(bkG, printList[y][x].myPolicyMove, x, y);
-						}
-						else if (printList[y][x].hasInformationZone) {
-							bkG.setFont(new Font( "SansSerif", Font.BOLD, 7));
-							bkG.setColor(Color.MAGENTA);
-							if (printList[y][x].isBreezy)
-								bkG.drawString("Breezy", x*Constants.baseImageSize+2, y*Constants.baseImageSize+12);
-							if (printList[y][x].isPungent)
-								bkG.drawString("Pungent", x*Constants.baseImageSize+2, y*Constants.baseImageSize+20);
+						/* 
+						 * TODO this is a hack, there should be no isHidden on the print list.  This has been created because
+						 * the BasicUtility AI model I created could not handle an unknown board.  Realistically I should be able
+						 * to display a policy and utility for a GameObject not visible yet. 
+						 */
+						
+						if (!printList[y][x].isHidden) {
+							if (printList[y][x].hasUtilityValue) {
+								bkG.setColor(Color.LIGHT_GRAY);
+								bkG.drawString(String.valueOf(printList[y][x].utilityValue), x*Constants.baseImageSize+12, y*Constants.baseImageSize+24);
+							}
+							else if (printList[y][x].hasPolicyMove) {
+								drawArrow(bkG, printList[y][x].myPolicyMove, x, y);
+							}
+							else if (printList[y][x].hasInformationZone) {
+								bkG.setFont(new Font( "SansSerif", Font.BOLD, 7));
+								bkG.setColor(Color.MAGENTA);
+								if (printList[y][x].isBreezy)
+									bkG.drawString("Breezy", x*Constants.baseImageSize+2, y*Constants.baseImageSize+12);
+								if (printList[y][x].isPungent)
+									bkG.drawString("Pungent", x*Constants.baseImageSize+2, y*Constants.baseImageSize+20);
+							}
 						}
 					}
 				}

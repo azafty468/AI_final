@@ -34,6 +34,8 @@ import xml.Message;
  *
  */
 public class ApplicationController {
+	public static enum GameView { STANDARD, UTILITY, POLICY, INFORMATIONZONE; }
+	
 	static Random generator = null;
 	static ApplicationController thisController = null;
 	private Timer renderTimer;	// our time keeper
@@ -42,11 +44,13 @@ public class ApplicationController {
 	private GamePlayTimeKeeper myTimeKeeper;
 	//private String logFile;
 	public ArrayList<String> loggedEvents;
-	public boolean advancedViewSetting;
-	public boolean advancedViewPolicySetting;
-	public boolean advancedViewInformationZones;
+	//public boolean advancedViewSetting;
+	//public boolean advancedViewPolicySetting;
+	//public boolean advancedViewInformationZones;
 	public GameConfiguration myLoadConfiguration;
+	public GameView myGameView;
 	private boolean resettingGame;
+	public static final int VISIBILITYRANGE = 5;
 	
 	public ApplicationController() {
 		currentEvents = new Stack<Event>();
@@ -144,12 +148,13 @@ public class ApplicationController {
 		else
 			myTimeKeeper = new GamePlayTimeKeeper(PlayRate.AIAUTOMATION);
 
+		GameObjectPlayer myPlayer = ApplicationModel.getInstance().myPlayer;
+		myPlayer.currentAction = new ActionMove(myPlayer.myLocation, myPlayer);
+		
+		myGameView = GameView.STANDARD;
 		renderTimer = new Timer();
 		ApplicationView.getInstance().displayMessage("Starting Game.  Current State - PAUSED");
 
-		advancedViewSetting = false;
-		advancedViewPolicySetting = false;
-		advancedViewInformationZones = false;
 		resettingGame = false;
 		return true;
 	}
@@ -205,9 +210,10 @@ public class ApplicationController {
 			case KeyEvent.VK_N:
 				myTimeKeeper.setPause(true);
 				ApplicationView.getInstance().displayMessage("Rotating Information Zones");
-				advancedViewInformationZones = !advancedViewInformationZones;
-				advancedViewPolicySetting = false;
-				advancedViewSetting = false;
+				if (myGameView == GameView.INFORMATIONZONE)
+					myGameView = GameView.STANDARD;
+				else
+					myGameView = GameView.INFORMATIONZONE;
 				break;
 				
 			case KeyEvent.VK_R:
@@ -239,17 +245,21 @@ public class ApplicationController {
 			case KeyEvent.VK_V:
 				myTimeKeeper.setPause(true);
 				ApplicationView.getInstance().displayMessage("Rotating Detailed AI View");
-				advancedViewSetting = !advancedViewSetting;
-				advancedViewPolicySetting = false;
-				advancedViewInformationZones = false;
+				if (myGameView == GameView.UTILITY)
+					myGameView = GameView.STANDARD;
+				else
+					myGameView = GameView.UTILITY;
+
 				break;
 				
 			case KeyEvent.VK_B:
 				myTimeKeeper.setPause(true);
 				ApplicationView.getInstance().displayMessage("Rotating Policy AI View");
-				advancedViewPolicySetting = !advancedViewPolicySetting;
-				advancedViewSetting = false;
-				advancedViewInformationZones = false;
+				if (myGameView == GameView.POLICY)
+					myGameView = GameView.STANDARD;
+				else
+					myGameView = GameView.POLICY;
+
 				break;
 		
 			default: 

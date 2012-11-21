@@ -194,7 +194,7 @@ public class ShowStartupScreen extends JFrame {
 	private GameConfiguration getConfiguration() {
 		boolean hasVisibleWorld = chckbxFullyVisibleWorld.isSelected();
 		boolean hasDeterministicWorld = chckbxDeterministicMove.isSelected();
-		boolean hasInformativeZones = true;		//TODO implement this
+		boolean hasInformativeZones = true;
 		boolean hasInternalWalls = chckbxInteriorWalls.isSelected();
 		
 		GameConfiguration retVal = new GameConfiguration(hasVisibleWorld, hasDeterministicWorld, hasInformativeZones, hasInternalWalls);
