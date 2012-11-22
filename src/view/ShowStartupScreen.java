@@ -137,6 +137,7 @@ public class ShowStartupScreen extends JFrame {
 	    redGhostAICombo.addItem("AIModelHillClimb");
 	    redGhostAICombo.addItem("AIModelPlayer");
 	    redGhostAICombo.addItem("AIModelBasicUtility");
+	    redGhostAICombo.addItem("AIModelLearning");
 	    redGhostAICombo.setSelectedIndex(1);
 	    contentPane.add(redGhostAICombo);
 	    
@@ -150,6 +151,7 @@ public class ShowStartupScreen extends JFrame {
 	    blueGhostAICombo.addItem("AIModelHillClimb");
 	    blueGhostAICombo.addItem("AIModelPlayer");
 	    blueGhostAICombo.addItem("AIModelBasicUtility");
+	    blueGhostAICombo.addItem("AIModelLearning");
 	    blueGhostAICombo.setSelectedIndex(2);
 	    contentPane.add(blueGhostAICombo);
 	    
@@ -168,7 +170,8 @@ public class ShowStartupScreen extends JFrame {
 	    playerAICombo.addItem("AIModelHillClimb");
 	    playerAICombo.addItem("AIModelPlayer");
 	    playerAICombo.addItem("AIModelBasicUtility");
-	    playerAICombo.setSelectedIndex(6);
+	    playerAICombo.addItem("AIModelLearning");
+	    playerAICombo.setSelectedIndex(7);
 	    contentPane.add(playerAICombo);
 			    
 	    //This starts the player AI model 
