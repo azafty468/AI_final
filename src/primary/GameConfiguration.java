@@ -51,7 +51,7 @@ public class GameConfiguration {
 		else if (aiName.equals("class aiModels.AIModelBasicUtility"))
 			retVal = new AIModelBasicUtility();
 		else if (aiName.equals("class aiModels.AIModelLearning"))
-			retVal = new AIModelBasicUtility();
+			retVal = new AIModelLearning();
 		return retVal;
 	}
 	
