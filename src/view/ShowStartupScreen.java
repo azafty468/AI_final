@@ -1,5 +1,8 @@
 package view;
 
+import gameObjects.GameObjectCreature;
+import gameObjects.GameObjectPlayer;
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,9 +17,14 @@ import javax.swing.border.EmptyBorder;
 import primary.Constants;
 import primary.GameConfiguration;
 import primary.MainApplication;
+import primary.Point;
+import xml.Message;
+
 import javax.swing.JRadioButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+
+import org.w3c.dom.Node;
 
 import aiModels.AIModelClosestMove;
 import aiModels.AIModelDijkstraAlgorithm;
@@ -25,6 +33,9 @@ import aiModels.AIModelEnemy;
 import aiModels.AIModelHillClimb;
 import aiModels.AIModelPlayer;
 import java.awt.Font;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import javax.swing.JTextField;
 
 public class ShowStartupScreen extends JFrame {
 	static final long serialVersionUID = 1L;
@@ -39,6 +50,7 @@ public class ShowStartupScreen extends JFrame {
 	PastRunsJPanel myPastRunsJPanel;
 	JCheckBox chckbxInteriorWalls, chckbxFullyVisibleWorld, chckbxRedGhost, chckbxBlueGhost, chckbxDeterministicMove;
 	JComboBox redGhostAICombo, blueGhostAICombo, playerAICombo;
+	private JTextField repeatCounterTextField;
 
 	public ShowStartupScreen() {
 		//creates the JFrame and contentPane to hold everything
@@ -96,9 +108,9 @@ public class ShowStartupScreen extends JFrame {
 	    pastRunsLabel = new JLabel("Prior Runs:");
 	    pastRunsLabel.setBounds(25, 205, 400, 25);
 	    getContentPane().add(pastRunsLabel);
-	    myPastRunsJPanel = new PastRunsJPanel(25, 225, 200, 400);
+	    myPastRunsJPanel = new PastRunsJPanel(25, 225, 200, 400, this);
 	    getContentPane().add(myPastRunsJPanel);
-	    
+	    	    
 	    chckbxInteriorWalls = new JCheckBox("Interior Walls");
 	    chckbxInteriorWalls.setFont(new Font("Tahoma", Font.PLAIN, 10));
 	    chckbxInteriorWalls.setBounds(581, 356, 116, 23);
@@ -173,7 +185,18 @@ public class ShowStartupScreen extends JFrame {
 	    playerAICombo.addItem("AIModelLearning");
 	    playerAICombo.setSelectedIndex(7);
 	    contentPane.add(playerAICombo);
-			    
+	    
+	    JLabel lblRepeatCounter = new JLabel("Repeat Counter");
+	    lblRepeatCounter.setFont(new Font("Tahoma", Font.PLAIN, 10));
+	    lblRepeatCounter.setBounds(500, 432, 82, 14);
+	    contentPane.add(lblRepeatCounter);
+	    
+	    repeatCounterTextField = new JTextField();
+	    repeatCounterTextField.setText("1");
+	    repeatCounterTextField.setBounds(590, 429, 50, 20);
+	    contentPane.add(repeatCounterTextField);
+	    repeatCounterTextField.setColumns(10);
+	    
 	    //This starts the player AI model 
 	    btnStartContoller.addActionListener(new ActionListener() {
 			@Override
@@ -194,6 +217,62 @@ public class ShowStartupScreen extends JFrame {
 	    });
 	}
 	
+	public void resetSettings() {
+		if (!Message.configure("logs" + Constants.fileDelimiter + "Board.xsd")) { 
+			System.err.println("Error, cannot load Board XSD file");
+			System.exit(-1);
+		}
+				
+		Message inMessage = null;
+		
+		try {
+			String inFile = "";
+			BufferedReader inBR = new BufferedReader(new FileReader("logs" + Constants.fileDelimiter + myPastRunsJPanel.localList.getSelectedItem()));
+
+			String inSegment = inBR.readLine();
+			while (inSegment != null) {
+				inFile += inSegment;
+				inSegment = inBR.readLine();
+			}
+			inBR.close();
+	
+			inMessage = new Message(inFile);
+		} catch (Exception e) {
+			System.err.println("Error while reading in XML file");
+			return;
+		}
+		Node localNode = inMessage.contents;
+		Node cursorNode;
+		String readAI;
+		chckbxFullyVisibleWorld.setSelected(Boolean.parseBoolean(localNode.getAttributes().getNamedItem("visible").getNodeValue()));
+		chckbxDeterministicMove.setSelected(Boolean.parseBoolean(localNode.getAttributes().getNamedItem("deterministic").getNodeValue()));
+		chckbxInteriorWalls.setSelected(false);
+		// information zones is always true, interior walls in this case is always false because the map is built
+		localNode = localNode.getFirstChild();
+		chckbxRedGhost.setSelected(false);
+		chckbxBlueGhost.setSelected(false);
+		for (int i = 0; i < localNode.getChildNodes().getLength(); i++) {
+			cursorNode = localNode.getChildNodes().item(i);
+			if (cursorNode.getLocalName().equals("Player")) {
+				readAI = cursorNode.getAttributes().getNamedItem("AIModel").getNodeValue();
+				readAI = readAI.replace("class aiModels.",  "");
+				playerAICombo.setSelectedItem(readAI);
+			}
+			else if (cursorNode.getLocalName().equals("RedGhost")) {
+				readAI = cursorNode.getAttributes().getNamedItem("AIModel").getNodeValue();
+				readAI = readAI.replace("class aiModels.",  "");
+				chckbxRedGhost.setSelected(true);
+				redGhostAICombo.setSelectedItem(readAI);
+			}
+			else if (cursorNode.getLocalName().equals("BlueGhost")) {
+				readAI = cursorNode.getAttributes().getNamedItem("AIModel").getNodeValue();
+				readAI = readAI.replace("class aiModels.",  "");
+				chckbxBlueGhost.setSelected(true);
+				blueGhostAICombo.setSelectedItem(readAI);
+			}
+		}
+	}
+	
 	private GameConfiguration getConfiguration() {
 		boolean hasVisibleWorld = chckbxFullyVisibleWorld.isSelected();
 		boolean hasDeterministicWorld = chckbxDeterministicMove.isSelected();
@@ -211,6 +290,8 @@ public class ShowStartupScreen extends JFrame {
 		retVal.setPlayerAI("class aiModels." +  (String)playerAICombo.getSelectedItem());
 		
 		retVal.setInitialBoard(myPastRunsJPanel.localList.getSelectedItem());
+		
+		retVal.setAutoRepeatCounter(Integer.parseInt(repeatCounterTextField.getText()));
 		
 		return retVal;
 	}

@@ -30,6 +30,7 @@
 *.sql
 *.sqlite
 Board*.xml
+Run*.xml
 
 # OS generated files #
 ######################

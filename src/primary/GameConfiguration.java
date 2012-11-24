@@ -15,6 +15,8 @@ public class GameConfiguration {
 	public boolean informativeZones; // these are the areas around a pit and/or a strawberry that indicate something is near
 	public boolean isHumanControlled;
 	public boolean hasInternalWalls;
+	private int autoRepeatCounter;
+	public boolean onAutoRepeat;
 	
 	/**
 	 * 
@@ -31,6 +33,8 @@ public class GameConfiguration {
 		hasBlueGhost = false;
 		informativeZones = hasInformativeZones;
 		this.hasInternalWalls = hasInternalWalls; 
+		autoRepeatCounter = 1;
+		onAutoRepeat = false;
 	}
 	
 	public static AIModel getAIModel(String aiName) {
@@ -74,6 +78,20 @@ public class GameConfiguration {
 		else 
 			randomlyGenerateWorld = false;
 		preexistingBoard = fileName;
+	}
+	
+	public void setAutoRepeatCounter(int newCounter) {
+		if (newCounter > 1)
+			onAutoRepeat = true;
+		autoRepeatCounter = newCounter;
+	}
+	
+	public void decrementAutoRepeatCounter() {
+		autoRepeatCounter--;
+	}
+	
+	public int getAutoRepeatCounter() {
+		return autoRepeatCounter;
 	}
 	
 	public void setBlueGhostAI(String aiName) {

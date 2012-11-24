@@ -64,31 +64,39 @@ public class ApplicationModel {
 		Node localNode = inMessage.getFirstChild();
 		String readAI;
 		AIModel readModel;
+		GameConfiguration myConfig = ApplicationController.getInstance().myLoadConfiguration;
 		
 		for (int i = 0; i < inMessage.getChildNodes().getLength(); i++) {
 			localNode = inMessage.getChildNodes().item(i);
 			if (inMessage.getChildNodes().item(i).getLocalName().equals("Player")) {
+				/*
 				readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
 				ApplicationController.getInstance().myLoadConfiguration.setPlayerAI(readAI);
 				readModel = GameConfiguration.getAIModel(readAI);
+				*/
+				readModel = GameConfiguration.getAIModel(myConfig.playerAIModel);
 				myPlayer = new GameObjectPlayer(readModel);
 				myPlayer.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
 				myPlayer.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
 						Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
 			}
 			else if (inMessage.getChildNodes().item(i).getLocalName().equals("RedGhost")) {
+				/*
 				readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
 				ApplicationController.getInstance().myLoadConfiguration.setRedGhostAI(readAI);
-				readModel = GameConfiguration.getAIModel(readAI);
+				*/
+				readModel = GameConfiguration.getAIModel(myConfig.redGhostAIModel);
 				redGhost = new GameObjectCreature(readModel);
 				redGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
 				redGhost.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
 						Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
 			}
 			else if (inMessage.getChildNodes().item(i).getLocalName().equals("BlueGhost")) {
+				/*
 				readAI = localNode.getAttributes().getNamedItem("AIModel").getNodeValue();
 				ApplicationController.getInstance().myLoadConfiguration.setBlueGhostAI(readAI);
-				readModel = GameConfiguration.getAIModel(readAI);
+				*/
+				readModel = GameConfiguration.getAIModel(myConfig.blueGhostAIModel);
 				blueGhost = new GameObjectCreature(readModel);
 				blueGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
 				blueGhost.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 

@@ -42,11 +42,7 @@ public class ApplicationController {
 	private TimerTask renderTask; // the main render and update task.
 	public Stack<Event> currentEvents;
 	private GamePlayTimeKeeper myTimeKeeper;
-	//private String logFile;
 	public ArrayList<String> loggedEvents;
-	//public boolean advancedViewSetting;
-	//public boolean advancedViewPolicySetting;
-	//public boolean advancedViewInformationZones;
 	public GameConfiguration myLoadConfiguration;
 	public GameView myGameView;
 	private boolean resettingGame;
@@ -96,11 +92,6 @@ public class ApplicationController {
 			return false;
 		}
 
-		boolean hasInformativeZones = Boolean.parseBoolean(inMessage.contents.getAttributes().getNamedItem("informationZones").getNodeValue());
-		boolean hasVisibleWorld = Boolean.parseBoolean(inMessage.contents.getAttributes().getNamedItem("visible").getNodeValue());
-		boolean hasDeterministicWorld = Boolean.parseBoolean(inMessage.contents.getAttributes().getNamedItem("deterministic").getNodeValue());
-		boolean hasInternalWalls = false;
-		myLoadConfiguration = new GameConfiguration(hasVisibleWorld, hasDeterministicWorld, hasInformativeZones, hasInternalWalls);
 		myLoadConfiguration.setInitialBoard(xmlFile);
 		
 		return ApplicationModel.getInstance().initialize(inMessage.contents.getFirstChild());
@@ -108,6 +99,7 @@ public class ApplicationController {
 	
 	public boolean initialize(GameConfiguration newLoadConfiguration) {
 		myLoadConfiguration = newLoadConfiguration;
+		myLoadConfiguration.decrementAutoRepeatCounter();
 		loggedEvents = new ArrayList<String>();
 		if (myLoadConfiguration.randomlyGenerateWorld) {
 			AIModel playerAI;
@@ -145,8 +137,14 @@ public class ApplicationController {
 		
 		if (myLoadConfiguration.isHumanControlled)
 			myTimeKeeper = new GamePlayTimeKeeper(PlayRate.HUMANPLAYER);
-		else
+		else {
 			myTimeKeeper = new GamePlayTimeKeeper(PlayRate.AIAUTOMATION);
+			
+			if (myLoadConfiguration.onAutoRepeat) {
+				myTimeKeeper.alterDelayBetweenTurns(2000);
+				myTimeKeeper.setPause(false);
+			}
+		}
 
 		GameObjectPlayer myPlayer = ApplicationModel.getInstance().myPlayer;
 		myPlayer.currentAction = new ActionMove(myPlayer.myLocation, myPlayer);
@@ -293,10 +291,12 @@ public class ApplicationController {
 	public void finishGame(String terminateReason) {
 		myTimeKeeper.setGameOver();
 
-		String runLog = myLoadConfiguration.preexistingBoard.replace(".xml", "") + "_Run_";
+		String runDir = myLoadConfiguration.preexistingBoard.replace(".xml", "");
+		String runLog = "Run_";
 		
 		int counter = 0;
-	    final File folder = new File("logs" + Constants.fileDelimiter);
+	    final File folder = new File("logs" + Constants.fileDelimiter + runDir + Constants.fileDelimiter);
+	    folder.mkdir();
 	    for (final File fileEntry : folder.listFiles())
 	        if (!(fileEntry.isDirectory()))
 	        	if (fileEntry.getName().contains(runLog))
@@ -306,7 +306,7 @@ public class ApplicationController {
 		runLog += counter + ".xml";
 		GameObjectPlayer myPlayer = ApplicationModel.getInstance().myPlayer;
 		try {
-			BufferedWriter myOut = new BufferedWriter(new FileWriter("logs" + Constants.fileDelimiter + runLog));
+			BufferedWriter myOut = new BufferedWriter(new FileWriter("logs" + Constants.fileDelimiter + runDir + Constants.fileDelimiter + runLog));
 			myOut.write("<GameRun Board='" + myLoadConfiguration.preexistingBoard + "' run='" + counter + "' ");
 			if (terminateReason.isEmpty())
 				myOut.write("finish='success' ");
@@ -317,7 +317,18 @@ public class ApplicationController {
 				"finalScore='" + myPlayer.getPointsGained() + "' " +
 				"ghostTouches='" + myPlayer.touchedByGhost  + "' " +
 				"pitFalls='" + myPlayer.pitFalls + "' " + 
-				"stepsTaken='" + myPlayer.stepsTaken  + "'>" + Constants.newline);
+				"playerAI='" + myPlayer.myAIModel.getClass() + "' ");
+			
+			if (ApplicationModel.getInstance().redGhost != null)
+				myOut.write("redGhostAI='" + ApplicationModel.getInstance().redGhost.myAIModel.getClass() + "' ");
+			if (ApplicationModel.getInstance().blueGhost != null)
+				myOut.write("blueGhostAI='" + ApplicationModel.getInstance().blueGhost.myAIModel.getClass() + "' ");
+
+			myOut.write("automatePlayer='" + (!myLoadConfiguration.isHumanControlled) + "' " +
+					"deterministic='" + myLoadConfiguration.deterministicWorld + "' " +
+					"visible='" + myLoadConfiguration.visibleWorld + "' " +
+					"informationZones='" + myLoadConfiguration.informativeZones + "' " +
+					"stepsTaken='" + myPlayer.stepsTaken  + "'>" + Constants.newline);
 			
 			for (int i = 0; i < loggedEvents.size(); i++)
 				myOut.write(loggedEvents.get(i) + Constants.newline);
@@ -329,6 +340,19 @@ public class ApplicationController {
 			System.exit(-1);
 		}
 		loggedEvents.clear();
+		
+		if (myLoadConfiguration.getAutoRepeatCounter() > 0) {
+			resettingGame = true;
+			myTimeKeeper.setPause(true);
+			ApplicationModel.getInstance().resetModel();
+			ApplicationView.getInstance().displayMessage("---Automatic Reset---");
+			if (!initialize(myLoadConfiguration)) {
+				System.err.println("Error while reseting environment");
+				System.exit(-1);
+			}
+
+		}
+		
 	}
 
 	private void moveCursor(KeyEvent e) {
