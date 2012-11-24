@@ -5,7 +5,7 @@ import aiModels.AIModelPlayer;
 
 public class GameObjectPlayer extends GameObjectCreature {
 	public Board board;
-	public int pointsGained;
+	private int pointsGained;
 	
 	public GameObjectPlayer(AIModel newModel) {
 		super(newModel);
@@ -29,5 +29,14 @@ public class GameObjectPlayer extends GameObjectCreature {
 		tmpO.pointsGained = pointsGained;
 		
 		return tmpObject;
+	}
+	
+	public int getPointsGained() {
+		return pointsGained;
+	}
+	
+	public void setPointsGained(int points) {
+		pointsGained += points;
+		this.myAIModel.receiveFeedbackFromEnvironment(points);
 	}
 }

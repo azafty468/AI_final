@@ -10,13 +10,8 @@ import view.PrintListNode;
 import actions.ActionMove;
 
 public class AIModelLearning extends AIModel {
-	public double alpha;
-    public double gamma;
-    public double lambda;
-    public double epsilon;
-    public double temp;
+	public double epsilon;
     public ActionMove action;
-    public Board myBoard;
     public GameObjectCreature mySelf;
     public PolicyNode myPolicies[][] = null;
 	private int maxIterations = 10;
@@ -48,13 +43,7 @@ public class AIModelLearning extends AIModel {
 	}
     
 	public AIModelLearning() {
-		alpha = 1;
-		gamma = 0.1;
-		lambda = 0.1;
 		epsilon = 0.1;
-		temp = 1;
-		
-		myBoard = ApplicationModel.getInstance().myBoard;
 	}
 	
 	@Override
@@ -71,6 +60,7 @@ public class AIModelLearning extends AIModel {
 	@Override
 	public ActionMove planNextMove() {
 		if (myPolicies == null) {
+			Board myBoard = ApplicationModel.getInstance().myBoard;
 			myPolicies = new PolicyNode[myBoard.height][myBoard.width];
 			maxIterations = Math.max(myBoard.height, myBoard.width);
 			
@@ -91,6 +81,12 @@ public class AIModelLearning extends AIModel {
 
 		return new ActionMove(getDirectionOfPolicy(myPolicies[mySelf.myLocation.y][mySelf.myLocation.x].myPolicy), mySelf);
 	}
+	
+	@Override
+	public void clearTarget(GameObject oldTarget) {
+		myPolicies = null;
+		mySelf.currentAction = null;
+	}	
 	
 	private Point getDirectionOfPolicy(PolicyMove myDirection) {
 		Point myPoint = new Point(mySelf.myLocation);
@@ -276,4 +272,51 @@ public class AIModelLearning extends AIModel {
 					if (!myPolicies[y][x].unreachableSquare)
 						myPL[y][x].setPolicyValue(myPolicies[y][x].myPolicy);
 	} 
+	
+	/**
+	 * This function allows the player to receive a reward from the environment
+	 * when it explores so it can determine what is good and what is bad. If the feedback
+	 * is greater than 0, it should update the utility of the strawberries to be higher. If
+	 * the feedback is less than 0, it should update the other utilities to be lower.
+	 */
+	@Override
+	public void receiveFeedbackFromEnvironment(int feedback) {
+		System.out.println("" + feedback);
+		if(feedback > 0) {
+			updateUtilities(100);
+		}
+		else if(feedback <= 0) {
+			updateUtilities(-10);
+		}
+	}
+	
+	/**
+	 * This should update the utilities of the various board objects as the player learns
+	 * what is good and bad.
+	 * @param reward
+	 */
+	private void updateUtilities(int reward) {
+		// populate the new learned values
+		for (int y = 0; y < myPolicies.length; y++) 
+			for (int x = 0; x < myPolicies[y].length; x++) {
+				GameObject localGO = ApplicationModel.getInstance().findGOByLocation(new Point(x, y));
+				if (localGO.name.equals("Strawberry")) {
+					myPolicies[y][x].utilityFixed = true;
+					myPolicies[y][x].utility += reward;
+				}
+				else if (localGO.name.equals("Pit")) {
+					myPolicies[y][x].utilityFixed = true;
+					myPolicies[y][x].utility += reward;
+				}
+				else if (localGO.name.equals("Wall")) {
+					myPolicies[y][x].utilityFixed = true;
+					myPolicies[y][x].unreachableSquare = true;
+					myPolicies[y][x].utility += reward;
+				}
+			}
+		
+		//how many times should I do this?.  Right now it is set to the maximum of the board size
+		for (int i = 0; i < maxIterations; i++)
+			iteratePolicies();
+	}
 }

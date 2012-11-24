@@ -43,4 +43,13 @@ public abstract class AIModel {
 	 * @param newSelf
 	 */
 	public void assignToCreature(GameObjectCreature newSelf) { newSelf.myAIModel = this; }
+	
+	/**
+	 * This method is used for communicating information from the environment back to the AI model since
+	 * not all the attributes of a model or a game object are public and we need to share feedback somehow
+	 * in order to help the player learn about its environment as it explores.
+	 * 
+	 * @param feedback
+	 */
+	public void receiveFeedbackFromEnvironment(int feedback) {	}
 }

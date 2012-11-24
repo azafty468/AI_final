@@ -314,7 +314,7 @@ public class ApplicationController {
 				myOut.write("finish='abort' reason='" + terminateReason + "' ");
 
 			myOut.write("availableBerries='" + ApplicationModel.getInstance().myBoard.startingBerries + "' " +
-				"finalScore='" + myPlayer.pointsGained + "' " +
+				"finalScore='" + myPlayer.getPointsGained() + "' " +
 				"ghostTouches='" + myPlayer.touchedByGhost  + "' " +
 				"pitFalls='" + myPlayer.pitFalls + "' " + 
 				"stepsTaken='" + myPlayer.stepsTaken  + "'>" + Constants.newline);

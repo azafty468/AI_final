@@ -20,13 +20,13 @@ public class EventPickupToken extends Event {
 	
 	@Override
 	public void processEvent() {
-		localPlayer.pointsGained += localToken.pointValue;
+		localPlayer.setPointsGained(localToken.pointValue);
 		
 		ApplicationController.getInstance().loggedEvents.add(writeLogString());
 		
 		ApplicationModel.getInstance().myBoard.removeToken(localToken);
 		ApplicationView.getInstance().displayMessage("Player '" + localPlayer.name + "' captured token '" + 
-				localToken.name + "'.  Player now has " + localPlayer.pointsGained + " points.");
+				localToken.name + "'.  Player now has " + localPlayer.getPointsGained() + " points.");
 		
 		//TODO there is a better mechanism than this
 		ApplicationModel.getInstance().myPlayer.clearTarget(localToken);
@@ -39,7 +39,7 @@ public class EventPickupToken extends Event {
 		
 		if (ApplicationModel.getInstance().myBoard.myTokens.size() == 0) {
 			//TODO: end game reached.  What to print?
-			ApplicationView.getInstance().displayMessage("Congratulations, you have collected all the tokens in " + localPlayer.stepsTaken + " moves ending with " + localPlayer.pointsGained + " points.  The game is over!");
+			ApplicationView.getInstance().displayMessage("Congratulations, you have collected all the tokens in " + localPlayer.stepsTaken + " moves ending with " + localPlayer.getPointsGained() + " points.  The game is over!");
 			ApplicationController.getInstance().finishGame("");
 		}
 
