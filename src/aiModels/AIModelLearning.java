@@ -10,7 +10,6 @@ import view.PrintListNode;
 import actions.ActionMove;
 
 public class AIModelLearning extends AIModel {
-	public double epsilon;
     public ActionMove action;
     public GameObjectCreature mySelf;
     public PolicyNode myPolicies[][] = null;
@@ -42,9 +41,7 @@ public class AIModelLearning extends AIModel {
 		}
 	}
     
-	public AIModelLearning() {
-		epsilon = 0.1;
-	}
+	public AIModelLearning() {	}
 	
 	@Override
 	public void assignToCreature(GameObjectCreature newSelf) {
@@ -169,6 +166,13 @@ public class AIModelLearning extends AIModel {
 			}
 	}
 	
+	/**
+	 * sets utilities for each type of space
+	 * 100 for strawberries
+	 * -1 for pits
+	 * -2 for walls
+	 * -1 for empty spaces
+	 */
 	private void populateUtilities() {
 		// populate the initial values
 		for (int y = 0; y < myPolicies.length; y++) 
@@ -176,16 +180,20 @@ public class AIModelLearning extends AIModel {
 				GameObject localGO = ApplicationModel.getInstance().findGOByLocation(new Point(x, y));
 				if (localGO.name.equals("Strawberry")) {
 					myPolicies[y][x].utilityFixed = true;
-					myPolicies[y][x].utility = 0;
+					myPolicies[y][x].utility = 100;
 				}
 				else if (localGO.name.equals("Pit")) {
 					myPolicies[y][x].utilityFixed = true;
-					myPolicies[y][x].utility = 0;
+					myPolicies[y][x].utility = -1;
 				}
 				else if (localGO.name.equals("Wall")) {
 					myPolicies[y][x].utilityFixed = true;
 					myPolicies[y][x].unreachableSquare = true;
-					myPolicies[y][x].utility = 0;
+					myPolicies[y][x].utility = -2;
+				}
+				else {
+					myPolicies[y][x].utilityFixed = false;
+					myPolicies[y][x].utility = -1;
 				}
 			}
 		
@@ -281,7 +289,6 @@ public class AIModelLearning extends AIModel {
 	 */
 	@Override
 	public void receiveFeedbackFromEnvironment(int feedback) {
-		System.out.println("" + feedback);
 		if(feedback > 0) {
 			updateUtilities(100);
 		}
@@ -313,9 +320,12 @@ public class AIModelLearning extends AIModel {
 					myPolicies[y][x].unreachableSquare = true;
 					myPolicies[y][x].utility += reward;
 				}
+				else {
+					myPolicies[y][x].utilityFixed = false;
+					myPolicies[y][x].utility += reward;
+				}
 			}
 		
-		//how many times should I do this?.  Right now it is set to the maximum of the board size
 		for (int i = 0; i < maxIterations; i++)
 			iteratePolicies();
 	}
