@@ -3,6 +3,7 @@ package aiModels;
 import gameObjects.*;
 import primary.ApplicationModel;
 import primary.Point;
+import primary.Constants.PolicyMove;
 import view.PrintListNode;
 import actions.ActionMove;
 
@@ -69,7 +70,7 @@ public class AIModelClosestMove extends AIModel {
 		if (y > latestTarget.myLocation.y)
 			y--;
 		
-		return new ActionMove(x, y, mySelf);
+		return new ActionMove(new Point(x, y), mySelf, PolicyMove.UNKNOWN);
 	}
 	
 	@Override
@@ -88,16 +89,7 @@ public class AIModelClosestMove extends AIModel {
 	}
 	
 	@Override
-	public void setAdvancedView(PrintListNode[][] myPL) {
-		/* sample access method.  This normally would rely on internal variables, and not directly reference the board
-		Board myBoard = ApplicationModel.getInstance().myBoard;
-
-		for (int y = 0; y < myBoard.height; y++)
-			for (int x = 0; x < myBoard.width; x++)
-				if (!myBoard.myGO[y][x].name.equals("Wall"))
-				myPL[y][x].setUtilityValue(100);
-		 */
-		
+	public void setAdvancedView(PrintListNode[][] myPL) {		
 		if (allTokens == null)
 			return;
 		

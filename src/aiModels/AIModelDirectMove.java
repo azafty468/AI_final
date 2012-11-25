@@ -1,21 +1,32 @@
 package aiModels;
 
+import java.util.ArrayList;
+import java.util.Stack;
+
 import primary.ApplicationModel;
+import primary.Constants;
+import primary.Constants.PolicyMove;
+import primary.Point;
 import gameObjects.Board;
 import gameObjects.GameObject;
 import gameObjects.GameObjectCreature;
+import gameObjects.GameObjectCreature.CreatureAlliance;
 import gameObjects.GameObjectPlayer;
 import gameObjects.GameObjectToken;
 import actions.ActionMove;
 
+/**
+ * Move directly at the target with a look ahead of 1 square
+ *
+ * @author Trevor - primary author
+ * @author Andrew - minor updates
+ */
 public class AIModelDirectMove extends AIModel {
-	GameObjectToken myTarget;
+	GameObject myTarget;
 	GameObjectCreature mySelf;
-	GameObjectPlayer player;
-	
+
 	public AIModelDirectMove() {
 		myTarget = null;
-		player = ApplicationModel.getInstance().myPlayer;
 	}
 	
 	@Override
@@ -26,32 +37,29 @@ public class AIModelDirectMove extends AIModel {
 	
 	@Override
 	public ActionMove planNextMove() {
-		if (myTarget == null) { // select a new target
-			Board myBoard = ApplicationModel.getInstance().myBoard;
-			if (myBoard.myTokens.isEmpty()) 
-				return null;
+		if (myTarget == null) {
 			
-			for(int i=0; i < myBoard.myTokens.size(); i++) {
-				myTarget = myBoard.myTokens.get(i);
-				if(myTarget == null) {
-					myTarget = myBoard.myTokens.get(i);
-				}
+			if (mySelf.myAlliance == CreatureAlliance.PLAYER) {
+				Board myBoard = ApplicationModel.getInstance().myBoard;
+				if (myBoard.myTokens.isEmpty()) 
+					return null;
+				
+				myTarget = myBoard.myTokens.get(0);
 			}
+			else //this is a ghost
+				myTarget = ApplicationModel.getInstance().myPlayer;
 		}
+
+
+		ArrayList<PolicyMove> bestMoveList = Constants.populateBestMoveDeterministicList(mySelf.myLocation.x, mySelf.myLocation.y, myTarget.myLocation.x, myTarget.myLocation.y);
+		PolicyMove moveTarget = bestMove(bestMoveList);
 		
-		int x, y;
-		x = mySelf.myLocation.x;
-		y = mySelf.myLocation.y;
-		if (x < myTarget.myLocation.x)
-			x++;
-		if (x >myTarget.myLocation.x)
-			x--;
-		if (y < myTarget.myLocation.y)
-			y++;
-		if (y > myTarget.myLocation.y)
-			y--;
+		if (moveTarget == null)
+			return null;
 		
-		return new ActionMove(x-1, y, mySelf);
+		Point targetP = Constants.outcomeOfMove(moveTarget, mySelf.myLocation);
+		
+		return new ActionMove(targetP, mySelf, moveTarget);
 	}
 	
 	@Override
@@ -64,12 +72,25 @@ public class AIModelDirectMove extends AIModel {
 		}
 	}
 	
+	
+	private PolicyMove bestMove(ArrayList<PolicyMove> bestList) {
+		for (int i = 0; i < bestList.size(); i++) {
+			PolicyMove testPolicy = bestList.get(i);
+			Point targetPoint = Constants.outcomeOfMove(testPolicy, mySelf.myLocation);
+			
+			if (!ApplicationModel.getInstance().myBoard.myGO[targetPoint.y][targetPoint.x].canBlockMovement)
+				return testPolicy;
+		}
+		
+		return null;
+	}
+	
 	@Override
 	public String describeActionPlan() {
-		String retval = "AIModelDirectMove - Move to top token in Token ArrayList.";
+		String retval = "AIModelDirectMove - Move directly to the target object with look ahead of 1 square for blocking squares only";
 		
 		if (myTarget != null) 
-			retval += "  Token: " + myTarget.name + " at (" + myTarget.myLocation.x + ", " + myTarget.myLocation.y + ")";
+			retval += "  Target: " + myTarget.name + " at (" + myTarget.myLocation.x + ", " + myTarget.myLocation.y + ")";
 		
 		return retval;
 	}

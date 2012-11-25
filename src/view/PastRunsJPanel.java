@@ -45,8 +45,8 @@ public class PastRunsJPanel extends JPanel {
 	    int counter = 0;
 	    final File folder = new File("logs" + Constants.fileDelimiter);
 	    for (final File fileEntry : folder.listFiles()) {
-	        if (!(fileEntry.isDirectory()) && counter < 15) {
-	        	if (!(fileEntry.getName().contains(".xsd")) && !(fileEntry.getName().contains("Run"))) {
+	        if (!(fileEntry.isDirectory()) && counter < 30) {
+	        	if (!(fileEntry.getName().contains(".xsd")) && !(fileEntry.getName().contains("Run")) && fileEntry.getName().contains(".xml")) {
 	        		localList.add(fileEntry.getName());
 	            counter++;
 	        	}

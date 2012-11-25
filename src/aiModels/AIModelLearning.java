@@ -4,6 +4,7 @@ import gameObjects.Board;
 import gameObjects.GameObject;
 import gameObjects.GameObjectCreature;
 import primary.ApplicationModel;
+import primary.Constants;
 import primary.Point;
 import primary.Constants.PolicyMove;
 import view.PrintListNode;
@@ -75,8 +76,12 @@ public class AIModelLearning extends AIModel {
 		
 		if (myPolicies[mySelf.myLocation.y][mySelf.myLocation.x] == null)
 			return null;
+		
+		PolicyMove myPolicy = myPolicies[mySelf.myLocation.y][mySelf.myLocation.x].myPolicy;
+		Point targetP = Constants.outcomeOfMove(myPolicy, mySelf.myLocation);
+		
 
-		return new ActionMove(getDirectionOfPolicy(myPolicies[mySelf.myLocation.y][mySelf.myLocation.x].myPolicy), mySelf);
+		return new ActionMove(targetP, mySelf, myPolicy);
 	}
 	
 	@Override
@@ -84,7 +89,7 @@ public class AIModelLearning extends AIModel {
 		myPolicies = null;
 		mySelf.currentAction = null;
 	}	
-	
+	/*
 	private Point getDirectionOfPolicy(PolicyMove myDirection) {
 		Point myPoint = new Point(mySelf.myLocation);
 
@@ -115,7 +120,7 @@ public class AIModelLearning extends AIModel {
 		}
 		
 		return myPoint;
-	}
+	}*/
 	
 	private void determinePolicies() {
 		for (int y = 0; y < myPolicies.length; y++) 

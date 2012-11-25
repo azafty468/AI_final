@@ -1,5 +1,6 @@
 package primary;
 
+import primary.Constants.PolicyMove;
 import view.ApplicationView;
 import gameObjects.*;
 import gameObjects.GameObject.GameObjectType;
@@ -9,9 +10,10 @@ public class PhysicsEngine {
 	//change this for non-deterministic worlds
 	public static boolean deterministicMovement = true;
 	
-	//the overall multiplier for non-deterministic worlds.  the forward location is at [1][2].  Array values must add up to 1
-	public static double movementModifier[][] = { {0, 0, 0}, {0, 0, 1}, {0, 0, 0}};
-
+	//the overall multiplier for non-deterministic worlds.  the first square is straight, with each next number being the chance to the right
+	// the last square is the chance to stay still
+	public static double movementModifier[] = { 1, 0, 0, 0, 0, 0, 0, 0, 0 };
+	
 	public static void moveCreature(ActionMove myAM) {
 		int targetX = myAM.initiator.myLocation.x;
 		int targetY = myAM.initiator.myLocation.y;

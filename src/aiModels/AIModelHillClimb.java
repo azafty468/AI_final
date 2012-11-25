@@ -14,19 +14,21 @@ import actions.ActionMove;
  * 
  * Definitely Does not work yet.....
  */
-class PotentialMove {
-	public int xCoordinate, yCoordinate;
-	
-	PotentialMove(){
-	}
-	
-	PotentialMove(int newX, int newY) {
-		xCoordinate = newX;
-		yCoordinate = newY;
-	}
-}
-
 public class AIModelHillClimb extends AIModelEnemy {
+	private class PotentialLocalMove {
+		public int targetX;
+		public int targetY;
+
+		PotentialLocalMove() {
+			
+		}
+		
+		PotentialLocalMove(int newX, int newY) {
+			targetX = newX;
+			targetY = newY;
+		}
+	}
+	
 	protected Board myBoard;
 	protected GameObjectPlayer player;
 	protected GameObjectCreature enemy;
@@ -113,7 +115,7 @@ public class AIModelHillClimb extends AIModelEnemy {
 		//fill in the appropriate heuristic values
 		populateHillValues();
 		
-		PotentialMove bestMove = new PotentialMove();
+		PotentialLocalMove bestMove = new PotentialLocalMove();
 		int closestDistance = -1;
 
 		//Find the square with the lowest heuristic value.  this should really write the values to an array.  
@@ -124,8 +126,8 @@ public class AIModelHillClimb extends AIModelEnemy {
 						(playerLocation.y != enemyLocation.y) &&
 						(playerLocation.x < enemyLocation.x)) { //and in fact is better than the currently occupied square
 					lowestSquareValue = closestDistance;
-					bestMove.xCoordinate = x;
-					bestMove.yCoordinate = y;
+					bestMove.targetX = x;
+					bestMove.targetY = y;
 				}
 			}
 		}
@@ -138,9 +140,9 @@ public class AIModelHillClimb extends AIModelEnemy {
 		
 		//make the move
 		if (foundBetterMove) {
-			enemyLocation.y = bestMove.yCoordinate;
+			enemyLocation.y = bestMove.targetY;
 		}
 		
-		return new ActionMove(bestMove.xCoordinate, bestMove.yCoordinate, enemy);
+		return new ActionMove(bestMove.targetX, bestMove.targetY, enemy);
 	}
 }

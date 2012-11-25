@@ -23,6 +23,7 @@ import javax.swing.JOptionPane;
 import actions.ActionMove;
 import actions.Event;
 import aiModels.*;
+import primary.Constants.PolicyMove;
 import primary.GamePlayTimeKeeper.PlayRate;
 import primary.Point;
 
@@ -147,7 +148,7 @@ public class ApplicationController {
 		}
 
 		GameObjectPlayer myPlayer = ApplicationModel.getInstance().myPlayer;
-		myPlayer.currentAction = new ActionMove(myPlayer.myLocation, myPlayer);
+		myPlayer.currentAction = new ActionMove(myPlayer.myLocation, myPlayer, PolicyMove.NOWHERE);
 		
 		myGameView = GameView.STANDARD;
 		renderTimer = new Timer();
@@ -358,37 +359,46 @@ public class ApplicationController {
 	private void moveCursor(KeyEvent e) {
 		ApplicationModel myModel = ApplicationModel.getInstance();
 		Point myLocation = new Point(myModel.myPlayer.myLocation);
+		PolicyMove myPolicy = PolicyMove.UNKNOWN;
 		
 		if (e.getKeyCode() == KeyEvent.VK_NUMPAD1) {
 			myLocation.x--;
 			myLocation.y++;
+			myPolicy = PolicyMove.DOWNLEFT;
 		}
 		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD3) {
 			myLocation.x++;
 			myLocation.y++;
+			myPolicy = PolicyMove.DOWNRIGHT;
 		}
 		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD9) {
 			myLocation.x++;
 			myLocation.y--;
+			myPolicy = PolicyMove.UPRIGHT;
 		}
 		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD7) {
 			myLocation.x--;
 			myLocation.y--;
+			myPolicy = PolicyMove.UPLEFT;
 		}
 		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD4 || e.getKeyCode() == KeyEvent.VK_LEFT) { //left
 			myLocation.x--;
+			myPolicy = PolicyMove.LEFT;
 		}
 		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD6 || e.getKeyCode() == KeyEvent.VK_RIGHT) { //right
 			myLocation.x++;
+			myPolicy = PolicyMove.RIGHT;
 		}
 		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD8 || e.getKeyCode() == KeyEvent.VK_UP) { //up
 			myLocation.y--;
+			myPolicy = PolicyMove.UP;
 		}
 		else if (e.getKeyCode() == KeyEvent.VK_NUMPAD2 || e.getKeyCode() == KeyEvent.VK_DOWN) { //down
 			myLocation.y++;
+			myPolicy = PolicyMove.DOWN;
 		}
 		
-		ActionMove newAction = new ActionMove(myLocation, myModel.myPlayer);
+		ActionMove newAction = new ActionMove(myLocation, myModel.myPlayer, myPolicy);
 		myModel.myPlayer.currentAction = newAction;
 	}
 
