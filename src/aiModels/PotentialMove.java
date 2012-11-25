@@ -22,7 +22,7 @@ public class PotentialMove {
 	public ArrayList<PotentialDestination> getResults() {
 		PolicyMove localDir = moveDirection;
 		ArrayList<PotentialDestination> localResults = new ArrayList<PotentialDestination>();
-		double pathChance[] = PhysicsEngine.movementModifier;
+		int pathChance[] = PhysicsEngine.movementModifier;
 		for (int counter = 0; counter < 8; counter++) {
 			if (pathChance[counter] > 0) {
 				Point targetP = Constants.outcomeOfMove(localDir, sourcePoint);

@@ -50,6 +50,8 @@ public class AIModelDirectMove extends AIModel {
 				myTarget = ApplicationModel.getInstance().myPlayer;
 		}
 
+		if (myTarget == null)
+			return null;
 
 		ArrayList<PolicyMove> bestMoveList = Constants.populateBestMoveDeterministicList(mySelf.myLocation.x, mySelf.myLocation.y, myTarget.myLocation.x, myTarget.myLocation.y);
 		PolicyMove moveTarget = bestMove(bestMoveList);

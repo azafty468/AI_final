@@ -20,7 +20,7 @@ public class ActionMove extends Action {
 		targetX = newX;
 		targetY = newY;
 		initiator = newInitiator;
-		moveDirection = PolicyMove.UNKNOWN;
+		determineMovePolicy();
 	}
 	
 	public ActionMove(Point targetLocation, GameObjectCreature newInitiator, PolicyMove targetDirection) {
@@ -29,11 +29,40 @@ public class ActionMove extends Action {
 		targetX = targetLocation.x;
 		targetY = targetLocation.y;
 		initiator = newInitiator;
-		moveDirection = targetDirection;
+		if (targetDirection == PolicyMove.UNKNOWN)
+			determineMovePolicy();
+		else
+			moveDirection = targetDirection;
 	}
 
 	public void processAction() {
 		PhysicsEngine.moveCreature(this);
+	}
+	
+	private void determineMovePolicy() {
+		int sourceX = initiator.myLocation.x;
+		int sourceY = initiator.myLocation.y;
+		
+		if (sourceX > targetX && sourceY < targetY) 
+			moveDirection = PolicyMove.DOWNLEFT;
+		else if (sourceX == targetX && sourceY < targetY) 
+			moveDirection = PolicyMove.DOWN;
+		else if (sourceX > targetX && sourceY == targetY) 
+			moveDirection = PolicyMove.LEFT;
+		else if (sourceX > targetX && sourceY > targetY) 
+			moveDirection = PolicyMove.UPLEFT;
+		else if (sourceX == targetX && sourceY > targetY) 
+			moveDirection = PolicyMove.UP;
+		else if (sourceX < targetX && sourceY == targetY) 
+			moveDirection = PolicyMove.RIGHT;
+		else if (sourceX < targetX && sourceY < targetY) 
+			moveDirection = PolicyMove.DOWNRIGHT;
+		else if (sourceX < targetX && sourceY > targetY) 
+			moveDirection = PolicyMove.UPRIGHT;
+		else if (sourceX == targetX && sourceY == targetY) 
+			moveDirection = PolicyMove.NOWHERE;
+		else 
+			moveDirection = PolicyMove.UNKNOWN;
 	}
 
 	@Override

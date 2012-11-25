@@ -1,39 +1,64 @@
 package primary;
 
+import java.util.ArrayList;
+
 import primary.Constants.PolicyMove;
 import view.ApplicationView;
 import gameObjects.*;
 import gameObjects.GameObject.GameObjectType;
 import actions.*;
+import aiModels.PotentialDestination;
+import aiModels.PotentialMove;
 
 public class PhysicsEngine {
 	//change this for non-deterministic worlds
 	public static boolean deterministicMovement = true;
 	
 	//the overall multiplier for non-deterministic worlds.  the first square is straight, with each next number being the chance to the right
-	// the last square is the chance to stay still
-	public static double movementModifier[] = { 1, 0, 0, 0, 0, 0, 0, 0, 0 };
+	// the last square is the chance to stay still.  these are normalized when being used
+	public static int movementModifier[] = { 100, 0, 0, 0, 0, 0, 0, 0, 0 };
 	
 	public static void moveCreature(ActionMove myAM) {
 		int targetX = myAM.initiator.myLocation.x;
 		int targetY = myAM.initiator.myLocation.y;
-
+		
 		if (deterministicMovement) {
 			targetX = myAM.initiator.myLocation.x;
 			targetY = myAM.initiator.myLocation.y;
+
+			if (targetX < myAM.targetX) {
+				targetX++;
+			}
+			if (targetX > myAM.targetX) {
+				targetX--;
+			}
+			if (targetY < myAM.targetY) {
+				targetY++;
+			}		
+			if (targetY > myAM.targetY) {
+				targetY--;
+			}
 		}
-		
-		if (targetX < myAM.targetX) {
-			targetX++;
-		}
-		if (targetX > myAM.targetX) {
-			targetX--;
-		}
-		if (targetY < myAM.targetY) {
-			targetY++;
-		}		
-		if (targetY > myAM.targetY) {
-			targetY--;
+		else { // non deterministic movement
+			PotentialMove testMove = new PotentialMove(myAM.moveDirection, myAM.initiator.myLocation.x, myAM.initiator.myLocation.y);
+			
+			ArrayList<PotentialDestination> myTestDest = testMove.getResults();
+			if (myTestDest == null) 
+				return;
+			int totalPool = 0;
+			for (int i = 0; i < myTestDest.size(); i++)
+				totalPool += myTestDest.get(i).expectedArrivalRate;
+			int randomValue = ApplicationController.getGenerator().nextInt(totalPool);
+
+			for (int i = 0; i < myTestDest.size(); i++) {
+				randomValue -= myTestDest.get(i).expectedArrivalRate;
+				if (randomValue <= 0) { // choose this movement
+					targetX = myTestDest.get(i).targetX;
+					targetY = myTestDest.get(i).targetY;
+					break;
+				}
+			}
+			
 		}
 		
 		ApplicationModel myModel = ApplicationModel.getInstance();
@@ -51,6 +76,9 @@ public class PhysicsEngine {
 			myAM.setIsDone(true);
 
 			myView.displayMessage("Error, while moving '" + myAM.initiator.name + "' encountered a square blocked by '" + tmp.name + "'");
+			
+			if (tmp.name.equals(myModel.myBoard.templateBoundaryWall.name))
+				myAM.initiator.wallCollisions++;
 		}
 		else {
 			if ((tmp.getType() == GameObjectType.TOKEN) && (myAM.initiator.getType() == GameObjectType.PLAYER)) {

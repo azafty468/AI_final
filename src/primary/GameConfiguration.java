@@ -17,6 +17,7 @@ public class GameConfiguration {
 	public boolean hasInternalWalls;
 	private int autoRepeatCounter;
 	public boolean onAutoRepeat;
+	public int nonDeterministicMovement [] = { 60, 10, 10, 5, 5, 5, 5, 0, 0 };
 	
 	/**
 	 * 

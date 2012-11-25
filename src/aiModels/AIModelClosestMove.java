@@ -1,7 +1,10 @@
 package aiModels;
 
+import java.util.ArrayList;
+
 import gameObjects.*;
 import primary.ApplicationModel;
+import primary.Constants;
 import primary.Point;
 import primary.Constants.PolicyMove;
 import view.PrintListNode;
@@ -58,19 +61,27 @@ public class AIModelClosestMove extends AIModel {
 		if (latestTarget == null)
 			return null;
 		
-		int x, y;
-		x = mySelf.myLocation.x;
-		y = mySelf.myLocation.y;
-		if (x < latestTarget.myLocation.x)
-			x++;
-		if (x > latestTarget.myLocation.x)
-			x--;
-		if (y < latestTarget.myLocation.y)
-			y++;
-		if (y > latestTarget.myLocation.y)
-			y--;
+		ArrayList<PolicyMove> bestMoveList = Constants.populateBestMoveDeterministicList(mySelf.myLocation.x, mySelf.myLocation.y, latestTarget.myLocation.x, latestTarget.myLocation.y);
+		PolicyMove moveTarget = bestMove(bestMoveList);
 		
-		return new ActionMove(new Point(x, y), mySelf, PolicyMove.UNKNOWN);
+		if (moveTarget == null)
+			return null;
+		
+		Point targetP = Constants.outcomeOfMove(moveTarget, mySelf.myLocation);
+		
+		return new ActionMove(targetP, mySelf, moveTarget);
+	}
+	
+	private PolicyMove bestMove(ArrayList<PolicyMove> bestList) {
+		for (int i = 0; i < bestList.size(); i++) {
+			PolicyMove testPolicy = bestList.get(i);
+			Point targetPoint = Constants.outcomeOfMove(testPolicy, mySelf.myLocation);
+			
+			if (!ApplicationModel.getInstance().myBoard.myGO[targetPoint.y][targetPoint.x].canBlockMovement)
+				return testPolicy;
+		}
+		
+		return null;
 	}
 	
 	@Override
@@ -80,7 +91,7 @@ public class AIModelClosestMove extends AIModel {
 
 	@Override
 	public String describeActionPlan() {
-		String retval = "AIModelClosestMove - locate the Token with shortest distance.";
+		String retval = "AIModelClosestMove - locate the Token with shortest distance with lookahead of 1 square";
 		
 		if (latestTarget != null) 
 		  retval += "  Token: " + latestTarget.name + " at (" + latestTarget.myLocation.x + ", " + latestTarget.myLocation.y + ")";

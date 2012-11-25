@@ -26,7 +26,7 @@ public class Board {
 	public ArrayList<GameObjectToken> myTokens;
 	private GameObjectToken templateStrawberryToken;
 	private GameObjectBackground templateBackgroundPit;
-	private GameObjectBackground templateBoundaryWall;
+	public GameObjectBackground templateBoundaryWall;
 	private GameObjectBackground templateBoundaryOpen;
 	public GameObjectBackground templateBoundaryHidden;
 	public int startingBerries;

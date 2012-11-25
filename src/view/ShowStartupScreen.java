@@ -145,7 +145,6 @@ public class ShowStartupScreen extends JFrame {
 	    redGhostAICombo.addItem("AIModelClosestMove");
 	    redGhostAICombo.addItem("AIModelDijkstraAlgorithm");
 	    redGhostAICombo.addItem("AIModelDirectMove");
-	    redGhostAICombo.addItem("AIModelEnemy");
 	    redGhostAICombo.addItem("AIModelHillClimb");
 	    redGhostAICombo.addItem("AIModelPlayer");
 	    redGhostAICombo.addItem("AIModelBasicUtility");
@@ -159,7 +158,6 @@ public class ShowStartupScreen extends JFrame {
 	    blueGhostAICombo.addItem("AIModelClosestMove");
 	    blueGhostAICombo.addItem("AIModelDijkstraAlgorithm");
 	    blueGhostAICombo.addItem("AIModelDirectMove");
-	    blueGhostAICombo.addItem("AIModelEnemy");
 	    blueGhostAICombo.addItem("AIModelHillClimb");
 	    blueGhostAICombo.addItem("AIModelPlayer");
 	    blueGhostAICombo.addItem("AIModelBasicUtility");
@@ -178,12 +176,11 @@ public class ShowStartupScreen extends JFrame {
 	    playerAICombo.addItem("AIModelClosestMove");
 	    playerAICombo.addItem("AIModelDijkstraAlgorithm");
 	    playerAICombo.addItem("AIModelDirectMove");
-	    playerAICombo.addItem("AIModelEnemy");
 	    playerAICombo.addItem("AIModelHillClimb");
 	    playerAICombo.addItem("AIModelPlayer");
 	    playerAICombo.addItem("AIModelBasicUtility");
 	    playerAICombo.addItem("AIModelLearning");
-	    playerAICombo.setSelectedIndex(7);
+	    playerAICombo.setSelectedIndex(6);
 	    contentPane.add(playerAICombo);
 	    
 	    JLabel lblRepeatCounter = new JLabel("Repeat Counter");

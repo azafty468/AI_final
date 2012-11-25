@@ -37,7 +37,7 @@ import xml.Message;
 public class ApplicationController {
 	public static enum GameView { STANDARD, UTILITY, POLICY, INFORMATIONZONE; }
 	
-	static Random generator = null;
+	private static Random generator = null;
 	static ApplicationController thisController = null;
 	private Timer renderTimer;	// our time keeper
 	private TimerTask renderTask; // the main render and update task.
@@ -146,6 +146,16 @@ public class ApplicationController {
 				myTimeKeeper.setPause(false);
 			}
 		}
+		
+		if (myLoadConfiguration.deterministicWorld) {
+			PhysicsEngine.deterministicMovement = true;
+			PhysicsEngine.movementModifier = new int[] { 100, 0, 0, 0, 0, 0, 0, 0, 0 };
+		}
+		else {
+			PhysicsEngine.deterministicMovement = false;
+			PhysicsEngine.movementModifier = myLoadConfiguration.nonDeterministicMovement;			
+		}
+		
 
 		GameObjectPlayer myPlayer = ApplicationModel.getInstance().myPlayer;
 		myPlayer.currentAction = new ActionMove(myPlayer.myLocation, myPlayer, PolicyMove.NOWHERE);
@@ -329,7 +339,8 @@ public class ApplicationController {
 					"deterministic='" + myLoadConfiguration.deterministicWorld + "' " +
 					"visible='" + myLoadConfiguration.visibleWorld + "' " +
 					"informationZones='" + myLoadConfiguration.informativeZones + "' " +
-					"stepsTaken='" + myPlayer.stepsTaken  + "'>" + Constants.newline);
+					"stepsTaken='" + myPlayer.stepsTaken + "' " + 
+					"wallCollisions='" + myPlayer.wallCollisions + "'>" + Constants.newline);
 			
 			for (int i = 0; i < loggedEvents.size(); i++)
 				myOut.write(loggedEvents.get(i) + Constants.newline);
