@@ -19,6 +19,11 @@ public class AIModelDijkstraAlgorithm extends AIModel {
 	}
 	
 	@Override
+	public String describeActionPlan() { 
+		return "Dijkstra Based Movement"; 
+	}
+	
+	@Override
 	public void assignToCreature(GameObjectCreature newSelf) {
 		enemy = newSelf;
 		enemy.myAIModel = this;

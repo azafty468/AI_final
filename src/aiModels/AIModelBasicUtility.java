@@ -84,39 +84,6 @@ public class AIModelBasicUtility extends AIModel {
 	public String describeActionPlan() { 
 		return "Simple Utility-based AI"; 
 	}
-	/*
-	private Point getDirectionOfPolicy(PolicyMove myDirection) {
-		Point myPoint = new Point(mySelf.myLocation);
-
-		//ignore unknown
-		if (myDirection == PolicyMove.LEFT)
-			myPoint.x--;
-		if (myDirection == PolicyMove.DOWNLEFT) {
-			myPoint.y++;
-			myPoint.x--;
-		}
-		if (myDirection == PolicyMove.DOWN)
-			myPoint.y++;
-		if (myDirection == PolicyMove.DOWNRIGHT) {
-			myPoint.x++;
-			myPoint.y++;
-		}
-		if (myDirection == PolicyMove.RIGHT)
-			myPoint.x++;
-		if (myDirection == PolicyMove.UPRIGHT) {
-			myPoint.x++;
-			myPoint.y--;
-		}
-		if (myDirection == PolicyMove.UP)
-			myPoint.y--;
-		if (myDirection == PolicyMove.UPLEFT) {
-			myPoint.y--;
-			myPoint.x--;
-		}
-		
-		return myPoint;
-	}
-	*/
 	
 	private void determinePolicies() {
 		for (int y = 0; y < myPolicies.length; y++) 
@@ -236,19 +203,8 @@ public class AIModelBasicUtility extends AIModel {
 			}
 		myPolicies = tmpPN;
 	}
-	
-	// this version has the problem where local maximum's are causing the guy to get stuck due to averaging...
-	/*
-	private void addPolicyInterim(PolicyInterim localPI, PolicyNode testPN) {
-		if (testPN.unreachableSquare)
-			return;
-		
-		localPI.utility += testPN.utility;
-		localPI.count++;
-	}
-	*/
-	// what about a future discounting
-	/* nope, still not good enough
+
+	/* Update, setting the utilities to be a double, values are large enough to travel across the map */
 	private void addPolicyInterim(PolicyInterim localPI, PolicyNode testPN) {
 		if (testPN.unreachableSquare)
 			return;
@@ -256,8 +212,8 @@ public class AIModelBasicUtility extends AIModel {
 		localPI.utility += testPN.utility * 0.9;
 		localPI.count++;
 	}
-	*/
-	// let's try just grabbing the best option
+
+	/* let's try just grabbing the best option
 	private void addPolicyInterim(PolicyInterim localPI, PolicyNode testPN) {
 		if (testPN.unreachableSquare)
 			return;
@@ -266,7 +222,7 @@ public class AIModelBasicUtility extends AIModel {
 			localPI.utility = (testPN.utility * 0.9);
 		
 		localPI.count = 1;
-	}
+	}*/
 	
 	@Override
 	public void setAdvancedView(PrintListNode[][] myPL) {
@@ -275,9 +231,10 @@ public class AIModelBasicUtility extends AIModel {
 		
 		for (int y = 0; y < myPolicies.length; y++) 
 			for (int x = 0; x < myPolicies[y].length; x++)
-				if (myPolicies[y][x] != null)
-					if (!myPolicies[y][x].unreachableSquare)
-						myPL[y][x].setUtilityValue((int)myPolicies[y][x].utility);
+				if (visibleSquares[y][x])
+					if (myPolicies[y][x] != null)
+						if (!myPolicies[y][x].unreachableSquare)
+							myPL[y][x].setUtilityValue((int)myPolicies[y][x].utility);
 	}
 
 	@Override
@@ -287,9 +244,10 @@ public class AIModelBasicUtility extends AIModel {
 		
 		for (int y = 0; y < myPolicies.length; y++) 
 			for (int x = 0; x < myPolicies[y].length; x++)
-				if (myPolicies[y][x] != null)
-					if (!myPolicies[y][x].unreachableSquare)
-						myPL[y][x].setPolicyValue(myPolicies[y][x].myPolicy);
+				if (visibleSquares[y][x])
+					if (myPolicies[y][x] != null)
+						if (!myPolicies[y][x].unreachableSquare)
+							myPL[y][x].setPolicyValue(myPolicies[y][x].myPolicy);
 	} 
 	
 }

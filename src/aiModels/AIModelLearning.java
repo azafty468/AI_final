@@ -269,9 +269,10 @@ public class AIModelLearning extends AIModel {
 		
 		for (int y = 0; y < myPolicies.length; y++) 
 			for (int x = 0; x < myPolicies[y].length; x++)
-				if (myPolicies[y][x] != null)
-					if (!myPolicies[y][x].unreachableSquare)
-						myPL[y][x].setUtilityValue((int)myPolicies[y][x].utility);
+				if (visibleSquares[y][x])
+					if (myPolicies[y][x] != null)
+						if (!myPolicies[y][x].unreachableSquare)
+							myPL[y][x].setUtilityValue((int)myPolicies[y][x].utility);
 	}
 
 	@Override
@@ -281,9 +282,10 @@ public class AIModelLearning extends AIModel {
 		
 		for (int y = 0; y < myPolicies.length; y++) 
 			for (int x = 0; x < myPolicies[y].length; x++)
-				if (myPolicies[y][x] != null)
-					if (!myPolicies[y][x].unreachableSquare)
-						myPL[y][x].setPolicyValue(myPolicies[y][x].myPolicy);
+				if (visibleSquares[y][x])
+					if (myPolicies[y][x] != null)
+						if (!myPolicies[y][x].unreachableSquare)
+							myPL[y][x].setPolicyValue(myPolicies[y][x].myPolicy);
 	} 
 	
 	/**

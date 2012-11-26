@@ -53,6 +53,12 @@ public class ApplicationModel {
 		myBoard = new Board(width, height);
 		myPlayer.setXY(5, 5);
 		myBoard.generateRandomMap();
+		
+		if (redGhost != null)
+			redGhost.myAIModel.setInitialValues(true);
+		if (blueGhost != null)
+			blueGhost.myAIModel.setInitialValues(true);
+		myPlayer.myAIModel.setInitialValues(ApplicationController.getInstance().myLoadConfiguration.visibleWorld);
 		return true;
 	}
 	
@@ -62,7 +68,6 @@ public class ApplicationModel {
 
 	public boolean initialize(Node inMessage) {
 		Node localNode = inMessage.getFirstChild();
-		String readAI;
 		AIModel readModel;
 		GameConfiguration myConfig = ApplicationController.getInstance().myLoadConfiguration;
 		
@@ -94,6 +99,12 @@ public class ApplicationModel {
 				myBoard = new Board(localNode);
 			}
 		}
+		
+		if (redGhost != null)
+			redGhost.myAIModel.setInitialValues(true);
+		if (blueGhost != null)
+			blueGhost.myAIModel.setInitialValues(true);
+		myPlayer.myAIModel.setInitialValues(ApplicationController.getInstance().myLoadConfiguration.visibleWorld);
 		return true;
 	}
 
@@ -101,8 +112,6 @@ public class ApplicationModel {
 		try {
 			BufferedImage imgBasePlayer = ImageIO.read(new File("images" + Constants.fileDelimiter + "Pacman.bmp"));
 			myPlayer.setGraphics(ApplicationView.convertImageToLocalSettings(imgBasePlayer));
-			//myPlayer.overrideColor = true;
-			//myPlayer.baseColor = new Color(ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255), ApplicationController.getGenerator().nextInt(255));
 			
 			if (redGhost != null) {
 				BufferedImage imgBaseRedGhost = ImageIO.read(new File("images" + Constants.fileDelimiter + "RedGhost.bmp"));
@@ -138,7 +147,7 @@ public class ApplicationModel {
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				if (myBoard.myGO[y][x].hasBeenSeen) {
+				if (myPlayer.myAIModel.visibleSquares[y][x]) {
 					if ((x == myPlayer.myLocation.x) && (y == myPlayer.myLocation.y))
 						printList[y][x] = myPlayer.generateDisplayNode();
 					else if(redGhost != null && (x == redGhost.myLocation.x && y == redGhost.myLocation.y))

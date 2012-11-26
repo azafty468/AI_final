@@ -62,7 +62,7 @@ public class GraphicsCanvas extends Canvas {
 						 * to display a policy and utility for a GameObject not visible yet. 
 						 */
 						
-						if (!printList[y][x].isHidden) {
+//						if (!printList[y][x].isHidden) {
 							if (printList[y][x].hasUtilityValue) {
 								bkG.setColor(Color.LIGHT_GRAY);
 								bkG.drawString(String.valueOf(printList[y][x].utilityValue), x*Constants.baseImageSize+12, y*Constants.baseImageSize+24);
@@ -78,7 +78,7 @@ public class GraphicsCanvas extends Canvas {
 								if (printList[y][x].isPungent)
 									bkG.drawString("Pungent", x*Constants.baseImageSize+2, y*Constants.baseImageSize+20);
 							}
-						}
+//						}
 					}
 				}
 			}

@@ -16,9 +16,8 @@ public class PrintListNode {
 	public PolicyMove myPolicyMove;
 	public boolean isBreezy;
 	public boolean isPungent;
-	public boolean isHidden;
-	
-	public PrintListNode(BufferedImage newImage, boolean overrideBase, Color newColor, boolean hasBeenSeen) {
+
+	public PrintListNode(BufferedImage newImage, boolean overrideBase, Color newColor) {
 		myImage = newImage;
 		overrideColor = overrideBase;
 		baseColor = newColor;
@@ -28,7 +27,6 @@ public class PrintListNode {
 		hasInformationZone = false;
 		isBreezy = false;
 		isPungent = false;
-		isHidden = hasBeenSeen;
 	}
 	
 	public void setInformationZone(boolean breezy, boolean pungent) {

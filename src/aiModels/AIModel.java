@@ -1,11 +1,39 @@
 package aiModels;
 
+import primary.ApplicationController;
+import primary.ApplicationModel;
+import primary.Point;
 import view.PrintListNode;
+import gameObjects.Board;
 import gameObjects.GameObject;
 import gameObjects.GameObjectCreature;
 import actions.ActionMove;
 
 public abstract class AIModel {
+	public boolean visibleSquares[][];
+	
+	public void setInitialValues(boolean initialValue) {
+		Board localBoard = ApplicationModel.getInstance().myBoard;
+		visibleSquares = new boolean[localBoard.height][localBoard.width];
+		for (int y = 0; y < visibleSquares.length; y++)
+			for (int x = 0; x < visibleSquares[y].length; x++)
+				visibleSquares[y][x] = initialValue;
+	}
+	
+	public void setVisibleSquares(Point centerPoint) {
+		if (ApplicationController.getInstance().myLoadConfiguration.visibleWorld)
+			return;
+		
+		int sightRange = ApplicationController.VISIBILITYRANGE;
+		
+		for (int y = centerPoint.y - sightRange; y <= (centerPoint.y + sightRange); y++)
+			for (int x = centerPoint.x - sightRange; x <= (centerPoint.x + sightRange); x++) {
+				if (x >= 0 && x < visibleSquares[0].length && y >= 0 && y < visibleSquares.length) {
+					visibleSquares[y][x] = true;
+				}
+			}
+	}
+	
 	
 	/**
 	 * This action returns the next move to be done.  However, this doesn't limit the AI Model

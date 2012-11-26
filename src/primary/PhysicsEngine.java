@@ -93,7 +93,7 @@ public class PhysicsEngine {
 			
 			// make the square and all around it visible
 			if (myAM.initiator.getType() == GameObjectType.PLAYER)
-				myModel.myBoard.setVisibleSquares(myAM.initiator.myLocation);
+				myAM.initiator.myAIModel.setVisibleSquares(myAM.initiator.myLocation);
 			
 			if (myModel.myBoard.myGO[targetY][targetX].name.equals("Pit"))
 				ApplicationController.getInstance().currentEvents.push(new EventFallenInPit(myAM.initiator));

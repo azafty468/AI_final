@@ -24,7 +24,6 @@ public class GameObject {
 	public String name;
 	public boolean isBreezy;
 	public boolean isPungent;
-	public boolean hasBeenSeen;
 	
 	public GameObject() {
 		myGraphics = null;
@@ -34,21 +33,20 @@ public class GameObject {
 		myType = GameObjectType.GENERAL;
 		isBreezy = false;
 		isPungent = false;
-		hasBeenSeen = ApplicationController.getInstance().myLoadConfiguration.visibleWorld;
 	}
 	
 	public GameObjectType getType() { return myType; }
 	
 	public PrintListNode generateDisplayNode() {
 		if (ApplicationController.getInstance().myGameView == ApplicationController.GameView.INFORMATIONZONE) {
-			PrintListNode retVal = new PrintListNode(myGraphics, overrideColor, baseColor, !hasBeenSeen);
+			PrintListNode retVal = new PrintListNode(myGraphics, overrideColor, baseColor);
 			
 			if (isBreezy || isPungent) 
 				retVal.setInformationZone(isBreezy,  isPungent);
 			return retVal;
 		}
 		else
-			return new PrintListNode(myGraphics, overrideColor, baseColor, !hasBeenSeen);
+			return new PrintListNode(myGraphics, overrideColor, baseColor);
 	}
 	
 	public void setXY(int newX, int newY) {

@@ -106,15 +106,15 @@ public class AIModelClosestMove extends AIModel {
 		
 		for (int y = 0; y < allTokens.length; y++) 
 			for (int x = 0; x < allTokens[y].length; x++)
-				if (allTokens[y][x] != null) {
-					if (latestTarget == null) 
-						myPL[y][x].setUtilityValue(50);					
-					else if (allTokens[y][x].equals(latestTarget))
-						myPL[y][x].setUtilityValue(100);
-					else
-						myPL[y][x].setUtilityValue(50);
-				}
-				
+				if (visibleSquares[y][x])
+					if (allTokens[y][x] != null) {
+						if (latestTarget == null) 
+							myPL[y][x].setUtilityValue(50);					
+						else if (allTokens[y][x].equals(latestTarget))
+							myPL[y][x].setUtilityValue(100);
+						else
+							myPL[y][x].setUtilityValue(50);
+					}
 	}
 
 }

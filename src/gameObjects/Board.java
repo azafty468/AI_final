@@ -388,18 +388,4 @@ public class Board {
 			}
 		}
 	}
-	
-	public void setVisibleSquares(Point centerPoint) {
-		if (ApplicationController.getInstance().myLoadConfiguration.visibleWorld)
-			return;
-		
-		int sightRange = ApplicationController.VISIBILITYRANGE;
-		
-		for (int y = centerPoint.y - sightRange; y <= (centerPoint.y + sightRange); y++)
-			for (int x = centerPoint.x - sightRange; x <= (centerPoint.x + sightRange); x++) {
-				if (x >= 0 && x < width && y >= 0 && y < height) {
-					myGO[y][x].hasBeenSeen = true;
-				}
-			}
-	}
 }
