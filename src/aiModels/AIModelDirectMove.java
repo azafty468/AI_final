@@ -89,7 +89,7 @@ public class AIModelDirectMove extends AIModel {
 	
 	@Override
 	public String describeActionPlan() {
-		String retval = "AIModelDirectMove - Move directly to the target object with look ahead of 1 square for blocking squares only";
+		String retval = "Direct Move - Move directly to the target object with look ahead of 1 square for blocking squares only";
 		
 		if (myTarget != null) 
 			retval += "  Target: " + myTarget.name + " at (" + myTarget.myLocation.x + ", " + myTarget.myLocation.y + ")";

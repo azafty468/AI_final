@@ -21,6 +21,7 @@ public class EventPickupToken extends Event {
 	@Override
 	public void processEvent() {
 		localPlayer.setPointsGained(localToken.pointValue);
+		localPlayer.berriesPickedUp++;
 		
 		ApplicationController.getInstance().loggedEvents.add(writeLogString());
 		
@@ -38,7 +39,6 @@ public class EventPickupToken extends Event {
 			ApplicationModel.getInstance().redGhost.clearTarget(localToken);
 		
 		if (ApplicationModel.getInstance().myBoard.myTokens.size() == 0) {
-			//TODO: end game reached.  What to print?
 			ApplicationView.getInstance().displayMessage("Congratulations, you have collected all the tokens in " + localPlayer.stepsTaken + " moves ending with " + localPlayer.getPointsGained() + " points.  The game is over!");
 			ApplicationController.getInstance().finishGame("");
 		}

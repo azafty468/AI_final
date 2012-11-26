@@ -13,6 +13,7 @@ public class GameObjectCreature extends GameObject {
 	public Action currentAction;
 	public int stepsTaken;
 	public int touchedByGhost;
+	public int berriesPickedUp;
 	public static enum CreatureAlliance { PLAYER, GHOST, UNDEFINED; }
 	public CreatureAlliance myAlliance;	
 	public int pitFalls;
@@ -28,6 +29,7 @@ public class GameObjectCreature extends GameObject {
 		touchedByGhost = 0;
 		pitFalls = 0;
 		wallCollisions = 0;
+		berriesPickedUp = 0;
 		myAlliance = CreatureAlliance.GHOST;
 	}
 	

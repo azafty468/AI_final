@@ -22,6 +22,11 @@ public class EventGhostTouchPlayer extends Event {
 		ApplicationController.getInstance().loggedEvents.add(writeLogString());
 		touchee.touchedByGhost++;
 		ApplicationView.getInstance().displayMessage("Player '" + touchee.name + "' has been touched by '" + toucher.name + "'." );
+		
+		if (ApplicationController.getInstance().myLoadConfiguration.killOnGhostTouch) {
+			ApplicationView.getInstance().displayMessage("Game Over, touched by ghost." );
+			ApplicationController.getInstance().finishGame("touched by ghost");
+		}
 	}
 
 	@Override

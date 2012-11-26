@@ -90,6 +90,7 @@
     <xs:attribute type="xs:boolean" name="deterministic"/>
     <xs:attribute type="xs:boolean" name="visible"/>
     <xs:attribute type="xs:boolean" name="informationZones"/>
+    <xs:attribute type="xs:boolean" name="ghostKills"/>
   </xs:complexType>
 </xs:element>
 

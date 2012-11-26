@@ -17,7 +17,8 @@ public class GameConfiguration {
 	public boolean hasInternalWalls;
 	private int autoRepeatCounter;
 	public boolean onAutoRepeat;
-	public int nonDeterministicMovement [] = { 60, 10, 10, 5, 5, 5, 5, 0, 0 };
+	public int nonDeterministicMovement [] = { 80, 10, 10, 5, 5, 0, 0, 0, 0 };
+	public boolean killOnGhostTouch;
 	
 	/**
 	 * 
@@ -26,7 +27,7 @@ public class GameConfiguration {
 	 * @param hasDeterministicWorld
 	 * @param hasInformativeZones
 	 */
-	public GameConfiguration(boolean hasVisibleWorld, boolean hasDeterministicWorld, boolean hasInformativeZones, boolean hasInternalWalls) {
+	public GameConfiguration(boolean hasVisibleWorld, boolean hasDeterministicWorld, boolean hasInformativeZones, boolean hasInternalWalls, boolean hasKills) {
 		visibleWorld = hasVisibleWorld;
 		deterministicWorld = hasDeterministicWorld;
 		randomlyGenerateWorld = true;
@@ -36,6 +37,7 @@ public class GameConfiguration {
 		this.hasInternalWalls = hasInternalWalls; 
 		autoRepeatCounter = 1;
 		onAutoRepeat = false;
+		killOnGhostTouch = hasKills;
 	}
 	
 	public static AIModel getAIModel(String aiName) {

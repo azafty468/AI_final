@@ -288,7 +288,8 @@ public class ApplicationController {
 			myOut.write("<Game automatePlayer='" + (!myLoadConfiguration.isHumanControlled) + "' " +
 					"deterministic='" + myLoadConfiguration.deterministicWorld + "' " +
 					"visible='" + myLoadConfiguration.visibleWorld + "' " +
-					"informationZones='" + myLoadConfiguration.informativeZones + "'>" + Constants.newline);
+					"informationZones='" + myLoadConfiguration.informativeZones + "' " +
+					"ghostKills='" + myLoadConfiguration.killOnGhostTouch + "'>" + Constants.newline);
 			ApplicationModel.getInstance().writeToXMLFile(myOut);
 			myOut.write("</Game>");
 			myOut.close();
@@ -325,6 +326,7 @@ public class ApplicationController {
 				myOut.write("finish='abort' reason='" + terminateReason + "' ");
 
 			myOut.write("availableBerries='" + ApplicationModel.getInstance().myBoard.startingBerries + "' " +
+				"acquiredBerries='" + myPlayer.berriesPickedUp + "' " +
 				"finalScore='" + myPlayer.getPointsGained() + "' " +
 				"ghostTouches='" + myPlayer.touchedByGhost  + "' " +
 				"pitFalls='" + myPlayer.pitFalls + "' " + 
@@ -339,6 +341,7 @@ public class ApplicationController {
 					"deterministic='" + myLoadConfiguration.deterministicWorld + "' " +
 					"visible='" + myLoadConfiguration.visibleWorld + "' " +
 					"informationZones='" + myLoadConfiguration.informativeZones + "' " +
+					"ghostKills='" + myLoadConfiguration.killOnGhostTouch + "' " +
 					"stepsTaken='" + myPlayer.stepsTaken + "' " + 
 					"wallCollisions='" + myPlayer.wallCollisions + "'>" + Constants.newline);
 			
@@ -416,6 +419,10 @@ public class ApplicationController {
 	public void processAIPhase() {
 		if (ApplicationModel.getInstance().myPlayer != null) {
 			if (ApplicationModel.getInstance().myPlayer.currentAction == null) {
+				if (ApplicationModel.getInstance().myPlayer.stepsTaken > 1000) {
+					ApplicationView.getInstance().displayMessage("Maximum number of moves exceeded, game exiting with failure");
+					finishGame("error, exceeded maximum number of moves");
+				}
 				ApplicationModel.getInstance().myPlayer.planNextMove();
 			}
 		}

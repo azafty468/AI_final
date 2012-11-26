@@ -48,7 +48,7 @@ public class ShowStartupScreen extends JFrame {
 	ImageIcon logo;
 	JLabel pastRunsLabel;
 	PastRunsJPanel myPastRunsJPanel;
-	JCheckBox chckbxInteriorWalls, chckbxFullyVisibleWorld, chckbxRedGhost, chckbxBlueGhost, chckbxDeterministicMove;
+	JCheckBox chckbxInteriorWalls, chckbxFullyVisibleWorld, chckbxRedGhost, chckbxBlueGhost, chckbxDeterministicMove, chckbxGhostKills;
 	JComboBox redGhostAICombo, blueGhostAICombo, playerAICombo;
 	private JTextField repeatCounterTextField;
 
@@ -113,13 +113,13 @@ public class ShowStartupScreen extends JFrame {
 	    	    
 	    chckbxInteriorWalls = new JCheckBox("Interior Walls");
 	    chckbxInteriorWalls.setFont(new Font("Tahoma", Font.PLAIN, 10));
-	    chckbxInteriorWalls.setBounds(581, 356, 116, 23);
+	    chckbxInteriorWalls.setBounds(584, 341, 116, 23);
 	    chckbxInteriorWalls.setSelected(true);
 	    contentPane.add(chckbxInteriorWalls);
 	    
 	    chckbxFullyVisibleWorld = new JCheckBox("Visible World");
 	    chckbxFullyVisibleWorld.setFont(new Font("Tahoma", Font.PLAIN, 10));
-	    chckbxFullyVisibleWorld.setBounds(581, 330, 116, 23);
+	    chckbxFullyVisibleWorld.setBounds(584, 315, 116, 23);
 	    chckbxFullyVisibleWorld.setSelected(true);
 	    contentPane.add(chckbxFullyVisibleWorld);
 	    
@@ -135,9 +135,14 @@ public class ShowStartupScreen extends JFrame {
 	    
 	    chckbxDeterministicMove = new JCheckBox("Deterministic Move");
 	    chckbxDeterministicMove.setFont(new Font("Tahoma", Font.PLAIN, 10));
-	    chckbxDeterministicMove.setBounds(581, 304, 116, 23);
+	    chckbxDeterministicMove.setBounds(584, 289, 116, 23);
 	    chckbxDeterministicMove.setSelected(true);
 	    contentPane.add(chckbxDeterministicMove);
+	    
+	    chckbxGhostKills = new JCheckBox("Ghost Kills");
+	    chckbxGhostKills.setFont(new Font("Tahoma", Font.PLAIN, 10));
+	    chckbxGhostKills.setBounds(584, 367, 116, 23);
+	    contentPane.add(chckbxGhostKills);
 	    
 	    redGhostAICombo = new JComboBox();
 	    redGhostAICombo.setFont(new Font("Tahoma", Font.PLAIN, 10));
@@ -167,12 +172,12 @@ public class ShowStartupScreen extends JFrame {
 	    
 	    JLabel lblPlayersAi = new JLabel("Players AI Model");
 	    lblPlayersAi.setFont(new Font("Tahoma", Font.PLAIN, 10));
-	    lblPlayersAi.setBounds(500, 405, 86, 14);
+	    lblPlayersAi.setBounds(491, 404, 86, 14);
 	    contentPane.add(lblPlayersAi);
 	    
 	    playerAICombo = new JComboBox();
 	    playerAICombo.setFont(new Font("Tahoma", Font.PLAIN, 10));
-	    playerAICombo.setBounds(593, 402, 145, 20);
+	    playerAICombo.setBounds(584, 401, 145, 20);
 	    playerAICombo.addItem("AIModelClosestMove");
 	    playerAICombo.addItem("AIModelDijkstraAlgorithm");
 	    playerAICombo.addItem("AIModelDirectMove");
@@ -185,12 +190,12 @@ public class ShowStartupScreen extends JFrame {
 	    
 	    JLabel lblRepeatCounter = new JLabel("Repeat Counter");
 	    lblRepeatCounter.setFont(new Font("Tahoma", Font.PLAIN, 10));
-	    lblRepeatCounter.setBounds(500, 432, 82, 14);
+	    lblRepeatCounter.setBounds(491, 431, 82, 14);
 	    contentPane.add(lblRepeatCounter);
 	    
 	    repeatCounterTextField = new JTextField();
 	    repeatCounterTextField.setText("1");
-	    repeatCounterTextField.setBounds(590, 429, 50, 20);
+	    repeatCounterTextField.setBounds(581, 428, 50, 20);
 	    contentPane.add(repeatCounterTextField);
 	    repeatCounterTextField.setColumns(10);
 	    
@@ -244,6 +249,7 @@ public class ShowStartupScreen extends JFrame {
 		chckbxFullyVisibleWorld.setSelected(Boolean.parseBoolean(localNode.getAttributes().getNamedItem("visible").getNodeValue()));
 		chckbxDeterministicMove.setSelected(Boolean.parseBoolean(localNode.getAttributes().getNamedItem("deterministic").getNodeValue()));
 		chckbxInteriorWalls.setSelected(false);
+		chckbxGhostKills.setSelected(Boolean.parseBoolean(localNode.getAttributes().getNamedItem("ghostKills").getNodeValue()));
 		// information zones is always true, interior walls in this case is always false because the map is built
 		localNode = localNode.getFirstChild();
 		chckbxRedGhost.setSelected(false);
@@ -275,8 +281,9 @@ public class ShowStartupScreen extends JFrame {
 		boolean hasDeterministicWorld = chckbxDeterministicMove.isSelected();
 		boolean hasInformativeZones = true;
 		boolean hasInternalWalls = chckbxInteriorWalls.isSelected();
+		boolean hasKills = chckbxGhostKills.isSelected();
 		
-		GameConfiguration retVal = new GameConfiguration(hasVisibleWorld, hasDeterministicWorld, hasInformativeZones, hasInternalWalls);
+		GameConfiguration retVal = new GameConfiguration(hasVisibleWorld, hasDeterministicWorld, hasInformativeZones, hasInternalWalls, hasKills);
 		
 		if (chckbxRedGhost.isSelected())
 			retVal.setRedGhostAI("class aiModels." +  (String)redGhostAICombo.getSelectedItem());
