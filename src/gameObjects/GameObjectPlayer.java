@@ -1,7 +1,6 @@
 package gameObjects;
 
 import aiModels.AIModel;
-import aiModels.AIModelPlayer;
 
 public class GameObjectPlayer extends GameObjectCreature {
 	public Board board;

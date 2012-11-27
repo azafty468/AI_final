@@ -16,7 +16,6 @@ import view.ApplicationView;
 import view.PrintListNode;
 
 import gameObjects.*;
-import gameObjects.GameObjectCreature.CreatureAlliance;
 
 /**
  * Controls all aspects of the Model objects
@@ -63,6 +62,18 @@ public class ApplicationModel {
 	}
 	
 	public void resetModel() {
+		myPlayer.myAIModel = null;
+		myPlayer = null;
+		if (redGhost != null) {
+			redGhost.myAIModel = null;
+			redGhost = null;
+		}
+		if (blueGhost != null) {
+			blueGhost.myAIModel = null;
+			blueGhost = null;
+		}
+		myBoard.clearBoard();
+		myBoard = null;
 		thisModel = null;
 	}
 
@@ -71,30 +82,29 @@ public class ApplicationModel {
 		AIModel readModel;
 		GameConfiguration myConfig = ApplicationController.getInstance().myLoadConfiguration;
 		
+		readModel = GameConfiguration.getAIModel(myConfig.playerAIModel);
+		myPlayer = new GameObjectPlayer(readModel);
+		myPlayer.name = "Pac-man";
+		myPlayer.setXY(5, 5);
+		
+		if (myConfig.hasRedGhost) {
+			readModel = GameConfiguration.getAIModel(myConfig.redGhostAIModel);
+			redGhost = new GameObjectCreature(readModel);
+			redGhost.name = "Red-Ghost";
+			redGhost.setXY(10, 10);
+		}
+		
+		if (myConfig.hasBlueGhost) {
+			readModel = GameConfiguration.getAIModel(myConfig.blueGhostAIModel);
+			blueGhost = new GameObjectCreature(readModel);
+			blueGhost.name = "Blue-Ghost";
+			blueGhost.setXY(10, 10);
+		}
+		
+		
 		for (int i = 0; i < inMessage.getChildNodes().getLength(); i++) {
 			localNode = inMessage.getChildNodes().item(i);
-			if (inMessage.getChildNodes().item(i).getLocalName().equals("Player")) {
-				readModel = GameConfiguration.getAIModel(myConfig.playerAIModel);
-				myPlayer = new GameObjectPlayer(readModel);
-				myPlayer.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
-				myPlayer.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
-						Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
-			}
-			else if (inMessage.getChildNodes().item(i).getLocalName().equals("RedGhost")) {
-				readModel = GameConfiguration.getAIModel(myConfig.redGhostAIModel);
-				redGhost = new GameObjectCreature(readModel);
-				redGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
-				redGhost.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
-						Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
-			}
-			else if (inMessage.getChildNodes().item(i).getLocalName().equals("BlueGhost")) {
-				readModel = GameConfiguration.getAIModel(myConfig.blueGhostAIModel);
-				blueGhost = new GameObjectCreature(readModel);
-				blueGhost.name = localNode.getAttributes().getNamedItem("name").getNodeValue();
-				blueGhost.myLocation = new Point(Integer.parseInt(localNode.getAttributes().getNamedItem("x").getNodeValue()), 
-						Integer.parseInt(localNode.getAttributes().getNamedItem("y").getNodeValue()));
-			}
-			else if (inMessage.getChildNodes().item(i).getLocalName().equals("Board")) {
+			if (inMessage.getChildNodes().item(i).getLocalName().equals("Board")) {
 				loadTemplates();
 				myBoard = new Board(localNode);
 			}

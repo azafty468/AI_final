@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.List;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -13,7 +11,6 @@ import java.io.File;
 import javax.swing.JPanel;
 
 import primary.Constants;
-import primary.MainApplication;
 
 public class PastRunsJPanel extends JPanel {
 	private static final long serialVersionUID = 1L;

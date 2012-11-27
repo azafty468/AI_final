@@ -79,6 +79,10 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	    this.setJMenuBar(jmb);
 	}
 	
+	public void resetView() {
+		commandOutArea.clearLog();
+	}
+	
 	//We can reset the game here
 	public void resetGame() {
 		this.dispose();

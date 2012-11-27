@@ -14,7 +14,7 @@ import actions.ActionMove;
  * 
  * Definitely Does not work yet.....
  */
-public class AIModelHillClimb extends AIModelEnemy {
+public class AIModelHillClimb extends AIModel {
 	private class PotentialLocalMove {
 		public int targetX;
 		public int targetY;
@@ -23,10 +23,11 @@ public class AIModelHillClimb extends AIModelEnemy {
 			
 		}
 		
+		/*
 		PotentialLocalMove(int newX, int newY) {
 			targetX = newX;
 			targetY = newY;
-		}
+		}*/
 	}
 	
 	protected Board myBoard;

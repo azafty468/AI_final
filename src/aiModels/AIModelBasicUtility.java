@@ -75,6 +75,22 @@ public class AIModelBasicUtility extends AIModel {
 	}
 	
 	@Override
+	public void setVisibleSquares(Point centerPoint) {
+		if (ApplicationController.getInstance().myLoadConfiguration.visibleWorld)
+			return;
+		
+		int sightRange = ApplicationController.VISIBILITYRANGE;
+		
+		for (int y = centerPoint.y - sightRange; y <= (centerPoint.y + sightRange); y++)
+			for (int x = centerPoint.x - sightRange; x <= (centerPoint.x + sightRange); x++) {
+				if (x >= 0 && x < visibleSquares[0].length && y >= 0 && y < visibleSquares.length) {
+					visibleSquares[y][x] = true;
+				}
+			}
+		myPolicies = null;
+	}
+	
+	@Override
 	public void clearTarget(GameObject oldTarget) {
 		myPolicies = null;
 		mySelf.currentAction = null;
@@ -139,7 +155,11 @@ public class AIModelBasicUtility extends AIModel {
 		for (int y = 0; y < myPolicies.length; y++) 
 			for (int x = 0; x < myPolicies[y].length; x++) {
 				GameObject localGO = ApplicationModel.getInstance().findGOByLocation(new Point(x, y));
-				if (localGO.name.equals("Strawberry")) {
+				if (!visibleSquares[y][x]) {
+					myPolicies[y][x].utilityFixed = true;
+					myPolicies[y][x].utility = 5;
+				}
+				else if (localGO.name.equals("Strawberry")) {
 					myPolicies[y][x].utilityFixed = true;
 					myPolicies[y][x].utility = 100;
 				}
@@ -204,16 +224,19 @@ public class AIModelBasicUtility extends AIModel {
 		myPolicies = tmpPN;
 	}
 
-	/* Update, setting the utilities to be a double, values are large enough to travel across the map */
+	/* Update, setting the utilities to be a double, values are large enough to travel across the map
+	 * This was working fine until I added blank squares as having a utility of 5
+	 * The averaging just throws off targeting strawberries sometimes.
+	 *  
 	private void addPolicyInterim(PolicyInterim localPI, PolicyNode testPN) {
 		if (testPN.unreachableSquare)
 			return;
 		
 		localPI.utility += testPN.utility * 0.9;
 		localPI.count++;
-	}
+	} */
 
-	/* let's try just grabbing the best option
+	/* let's try just grabbing the best option.  Retried a few times.  This guy just performs the best */ 
 	private void addPolicyInterim(PolicyInterim localPI, PolicyNode testPN) {
 		if (testPN.unreachableSquare)
 			return;
@@ -222,7 +245,7 @@ public class AIModelBasicUtility extends AIModel {
 			localPI.utility = (testPN.utility * 0.9);
 		
 		localPI.count = 1;
-	}*/
+	}
 	
 	@Override
 	public void setAdvancedView(PrintListNode[][] myPL) {
@@ -231,10 +254,9 @@ public class AIModelBasicUtility extends AIModel {
 		
 		for (int y = 0; y < myPolicies.length; y++) 
 			for (int x = 0; x < myPolicies[y].length; x++)
-				if (visibleSquares[y][x])
-					if (myPolicies[y][x] != null)
-						if (!myPolicies[y][x].unreachableSquare)
-							myPL[y][x].setUtilityValue((int)myPolicies[y][x].utility);
+				if (myPolicies[y][x] != null)
+					if (!myPolicies[y][x].unreachableSquare)
+						myPL[y][x].setUtilityValue((int)myPolicies[y][x].utility);
 	}
 
 	@Override
@@ -244,10 +266,9 @@ public class AIModelBasicUtility extends AIModel {
 		
 		for (int y = 0; y < myPolicies.length; y++) 
 			for (int x = 0; x < myPolicies[y].length; x++)
-				if (visibleSquares[y][x])
-					if (myPolicies[y][x] != null)
-						if (!myPolicies[y][x].unreachableSquare)
-							myPL[y][x].setPolicyValue(myPolicies[y][x].myPolicy);
+				if (myPolicies[y][x] != null)
+					if (!myPolicies[y][x].unreachableSquare)
+						myPL[y][x].setPolicyValue(myPolicies[y][x].myPolicy);
 	} 
 	
 }

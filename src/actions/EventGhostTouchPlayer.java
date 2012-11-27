@@ -1,10 +1,6 @@
 package actions;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-
 import primary.ApplicationController;
-import primary.Constants;
 import view.ApplicationView;
 import gameObjects.*;
 

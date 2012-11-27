@@ -41,4 +41,8 @@ public class CommandOutJPanel extends JPanel {
 		myCommandWindow.append(newline + message);
 		myCommandWindow.setCaretPosition(myCommandWindow.getDocument().getLength());
 	}
+	
+	public void clearLog() {
+		myCommandWindow.setText("");
+	}
 }

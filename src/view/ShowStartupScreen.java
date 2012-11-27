@@ -1,8 +1,5 @@
 package view;
 
-import gameObjects.GameObjectCreature;
-import gameObjects.GameObjectPlayer;
-
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,21 +14,13 @@ import javax.swing.border.EmptyBorder;
 import primary.Constants;
 import primary.GameConfiguration;
 import primary.MainApplication;
-import primary.Point;
 import xml.Message;
 
-import javax.swing.JRadioButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
 import org.w3c.dom.Node;
 
-import aiModels.AIModelClosestMove;
-import aiModels.AIModelDijkstraAlgorithm;
-import aiModels.AIModelDirectMove;
-import aiModels.AIModelEnemy;
-import aiModels.AIModelHillClimb;
-import aiModels.AIModelPlayer;
 import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.FileReader;

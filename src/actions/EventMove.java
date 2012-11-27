@@ -1,9 +1,5 @@
 package actions;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-
-import primary.Constants;
 import primary.Point;
 
 public class EventMove extends Event {

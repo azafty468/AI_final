@@ -1,7 +1,7 @@
 package aiModels;
 
 import java.util.ArrayList;
-import java.util.Stack;
+import java.util.Collections;
 
 import primary.ApplicationModel;
 import primary.Constants;
@@ -11,8 +11,6 @@ import gameObjects.Board;
 import gameObjects.GameObject;
 import gameObjects.GameObjectCreature;
 import gameObjects.GameObjectCreature.CreatureAlliance;
-import gameObjects.GameObjectPlayer;
-import gameObjects.GameObjectToken;
 import actions.ActionMove;
 
 /**
@@ -44,22 +42,45 @@ public class AIModelDirectMove extends AIModel {
 				if (myBoard.myTokens.isEmpty()) 
 					return null;
 				
-				myTarget = myBoard.myTokens.get(0);
+				for (int i = 0; i < myBoard.myTokens.size(); i++) {
+					if (visibleSquares[myBoard.myTokens.get(i).myLocation.y][myBoard.myTokens.get(i).myLocation.x]) {
+						myTarget = myBoard.myTokens.get(i);
+						break;
+					}
+				}
 			}
-			else //this is a ghost
-				myTarget = ApplicationModel.getInstance().myPlayer;
+			else { //this is a ghost
+					myTarget = ApplicationModel.getInstance().myPlayer;
+			}
 		}
 
-		if (myTarget == null)
-			return null;
 
-		ArrayList<PolicyMove> bestMoveList = Constants.populateBestMoveDeterministicList(mySelf.myLocation.x, mySelf.myLocation.y, myTarget.myLocation.x, myTarget.myLocation.y);
+		ArrayList<PolicyMove> bestMoveList;
+		
+		if ((myTarget == null) || (myTarget != null && !visibleSquares[myTarget.myLocation.y][myTarget.myLocation.x])) { 
+			// No target visible, Randomly move
+			bestMoveList = new ArrayList<PolicyMove>();
+			bestMoveList.add(PolicyMove.UP);
+			bestMoveList.add(PolicyMove.DOWN);
+			bestMoveList.add(PolicyMove.LEFT);
+			bestMoveList.add(PolicyMove.RIGHT);
+			bestMoveList.add(PolicyMove.UPLEFT);
+			bestMoveList.add(PolicyMove.UPRIGHT);
+			bestMoveList.add(PolicyMove.DOWNLEFT);
+			bestMoveList.add(PolicyMove.DOWNRIGHT);
+			Collections.shuffle(bestMoveList);
+		}
+		else
+			bestMoveList = Constants.populateBestMoveDeterministicList(mySelf.myLocation.x, mySelf.myLocation.y, myTarget.myLocation.x, myTarget.myLocation.y);
 		PolicyMove moveTarget = bestMove(bestMoveList);
 		
 		if (moveTarget == null)
 			return null;
 		
 		Point targetP = Constants.outcomeOfMove(moveTarget, mySelf.myLocation);
+		
+		if (targetP == null)
+			return null;
 		
 		return new ActionMove(targetP, mySelf, moveTarget);
 	}

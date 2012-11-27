@@ -17,6 +17,7 @@ import java.util.Random;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JOptionPane;
 
@@ -42,16 +43,21 @@ public class ApplicationController {
 	private Timer renderTimer;	// our time keeper
 	private TimerTask renderTask; // the main render and update task.
 	public Stack<Event> currentEvents;
-	private GamePlayTimeKeeper myTimeKeeper;
+	private volatile GamePlayTimeKeeper myTimeKeeper;
 	public ArrayList<String> loggedEvents;
 	public GameConfiguration myLoadConfiguration;
 	public GameView myGameView;
-	private boolean resettingGame;
+	private AtomicBoolean resettingGame;
 	public static final int VISIBILITYRANGE = 5;
+	private AtomicBoolean threadInProcess;
+	private String terminateReason;
+	private boolean terminate;
 	
 	public ApplicationController() {
 		currentEvents = new Stack<Event>();
 		myTimeKeeper = new GamePlayTimeKeeper(PlayRate.AIAUTOMATION);
+		threadInProcess = new AtomicBoolean(false);
+		resettingGame = new AtomicBoolean(false);
 	}
 	
 	public static Random getGenerator() {
@@ -99,6 +105,7 @@ public class ApplicationController {
 	}
 	
 	public boolean initialize(GameConfiguration newLoadConfiguration) {
+		terminate = false;
 		myLoadConfiguration = newLoadConfiguration;
 		myLoadConfiguration.decrementAutoRepeatCounter();
 		loggedEvents = new ArrayList<String>();
@@ -162,9 +169,11 @@ public class ApplicationController {
 		
 		myGameView = GameView.STANDARD;
 		renderTimer = new Timer();
+		startGraphicTimer();
+		
 		ApplicationView.getInstance().displayMessage("Starting Game.  Current State - PAUSED");
 
-		resettingGame = false;
+		resettingGame.set(false);
 		return true;
 	}
 	
@@ -226,9 +235,10 @@ public class ApplicationController {
 				break;
 				
 			case KeyEvent.VK_R:
-				resettingGame = true;
+				resettingGame.set(true);
 				myTimeKeeper.setPause(true);
 				ApplicationModel.getInstance().resetModel();
+				ApplicationView.getInstance().resetView();
 				ApplicationView.getInstance().displayMessage("---Game Reset Command Received---");
 				if (!initialize(myLoadConfiguration)) {
 					System.err.println("Error while reseting environment");
@@ -237,17 +247,17 @@ public class ApplicationController {
 				break;
 				
 			case KeyEvent.VK_A:
-				ApplicationView.getInstance().displayMessage("Aborting game for undefined reason");
+				ApplicationView.getInstance().displayMessage("Manually aborting game for undefined reason");
 				finishGame("unknown reason");
 				break;
 			
 			case KeyEvent.VK_S:
 				finishGame("unwinnable");
-				ApplicationView.getInstance().displayMessage("Aborting game because it has been deemed unwinnable");
+				ApplicationView.getInstance().displayMessage("Manually aborting game because it has been deemed unwinnable");
 				break;
 				
 			case KeyEvent.VK_D:
-				ApplicationView.getInstance().displayMessage("Aborting game due to an error in the game");
+				ApplicationView.getInstance().displayMessage("Manually aborting game due to an error in the game");
 				finishGame("error in game");
 				break;
 				
@@ -299,9 +309,16 @@ public class ApplicationController {
 			System.exit(-1);
 		}
 	}
-	
+
 	public void finishGame(String terminateReason) {
+		this.terminateReason = terminateReason;
+		terminate = true;
+	}
+	
+	private void writeOutRunLog() {
+		renderTask.cancel();
 		myTimeKeeper.setGameOver();
+		terminate = false;
 
 		String runDir = myLoadConfiguration.preexistingBoard.replace(".xml", "");
 		String runLog = "Run_";
@@ -357,17 +374,14 @@ public class ApplicationController {
 		loggedEvents.clear();
 		
 		if (myLoadConfiguration.getAutoRepeatCounter() > 0) {
-			resettingGame = true;
-			myTimeKeeper.setPause(true);
+			resettingGame.set(true);
 			ApplicationModel.getInstance().resetModel();
 			ApplicationView.getInstance().displayMessage("---Automatic Reset---");
 			if (!initialize(myLoadConfiguration)) {
 				System.err.println("Error while reseting environment");
 				System.exit(-1);
 			}
-
 		}
-		
 	}
 
 	private void moveCursor(KeyEvent e) {
@@ -416,7 +430,7 @@ public class ApplicationController {
 		myModel.myPlayer.currentAction = newAction;
 	}
 
-	public void processAIPhase() {
+	public synchronized void processAIPhase() {
 		if (ApplicationModel.getInstance().myPlayer != null) {
 			if (ApplicationModel.getInstance().myPlayer.currentAction == null) {
 				if (ApplicationModel.getInstance().myPlayer.stepsTaken > 1000) {
@@ -439,7 +453,6 @@ public class ApplicationController {
 			}
 		}
 	}
-
 	
 	public static int getScreenWorkingWidth() {
 	    return java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().width;
@@ -452,7 +465,7 @@ public class ApplicationController {
 	/*
 	 * Actions are intended before they are carried out.  This step processes all intended actions
 	 */
-	public void processActions() {
+	public synchronized void processActions() {
 		ApplicationModel myModel = ApplicationModel.getInstance();
 		
 		if (myModel.myPlayer != null) {
@@ -484,7 +497,7 @@ public class ApplicationController {
 		}
 	}
 	
-	public void processEvents() {
+	public synchronized void processEvents() {
 		while (!currentEvents.empty()) {
 			currentEvents.pop().processEvent();
 		}
@@ -497,10 +510,15 @@ public class ApplicationController {
 			renderTask.cancel();
 		}
 
+		threadInProcess.set(false);
 		renderTask = new TimerTask() {
 			@Override
 			public void run() {
-				if (!resettingGame) {
+				if (threadInProcess.get())
+					return;
+				
+				threadInProcess.set(true);
+				if (!resettingGame.get()) {
 					renderGraphics();
 					if (myTimeKeeper.isTimeForTurn()) {
 						processActions();
@@ -508,6 +526,10 @@ public class ApplicationController {
 						processAIPhase();
 					}
 				}
+				threadInProcess.set(false);
+				
+				if (terminate)
+					writeOutRunLog();
 			}
 		};
 		renderTimer.schedule(renderTask, 0, 16);

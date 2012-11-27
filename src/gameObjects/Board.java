@@ -116,6 +116,16 @@ public class Board {
 			setInformationZones();
 	}
 	
+	public void clearBoard() {
+		myGO = null;
+		myTokens.clear();
+		myTokens = null;
+		templateStrawberryToken = null;
+		templateBoundaryWall = null;
+		templateBoundaryOpen = null;
+		templateBoundaryHidden = null;
+	}
+	
 	private void setGameObjectTemplates() {
 		templateBoundaryWall = new GameObjectBackground();
 		templateBoundaryWall.name = "Wall";

@@ -5,8 +5,6 @@ import javax.swing.JOptionPane;
 import view.ApplicationView;
 import view.ShowStartupScreen;
 
-import aiModels.*;
-
 public class MainApplication {
 	/**
 	 * @param args
@@ -28,7 +26,7 @@ public class MainApplication {
 			System.exit(0);				
 		}
 		
-		ApplicationController.getInstance().startGraphicTimer();
+		//ApplicationController.getInstance().startGraphicTimer();
 		ApplicationView.getInstance().displayMessage(new String("Load complete"));
 	}
 }

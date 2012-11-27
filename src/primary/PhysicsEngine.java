@@ -2,7 +2,6 @@ package primary;
 
 import java.util.ArrayList;
 
-import primary.Constants.PolicyMove;
 import view.ApplicationView;
 import gameObjects.*;
 import gameObjects.GameObject.GameObjectType;

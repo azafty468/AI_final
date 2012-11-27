@@ -60,6 +60,7 @@ public class GamePlayTimeKeeper {
 	}
 	
 	public void setGameOver() {
+		isPaused = true;
 		gameOver = true;
 	}
 	

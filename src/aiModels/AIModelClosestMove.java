@@ -1,6 +1,7 @@
 package aiModels;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import gameObjects.*;
 import primary.ApplicationModel;
@@ -49,19 +50,33 @@ public class AIModelClosestMove extends AIModel {
 		for (int y = 0; y < allTokens.length; y++) 
 			for(int x = 0; x < allTokens[y].length; x++)
 				if (allTokens[y][x] != null) {
-					if ((closestDistance < 0) || (closestDistance > 
-							Math.max(Math.abs(myLocation.x - allTokens[y][x].myLocation.x), 
-							Math.abs(myLocation.y - allTokens[y][x].myLocation.y)))) {
-						latestTarget = allTokens[y][x];
-						
-						closestDistance = Math.max(Math.abs(myLocation.x - allTokens[y][x].myLocation.x), Math.abs(myLocation.y - allTokens[y][x].myLocation.y));
+					if (visibleSquares[y][x]) {
+						if ((closestDistance < 0) || (closestDistance > 
+								Math.max(Math.abs(myLocation.x - allTokens[y][x].myLocation.x), 
+								Math.abs(myLocation.y - allTokens[y][x].myLocation.y)))) {
+							latestTarget = allTokens[y][x];
+							
+							closestDistance = Math.max(Math.abs(myLocation.x - allTokens[y][x].myLocation.x), Math.abs(myLocation.y - allTokens[y][x].myLocation.y));
+						}
 					}
 				}
 		
-		if (latestTarget == null)
-			return null;
+		ArrayList<PolicyMove> bestMoveList;
+		if (latestTarget == null) { // no target visible, do random move
+			bestMoveList = new ArrayList<PolicyMove>();
+			bestMoveList.add(PolicyMove.UP);
+			bestMoveList.add(PolicyMove.DOWN);
+			bestMoveList.add(PolicyMove.LEFT);
+			bestMoveList.add(PolicyMove.RIGHT);
+			bestMoveList.add(PolicyMove.UPLEFT);
+			bestMoveList.add(PolicyMove.UPRIGHT);
+			bestMoveList.add(PolicyMove.DOWNLEFT);
+			bestMoveList.add(PolicyMove.DOWNRIGHT);
+			Collections.shuffle(bestMoveList);
+		}
+		else
+			bestMoveList = Constants.populateBestMoveDeterministicList(mySelf.myLocation.x, mySelf.myLocation.y, latestTarget.myLocation.x, latestTarget.myLocation.y);
 		
-		ArrayList<PolicyMove> bestMoveList = Constants.populateBestMoveDeterministicList(mySelf.myLocation.x, mySelf.myLocation.y, latestTarget.myLocation.x, latestTarget.myLocation.y);
 		PolicyMove moveTarget = bestMove(bestMoveList);
 		
 		if (moveTarget == null)

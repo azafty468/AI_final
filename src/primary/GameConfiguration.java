@@ -49,8 +49,6 @@ public class GameConfiguration {
 			retVal = new AIModelDijkstraAlgorithm();
 		else if (aiName.equals("class aiModels.AIModelDirectMove")) 
 			retVal = new AIModelDirectMove();
-		else if (aiName.equals("class aiModels.AIModelEnemy")) 
-			retVal = new AIModelEnemy();
 		else if (aiName.equals("class aiModels.AIModelHillClimb")) 
 			retVal = new AIModelHillClimb();
 		else if (aiName.equals("class aiModels.AIModelPlayer")) 

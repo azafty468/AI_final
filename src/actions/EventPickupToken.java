@@ -1,11 +1,7 @@
 package actions;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-
 import primary.ApplicationController;
 import primary.ApplicationModel;
-import primary.Constants;
 import view.ApplicationView;
 import gameObjects.*;
 
@@ -29,7 +25,6 @@ public class EventPickupToken extends Event {
 		ApplicationView.getInstance().displayMessage("Player '" + localPlayer.name + "' captured token '" + 
 				localToken.name + "'.  Player now has " + localPlayer.getPointsGained() + " points.");
 		
-		//TODO there is a better mechanism than this
 		ApplicationModel.getInstance().myPlayer.clearTarget(localToken);
 		
 		if (ApplicationModel.getInstance().blueGhost != null)
@@ -37,12 +32,12 @@ public class EventPickupToken extends Event {
 		
 		if (ApplicationModel.getInstance().redGhost != null)
 			ApplicationModel.getInstance().redGhost.clearTarget(localToken);
-		
+
 		if (ApplicationModel.getInstance().myBoard.myTokens.size() == 0) {
-			ApplicationView.getInstance().displayMessage("Congratulations, you have collected all the tokens in " + localPlayer.stepsTaken + " moves ending with " + localPlayer.getPointsGained() + " points.  The game is over!");
+			ApplicationModel myModel = ApplicationModel.getInstance();
+			ApplicationView.getInstance().displayMessage("Congratulations, you have collected all the tokens in " + myModel.myPlayer.stepsTaken + " moves ending with " + myModel.myPlayer.getPointsGained() + " points.  The game is over!");
 			ApplicationController.getInstance().finishGame("");
 		}
-
 	}
 
 	@Override
