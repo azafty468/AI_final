@@ -16,7 +16,7 @@ public class EventPickupToken extends Event {
 	
 	@Override
 	public void processEvent() {
-		localPlayer.setPointsGained(localToken.pointValue);
+		localPlayer.setPointsGained(localToken.pointValue, localToken.name);
 		localPlayer.berriesPickedUp++;
 		
 		ApplicationController.getInstance().loggedEvents.add(writeLogString());

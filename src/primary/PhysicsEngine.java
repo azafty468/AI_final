@@ -63,7 +63,7 @@ public class PhysicsEngine {
 		ApplicationModel myModel = ApplicationModel.getInstance();
 		GameObject tmp = myModel.findGOByLocation(new Point(targetX, targetY));
 		
-		ApplicationController.getInstance().loggedEvents.add(new EventMove(myAM.initiator.name, new Point(targetX, targetY)).writeLogString());
+		ApplicationController.getInstance().loggedEvents.add(new EventMove(myAM.initiator, new Point(targetX, targetY)).writeLogString());
 		
 		ApplicationView myView = ApplicationView.getInstance();
 		

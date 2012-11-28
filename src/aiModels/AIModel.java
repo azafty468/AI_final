@@ -79,5 +79,5 @@ public abstract class AIModel {
 	 * 
 	 * @param feedback
 	 */
-	public void receiveFeedbackFromEnvironment(int feedback) {	}
+	public void receiveFeedbackFromEnvironment(double feedback, String itemName) {	}
 }

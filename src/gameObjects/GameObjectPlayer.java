@@ -34,8 +34,8 @@ public class GameObjectPlayer extends GameObjectCreature {
 		return pointsGained;
 	}
 	
-	public void setPointsGained(int points) {
+	public void setPointsGained(double points, String itemName) {
 		pointsGained += points;
-		this.myAIModel.receiveFeedbackFromEnvironment(points);
+		this.myAIModel.receiveFeedbackFromEnvironment(points, itemName);
 	}
 }
