@@ -311,7 +311,7 @@ public class Board {
 	}
 	
 	public void generateInternalWalls() {
-		int wallSections = ApplicationController.getGenerator().nextInt(20) + 10;
+		int wallSections = (ApplicationController.getGenerator().nextInt(20) + 10) * ((width*height) /  (40*25));
 		int wallLength;
 		int startX, startY, endX, endY, direction;
 		boolean safeToAdd;

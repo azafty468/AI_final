@@ -24,14 +24,17 @@ public class AIModelBlindlyForward extends AIModel {
 	
 	@Override
 	public void assignToCreature(GameObjectCreature newSelf) {
-		myLocation = newSelf.myLocation;
-		myAlliance = newSelf.myAlliance;
 		newSelf.myAIModel = this;
 		myTempReference = newSelf;
 	}
 	
 	@Override
 	public ActionMove planNextMove() {
+		if (myAlliance == null) { //initial set up now that this is defined
+			myAlliance = myTempReference.myAlliance;
+			myLocation = myTempReference.myLocation;
+		}
+		
 		if (myTarget == null) {
 			
 			if (myAlliance == CreatureAlliance.PLAYER) {
