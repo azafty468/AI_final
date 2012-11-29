@@ -24,7 +24,7 @@ import javax.swing.JOptionPane;
 import actions.ActionMove;
 import actions.Event;
 import aiModels.*;
-import primary.Constants.PolicyMove;
+import aiModels.AIModel.PolicyMove;
 import primary.GamePlayTimeKeeper.PlayRate;
 import primary.Point;
 
@@ -319,6 +319,12 @@ public class ApplicationController {
 		renderTask.cancel();
 		myTimeKeeper.setGameOver();
 		terminate = false;
+		
+		LearningObject myLO = null;
+		if (ApplicationModel.getInstance().myPlayer.myAIModel instanceof AIModelLearning) {
+			AIModelLearning tempAI = (AIModelLearning) ApplicationModel.getInstance().myPlayer.myAIModel;
+			myLO = tempAI.createLearningObject();
+		}
 
 		String runDir = myLoadConfiguration.preexistingBoard.replace(".xml", "");
 		String runLog = "Run_";
@@ -381,6 +387,12 @@ public class ApplicationController {
 				System.err.println("Error while reseting environment");
 				System.exit(-1);
 			}
+			if (ApplicationModel.getInstance().myPlayer.myAIModel instanceof AIModelLearning && myLO != null) {
+				myLO.explorationRate = 0;
+				AIModelLearning tempAI = (AIModelLearning) ApplicationModel.getInstance().myPlayer.myAIModel;
+				tempAI.setLearningObject(myLO);
+			}
+			
 		}
 	}
 

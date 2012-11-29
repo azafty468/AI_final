@@ -3,7 +3,7 @@ package view;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
-import primary.Constants.PolicyMove;
+import aiModels.AIModel.PolicyMove;
 
 public class PrintListNode {
 	public BufferedImage myImage;

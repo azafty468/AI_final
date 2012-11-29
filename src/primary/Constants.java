@@ -2,12 +2,13 @@ package primary;
 
 import java.util.ArrayList;
 
+import aiModels.AIModel.PolicyMove;
+
 public class Constants {
 	public static final String fileDelimiter = System.getProperty("file.separator");
 	public static final String newline = System.getProperty("line.separator");
 	public static final int baseImageSize = 32;
-	public static enum PolicyMove {UP, UPLEFT, LEFT, DOWNLEFT, DOWN, DOWNRIGHT, RIGHT, UPRIGHT, NOWHERE, UNKNOWN; }
-	
+
 	public static PolicyMove getMoveDirectionToRight(PolicyMove targetMove) {
 		if (targetMove == PolicyMove.UP)
 			return PolicyMove.UPRIGHT;
@@ -28,7 +29,6 @@ public class Constants {
 		
 		return PolicyMove.UNKNOWN;
 	}
-
 	
 	public static Point outcomeOfMove(PolicyMove moveDirection, Point sourcePt) {
 		if (moveDirection == PolicyMove.UP)
@@ -52,94 +52,5 @@ public class Constants {
 		
 		return new Point(sourcePt);
 		
-	}
-	
-
-	public static ArrayList<PolicyMove> populateBestMoveDeterministicList(int sourceX, int sourceY, int targetX, int targetY) {
-		ArrayList<PolicyMove> bestMoveList = new ArrayList<PolicyMove>();
-		
-		if (sourceX > targetX && sourceY < targetY) {
-			bestMoveList.add(PolicyMove.DOWNLEFT);
-			bestMoveList.add(PolicyMove.DOWN);
-			bestMoveList.add(PolicyMove.LEFT);
-			bestMoveList.add(PolicyMove.DOWNRIGHT);
-			bestMoveList.add(PolicyMove.UPLEFT);
-			bestMoveList.add(PolicyMove.RIGHT);
-			bestMoveList.add(PolicyMove.UP);
-			bestMoveList.add(PolicyMove.UPRIGHT);
-		}
-		else if (sourceX == targetX && sourceY < targetY) {
-			bestMoveList.add(PolicyMove.DOWN);
-			bestMoveList.add(PolicyMove.DOWNLEFT);
-			bestMoveList.add(PolicyMove.DOWNRIGHT);
-			bestMoveList.add(PolicyMove.LEFT);
-			bestMoveList.add(PolicyMove.RIGHT);
-			bestMoveList.add(PolicyMove.UPLEFT);
-			bestMoveList.add(PolicyMove.UPRIGHT);
-			bestMoveList.add(PolicyMove.UP);
-		}
-		else if (sourceX > targetX && sourceY == targetY) {
-			bestMoveList.add(PolicyMove.LEFT);
-			bestMoveList.add(PolicyMove.DOWNLEFT);
-			bestMoveList.add(PolicyMove.UPLEFT);
-			bestMoveList.add(PolicyMove.UP);
-			bestMoveList.add(PolicyMove.DOWN);
-			bestMoveList.add(PolicyMove.DOWNRIGHT);
-			bestMoveList.add(PolicyMove.UPRIGHT);
-			bestMoveList.add(PolicyMove.RIGHT);
-		}
-		else if (sourceX > targetX && sourceY > targetY) {
-			bestMoveList.add(PolicyMove.UPLEFT);
-			bestMoveList.add(PolicyMove.LEFT);
-			bestMoveList.add(PolicyMove.UP);
-			bestMoveList.add(PolicyMove.DOWNLEFT);
-			bestMoveList.add(PolicyMove.UPRIGHT);
-			bestMoveList.add(PolicyMove.DOWN);
-			bestMoveList.add(PolicyMove.RIGHT);
-			bestMoveList.add(PolicyMove.DOWNRIGHT);
-		}
-		else if (sourceX == targetX && sourceY > targetY) {
-			bestMoveList.add(PolicyMove.UP);
-			bestMoveList.add(PolicyMove.UPLEFT);
-			bestMoveList.add(PolicyMove.UPRIGHT);
-			bestMoveList.add(PolicyMove.LEFT);
-			bestMoveList.add(PolicyMove.RIGHT);
-			bestMoveList.add(PolicyMove.DOWNLEFT);
-			bestMoveList.add(PolicyMove.DOWNRIGHT);
-			bestMoveList.add(PolicyMove.DOWN);
-		}
-		else if (sourceX < targetX && sourceY == targetY) {
-			bestMoveList.add(PolicyMove.RIGHT);
-			bestMoveList.add(PolicyMove.DOWNRIGHT);
-			bestMoveList.add(PolicyMove.UPRIGHT);
-			bestMoveList.add(PolicyMove.UP);
-			bestMoveList.add(PolicyMove.DOWN);
-			bestMoveList.add(PolicyMove.DOWNLEFT);
-			bestMoveList.add(PolicyMove.UPLEFT);
-			bestMoveList.add(PolicyMove.LEFT);
-		}
-		else if (sourceX < targetX && sourceY < targetY) {
-			bestMoveList.add(PolicyMove.DOWNRIGHT);
-			bestMoveList.add(PolicyMove.DOWN);
-			bestMoveList.add(PolicyMove.RIGHT);
-			bestMoveList.add(PolicyMove.DOWNLEFT);
-			bestMoveList.add(PolicyMove.UPRIGHT);
-			bestMoveList.add(PolicyMove.LEFT);
-			bestMoveList.add(PolicyMove.UP);
-			bestMoveList.add(PolicyMove.UPLEFT);
-		}
-		else if (sourceX < targetX && sourceY > targetY) {
-			bestMoveList.add(PolicyMove.UPRIGHT);
-			bestMoveList.add(PolicyMove.RIGHT);
-			bestMoveList.add(PolicyMove.UP);
-			bestMoveList.add(PolicyMove.DOWNRIGHT);
-			bestMoveList.add(PolicyMove.UPLEFT);
-			bestMoveList.add(PolicyMove.DOWN);
-			bestMoveList.add(PolicyMove.LEFT);
-			bestMoveList.add(PolicyMove.DOWNLEFT);
-		}
-			
-		
-		return bestMoveList;
 	}
 }

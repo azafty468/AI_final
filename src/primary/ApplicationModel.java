@@ -98,7 +98,7 @@ public class ApplicationModel {
 			readModel = GameConfiguration.getAIModel(myConfig.blueGhostAIModel);
 			blueGhost = new GameObjectCreature(readModel);
 			blueGhost.name = "Blue-Ghost";
-			blueGhost.setXY(10, 10);
+			blueGhost.setXY(15, 15);
 		}
 		
 		

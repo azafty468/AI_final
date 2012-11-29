@@ -45,8 +45,8 @@ public class GameConfiguration {
 		
 		if (aiName.equals("class aiModels.AIModelClosestMove"))
 			retVal = new AIModelClosestMove();
-		else if (aiName.equals("class aiModels.AIModelDijkstraAlgorithm")) 
-			retVal = new AIModelDijkstraAlgorithm();
+		else if (aiName.equals("class aiModels.AIModelBlindlyForward")) 
+			retVal = new AIModelBlindlyForward();
 		else if (aiName.equals("class aiModels.AIModelDirectMove")) 
 			retVal = new AIModelDirectMove();
 		else if (aiName.equals("class aiModels.AIModelHillClimb")) 

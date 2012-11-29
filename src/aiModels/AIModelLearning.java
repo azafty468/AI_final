@@ -2,58 +2,32 @@ package aiModels;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 import gameObjects.Board;
 import gameObjects.GameObject;
 import gameObjects.GameObjectCreature;
+import primary.ApplicationController;
 import primary.ApplicationModel;
 import primary.Constants;
 import primary.Point;
-import primary.Constants.PolicyMove;
 import view.PrintListNode;
 import actions.ActionMove;
 
-public class AIModelLearning extends AIModel {
+public class AIModelLearning extends AIModelSelfAware {
+	private boolean visitedSquares[][];
     public ActionMove action;
-    public GameObjectCreature mySelf;
     public PolicyNode myPolicies[][] = null;
 	private int maxIterations = 10;
-    public double exploration = 1.0;
+    public int exploration = 100;
     public double learningRate = 0.1;   //10 percent should make the player learn pretty quickly
+    public String currentActivity;
     
     //set default values for different types of rewards
-    private double berryGuess = -1.0;
-    private double pitGuess = -1.0;
-    private double openGuess = -1.0;
-    private double wallGuess = -1.0;
-	
-    private class PolicyInterim {
-		public double utility;
-		public int count;
-	}
-	
-	private class PolicyNode {
-		public double utility;
-		public PolicyMove myPolicy;
-		public boolean utilityFixed;
-		public boolean unreachableSquare;
-		
-		PolicyNode() {
-			utility = 0.0;
-			myPolicy = PolicyMove.UNKNOWN;
-			utilityFixed = false;
-			unreachableSquare = false;
-		}
-		
-		PolicyNode(PolicyNode dupe) {
-			utility = dupe.utility;
-			myPolicy = dupe.myPolicy;
-			utilityFixed = dupe.utilityFixed;
-			unreachableSquare = dupe.unreachableSquare;
-		}
-	}
+    private HashMap<String, Double> rewardGuesses = null;
     
-	public AIModelLearning() {	
+	public AIModelLearning() {
+		currentActivity = "Undefined";
 		//set learningRate
 		//set explorationRate
 	}
@@ -66,13 +40,32 @@ public class AIModelLearning extends AIModel {
 	
 	@Override
 	public String describeActionPlan() { 
-		return "Reinforcement Learning AI"; 
+		return "Reinforcement Learning AI.  Explore rate:" + exploration + "% Learning Rate: " + (int)(learningRate*100) + "%  Current Mode:" + currentActivity; 
+	}
+	
+	private HashMap<String, Double> getRewardList() {
+		if (rewardGuesses == null) {
+			rewardGuesses = new HashMap<String, Double>();
+			Board tempBoard = ApplicationModel.getInstance().myBoard;
+			if (tempBoard != null) {
+				//populate initial values
+				for (int y = 0; y < tempBoard.height; y++)
+					for (int x = 0; x < tempBoard.width; x++) {
+						GameObject tmpGO = ApplicationModel.getInstance().findGOByLocation(new Point(x, y));
+						if (!rewardGuesses.containsKey(tmpGO.name))
+							rewardGuesses.put(tmpGO.name, new Double(-1.0));
+					}
+			}
+		}
+		return rewardGuesses;
 	}
 
 	@Override
 	public ActionMove planNextMove() {
-		exploration -= 0.01;
-		if(exploration >= 0.0) {
+		if (visitedSquares == null) 
+			defaultVisitedSquares();
+		
+		if(exploration >= ApplicationController.getGenerator().nextInt(100)) {
 			return planNextMoveExploration();
 		}
 		else {
@@ -80,43 +73,55 @@ public class AIModelLearning extends AIModel {
 		}
 	}
 	
+	private void defaultVisitedSquares() {
+		visitedSquares = new boolean[ApplicationModel.getInstance().myBoard.height][ApplicationModel.getInstance().myBoard.width];
+		for (int y = 0; y < visitedSquares.length; y++)
+			for (int x = 0; x < visitedSquares[y].length; x++) 
+				visitedSquares[y][x] = ApplicationModel.getInstance().findGOByLocation(new Point(x, y)).canBlockMovement;
+	}
+	
+	@Override
+	public void setVisibleSquares(Point centerPoint) {
+		if (visitedSquares == null) 
+			defaultVisitedSquares();
+
+		visitedSquares[centerPoint.y][centerPoint.x] = true;
+		super.setVisibleSquares(centerPoint);
+	}
+	
 	/**
 	 * Explore if the player doesn't really know what to do or where to go
 	 * @return ActionMove
 	 */
 	public ActionMove planNextMoveExploration() {
-		ArrayList<PolicyMove> bestMoveList;
-		bestMoveList = new ArrayList<PolicyMove>();
-		bestMoveList.add(PolicyMove.UP);
-		bestMoveList.add(PolicyMove.DOWN);
-		bestMoveList.add(PolicyMove.LEFT);
-		bestMoveList.add(PolicyMove.RIGHT);
-		bestMoveList.add(PolicyMove.UPLEFT);
-		bestMoveList.add(PolicyMove.UPRIGHT);
-		bestMoveList.add(PolicyMove.DOWNLEFT);
-		bestMoveList.add(PolicyMove.DOWNRIGHT);
-		Collections.shuffle(bestMoveList);
+		//exploration -= 0.01;
+		currentActivity = "Explore";
+		visitedSquares[mySelf.myLocation.y][mySelf.myLocation.x]= true; 
 		
-		PolicyMove moveTarget = bestMove(bestMoveList);
+		int distance = visitedSquares.length * visitedSquares[0].length;
+		ArrayList<PolicyMove> bestMoveList = null;
+		for (int y = 0; y < visitedSquares.length; y++)
+			for (int x = 0; x < visitedSquares[y].length; x++)
+				if (!visitedSquares[y][x])
+					if (Math.max(Math.abs(mySelf.myLocation.x - x), Math.abs(mySelf.myLocation.y - y)) < distance) {
+						bestMoveList = new ArrayList<PolicyMove>();
+						bestMoveList.add(populateBestSingleMove(x, y, mySelf.myLocation.x, mySelf.myLocation.y));
+						distance = Math.max(Math.abs(mySelf.myLocation.x - x), Math.abs(mySelf.myLocation.y - y));
+					} else if (Math.max(Math.abs(mySelf.myLocation.x - x), Math.abs(mySelf.myLocation.y - y)) == distance) {
+						bestMoveList.add(populateBestSingleMove(x, y, mySelf.myLocation.x, mySelf.myLocation.y));
+					}
 		
+		if (bestMoveList == null)
+			bestMoveList  = getRandomMoveList();
+		else 
+			Collections.shuffle(bestMoveList);
+		
+		PolicyMove moveTarget = determineBestMove(bestMoveList);
 		if (moveTarget == null)
 			return null;
-		
 		Point targetP = Constants.outcomeOfMove(moveTarget, mySelf.myLocation);
 		
 		return new ActionMove(targetP, mySelf, moveTarget);
-	}
-	
-	private PolicyMove bestMove(ArrayList<PolicyMove> bestList) {
-		for (int i = 0; i < bestList.size(); i++) {
-			PolicyMove testPolicy = bestList.get(i);
-			Point targetPoint = Constants.outcomeOfMove(testPolicy, mySelf.myLocation);
-			
-			if (!ApplicationModel.getInstance().myBoard.myGO[targetPoint.y][targetPoint.x].canBlockMovement)
-				return testPolicy;
-		}
-		
-		return null;
 	}
 	
 	/**
@@ -124,6 +129,8 @@ public class AIModelLearning extends AIModel {
 	 * return ActionMove
 	 */
 	public ActionMove planNextMoveExploitation() {
+		currentActivity = "Exploit";
+		
 		if (myPolicies == null) {
 			Board myBoard = ApplicationModel.getInstance().myBoard;
 			myPolicies = new PolicyNode[myBoard.height][myBoard.width];
@@ -206,35 +213,25 @@ public class AIModelLearning extends AIModel {
 			}
 	}
 	
-	/**
-	 * sets utilities for each type of space
-	 * -1 for strawberries
-	 * -1 for pits
-	 * -2 for walls
-	 * -1 for empty spaces
-	 */
 	private void populateUtilities() {
 		// populate the initial values
 		for (int y = 0; y < myPolicies.length; y++) 
 			for (int x = 0; x < myPolicies[y].length; x++) {
 				GameObject localGO = ApplicationModel.getInstance().findGOByLocation(new Point(x, y));
+				myPolicies[y][x].utility = getRewardList().get(localGO.name);
+				
 				if (localGO.name.equals("Strawberry")) {
 					myPolicies[y][x].utilityFixed = true;
-					myPolicies[y][x].utility = berryGuess;
 				}
 				else if (localGO.name.equals("Pit")) {
 					myPolicies[y][x].utilityFixed = true;
-					myPolicies[y][x].utility = pitGuess;
 				}
 				else if (localGO.name.equals("Wall")) {
 					myPolicies[y][x].utilityFixed = true;
 					myPolicies[y][x].unreachableSquare = true;
-					myPolicies[y][x].utility = wallGuess;
 				}
-				else {
+				else 
 					myPolicies[y][x].utilityFixed = false;
-					myPolicies[y][x].utility = openGuess;
-				}
 			}
 		
 		//how many times should I do this?.  Right now it is set to the maximum of the board size
@@ -299,15 +296,30 @@ public class AIModelLearning extends AIModel {
 	
 	@Override
 	public void setAdvancedView(PrintListNode[][] myPL) {
-		if (myPolicies == null) 
-			return;
-		
-		for (int y = 0; y < myPolicies.length; y++) 
-			for (int x = 0; x < myPolicies[y].length; x++)
-				if (visibleSquares[y][x])
-					if (myPolicies[y][x] != null)
-						if (!myPolicies[y][x].unreachableSquare)
-							myPL[y][x].setUtilityValue((int)myPolicies[y][x].utility);
+		if (currentActivity.equals("Explore")) {
+			if (visitedSquares == null)
+				defaultVisitedSquares();
+			
+			for (int y = 0; y < visitedSquares.length; y++) 
+				for (int x = 0; x < visitedSquares[y].length; x++)
+					if (visibleSquares[y][x]) {
+						if (visitedSquares[y][x])
+							myPL[y][x].setUtilityValue(0);
+						else
+							myPL[y][x].setUtilityValue(1);
+					}
+		}
+		else {
+			if (myPolicies == null) 
+				return;
+			
+			for (int y = 0; y < myPolicies.length; y++) 
+				for (int x = 0; x < myPolicies[y].length; x++)
+					if (visibleSquares[y][x])
+						if (myPolicies[y][x] != null)
+							if (!myPolicies[y][x].unreachableSquare)
+								myPL[y][x].setUtilityValue((int)myPolicies[y][x].utility);
+		}
 	}
 
 	@Override
@@ -331,17 +343,19 @@ public class AIModelLearning extends AIModel {
 	 */
 	@Override
 	public void receiveFeedbackFromEnvironment(double feedback, String itemName) {
-		if(itemName.equals("Strawberry")) {
-			berryGuess += (feedback - berryGuess) * learningRate + berryGuess;
-		}
-		else if(itemName.equals("Open")) {
-			openGuess += (feedback - openGuess) * learningRate + openGuess;
-		}
-		else if(itemName.equals("Pit")) {
-			pitGuess += (feedback - pitGuess) * learningRate + pitGuess;
-		}
-		else if(itemName.equals("Wall")) {
-			wallGuess += (feedback - wallGuess) * learningRate + wallGuess;
-		}
+		Double curValue = getRewardList().get(itemName);
+		
+		Double newReward = curValue + (feedback - curValue) * learningRate;
+		getRewardList().put(itemName,  newReward);
+	}
+	
+	public LearningObject createLearningObject() {
+		return new LearningObject(learningRate, exploration,rewardGuesses);
+	}
+	
+	public void setLearningObject(LearningObject newLO) {
+		exploration = newLO.explorationRate;
+		learningRate = newLO.learningRate;
+		rewardGuesses = newLO.rewardList;
 	}
 }

@@ -7,12 +7,10 @@ import gameObjects.*;
 import primary.ApplicationModel;
 import primary.Constants;
 import primary.Point;
-import primary.Constants.PolicyMove;
 import view.PrintListNode;
 import actions.ActionMove;
 
-public class AIModelClosestMove extends AIModel {	
-	GameObjectCreature mySelf;
+public class AIModelClosestMove extends AIModelSelfAware {	
 	GameObjectToken[][] allTokens;
 	GameObjectToken latestTarget = null;
 	
@@ -62,22 +60,12 @@ public class AIModelClosestMove extends AIModel {
 				}
 		
 		ArrayList<PolicyMove> bestMoveList;
-		if (latestTarget == null) { // no target visible, do random move
-			bestMoveList = new ArrayList<PolicyMove>();
-			bestMoveList.add(PolicyMove.UP);
-			bestMoveList.add(PolicyMove.DOWN);
-			bestMoveList.add(PolicyMove.LEFT);
-			bestMoveList.add(PolicyMove.RIGHT);
-			bestMoveList.add(PolicyMove.UPLEFT);
-			bestMoveList.add(PolicyMove.UPRIGHT);
-			bestMoveList.add(PolicyMove.DOWNLEFT);
-			bestMoveList.add(PolicyMove.DOWNRIGHT);
-			Collections.shuffle(bestMoveList);
-		}
+		if (latestTarget == null) // no target visible, do random move
+			bestMoveList = getRandomMoveList();
 		else
-			bestMoveList = Constants.populateBestMoveDeterministicList(mySelf.myLocation.x, mySelf.myLocation.y, latestTarget.myLocation.x, latestTarget.myLocation.y);
+			bestMoveList = populateBestMoveDeterministicList(mySelf.myLocation.x, mySelf.myLocation.y, latestTarget.myLocation.x, latestTarget.myLocation.y);
 		
-		PolicyMove moveTarget = bestMove(bestMoveList);
+		PolicyMove moveTarget = determineBestMove(bestMoveList);
 		
 		if (moveTarget == null)
 			return null;
@@ -87,18 +75,6 @@ public class AIModelClosestMove extends AIModel {
 		return new ActionMove(targetP, mySelf, moveTarget);
 	}
 	
-	private PolicyMove bestMove(ArrayList<PolicyMove> bestList) {
-		for (int i = 0; i < bestList.size(); i++) {
-			PolicyMove testPolicy = bestList.get(i);
-			Point targetPoint = Constants.outcomeOfMove(testPolicy, mySelf.myLocation);
-			
-			if (!ApplicationModel.getInstance().myBoard.myGO[targetPoint.y][targetPoint.x].canBlockMovement)
-				return testPolicy;
-		}
-		
-		return null;
-	}
-	
 	@Override
 	public void clearTarget(GameObject oldTarget) {
 		allTokens[oldTarget.myLocation.y][oldTarget.myLocation.x]= null; 
@@ -106,7 +82,7 @@ public class AIModelClosestMove extends AIModel {
 
 	@Override
 	public String describeActionPlan() {
-		String retval = "AIModelClosestMove - locate the Token with shortest distance with lookahead of 1 square";
+		String retval = "Closest Move - locate the Token with shortest distance (using Djikstra) with a look ahead of 1 square";
 		
 		if (latestTarget != null) 
 		  retval += "  Token: " + latestTarget.name + " at (" + latestTarget.myLocation.x + ", " + latestTarget.myLocation.y + ")";

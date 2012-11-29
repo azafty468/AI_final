@@ -1,8 +1,12 @@
 package aiModels;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import primary.ApplicationController;
 import primary.ApplicationModel;
 import primary.Point;
+//import primary.Constants.PolicyMove;
 import view.PrintListNode;
 import gameObjects.Board;
 import gameObjects.GameObject;
@@ -10,7 +14,34 @@ import gameObjects.GameObjectCreature;
 import actions.ActionMove;
 
 public abstract class AIModel {
+	public static enum PolicyMove {UP, UPLEFT, LEFT, DOWNLEFT, DOWN, DOWNRIGHT, RIGHT, UPRIGHT, NOWHERE, UNKNOWN; }
 	public boolean visibleSquares[][];
+	
+    class PolicyInterim {
+		public double utility;
+		public int count;
+	}
+	
+	class PolicyNode {
+		public double utility;
+		public PolicyMove myPolicy;
+		public boolean utilityFixed;
+		public boolean unreachableSquare;
+		
+		PolicyNode() {
+			utility = 0.0;
+			myPolicy = PolicyMove.UNKNOWN;
+			utilityFixed = false;
+			unreachableSquare = false;
+		}
+		
+		PolicyNode(PolicyNode dupe) {
+			utility = dupe.utility;
+			myPolicy = dupe.myPolicy;
+			utilityFixed = dupe.utilityFixed;
+			unreachableSquare = dupe.unreachableSquare;
+		}
+	}
 	
 	public void setInitialValues(boolean initialValue) {
 		Board localBoard = ApplicationModel.getInstance().myBoard;
@@ -80,4 +111,150 @@ public abstract class AIModel {
 	 * @param feedback
 	 */
 	public void receiveFeedbackFromEnvironment(double feedback, String itemName) {	}
+	
+	public ArrayList<PolicyMove> getRandomMoveList() {
+		ArrayList<PolicyMove> bestMoveList = new ArrayList<PolicyMove>();
+		bestMoveList.add(PolicyMove.UP);
+		bestMoveList.add(PolicyMove.DOWN);
+		bestMoveList.add(PolicyMove.LEFT);
+		bestMoveList.add(PolicyMove.RIGHT);
+		bestMoveList.add(PolicyMove.UPLEFT);
+		bestMoveList.add(PolicyMove.UPRIGHT);
+		bestMoveList.add(PolicyMove.DOWNLEFT);
+		bestMoveList.add(PolicyMove.DOWNRIGHT);
+		Collections.shuffle(bestMoveList);
+		return bestMoveList;
+	}
+
+	PolicyMove determineBestMove(ArrayList<PolicyMove> bestList) {
+		return bestList.get(0);
+	}
+	
+	public ArrayList<PolicyMove> populateBestMoveDeterministicList(int sourceX, int sourceY, int targetX, int targetY) {
+		ArrayList<PolicyMove> bestMoveList = new ArrayList<PolicyMove>();
+		
+		if (sourceX > targetX && sourceY < targetY) {
+			bestMoveList.add(PolicyMove.DOWNLEFT);
+			bestMoveList.add(PolicyMove.DOWN);
+			bestMoveList.add(PolicyMove.LEFT);
+			bestMoveList.add(PolicyMove.DOWNRIGHT);
+			bestMoveList.add(PolicyMove.UPLEFT);
+			bestMoveList.add(PolicyMove.RIGHT);
+			bestMoveList.add(PolicyMove.UP);
+			bestMoveList.add(PolicyMove.UPRIGHT);
+		}
+		else if (sourceX == targetX && sourceY < targetY) {
+			bestMoveList.add(PolicyMove.DOWN);
+			bestMoveList.add(PolicyMove.DOWNLEFT);
+			bestMoveList.add(PolicyMove.DOWNRIGHT);
+			bestMoveList.add(PolicyMove.LEFT);
+			bestMoveList.add(PolicyMove.RIGHT);
+			bestMoveList.add(PolicyMove.UPLEFT);
+			bestMoveList.add(PolicyMove.UPRIGHT);
+			bestMoveList.add(PolicyMove.UP);
+		}
+		else if (sourceX > targetX && sourceY == targetY) {
+			bestMoveList.add(PolicyMove.LEFT);
+			bestMoveList.add(PolicyMove.DOWNLEFT);
+			bestMoveList.add(PolicyMove.UPLEFT);
+			bestMoveList.add(PolicyMove.UP);
+			bestMoveList.add(PolicyMove.DOWN);
+			bestMoveList.add(PolicyMove.DOWNRIGHT);
+			bestMoveList.add(PolicyMove.UPRIGHT);
+			bestMoveList.add(PolicyMove.RIGHT);
+		}
+		else if (sourceX > targetX && sourceY > targetY) {
+			bestMoveList.add(PolicyMove.UPLEFT);
+			bestMoveList.add(PolicyMove.LEFT);
+			bestMoveList.add(PolicyMove.UP);
+			bestMoveList.add(PolicyMove.DOWNLEFT);
+			bestMoveList.add(PolicyMove.UPRIGHT);
+			bestMoveList.add(PolicyMove.DOWN);
+			bestMoveList.add(PolicyMove.RIGHT);
+			bestMoveList.add(PolicyMove.DOWNRIGHT);
+		}
+		else if (sourceX == targetX && sourceY > targetY) {
+			bestMoveList.add(PolicyMove.UP);
+			bestMoveList.add(PolicyMove.UPLEFT);
+			bestMoveList.add(PolicyMove.UPRIGHT);
+			bestMoveList.add(PolicyMove.LEFT);
+			bestMoveList.add(PolicyMove.RIGHT);
+			bestMoveList.add(PolicyMove.DOWNLEFT);
+			bestMoveList.add(PolicyMove.DOWNRIGHT);
+			bestMoveList.add(PolicyMove.DOWN);
+		}
+		else if (sourceX < targetX && sourceY == targetY) {
+			bestMoveList.add(PolicyMove.RIGHT);
+			bestMoveList.add(PolicyMove.DOWNRIGHT);
+			bestMoveList.add(PolicyMove.UPRIGHT);
+			bestMoveList.add(PolicyMove.UP);
+			bestMoveList.add(PolicyMove.DOWN);
+			bestMoveList.add(PolicyMove.DOWNLEFT);
+			bestMoveList.add(PolicyMove.UPLEFT);
+			bestMoveList.add(PolicyMove.LEFT);
+		}
+		else if (sourceX < targetX && sourceY < targetY) {
+			bestMoveList.add(PolicyMove.DOWNRIGHT);
+			bestMoveList.add(PolicyMove.DOWN);
+			bestMoveList.add(PolicyMove.RIGHT);
+			bestMoveList.add(PolicyMove.DOWNLEFT);
+			bestMoveList.add(PolicyMove.UPRIGHT);
+			bestMoveList.add(PolicyMove.LEFT);
+			bestMoveList.add(PolicyMove.UP);
+			bestMoveList.add(PolicyMove.UPLEFT);
+		}
+		else if (sourceX < targetX && sourceY > targetY) {
+			bestMoveList.add(PolicyMove.UPRIGHT);
+			bestMoveList.add(PolicyMove.RIGHT);
+			bestMoveList.add(PolicyMove.UP);
+			bestMoveList.add(PolicyMove.DOWNRIGHT);
+			bestMoveList.add(PolicyMove.UPLEFT);
+			bestMoveList.add(PolicyMove.DOWN);
+			bestMoveList.add(PolicyMove.LEFT);
+			bestMoveList.add(PolicyMove.DOWNLEFT);
+		}
+			
+		
+		return bestMoveList;
+	}
+	
+	
+	public PolicyMove populateBestSingleMove(int sourceX, int sourceY, int targetX, int targetY) {
+		if (sourceX > targetX && sourceY < targetY)
+			return PolicyMove.UPRIGHT;
+		else if (sourceX == targetX && sourceY < targetY) 
+			return PolicyMove.UP;
+		else if (sourceX > targetX && sourceY == targetY)
+			return PolicyMove.RIGHT;
+		else if (sourceX > targetX && sourceY > targetY)
+			return PolicyMove.DOWNRIGHT;
+		else if (sourceX == targetX && sourceY > targetY)
+			return PolicyMove.DOWN;
+		else if (sourceX < targetX && sourceY == targetY) 
+			return PolicyMove.LEFT;
+		else if (sourceX < targetX && sourceY < targetY) 
+			return PolicyMove.UPLEFT;
+		else
+			return PolicyMove.DOWNLEFT;
+		
+		/*
+		if (sourceX > targetX && sourceY < targetY)
+			return PolicyMove.DOWNLEFT;
+		else if (sourceX == targetX && sourceY < targetY) 
+			return PolicyMove.DOWN;
+		else if (sourceX > targetX && sourceY == targetY)
+			return PolicyMove.LEFT;
+		else if (sourceX > targetX && sourceY > targetY)
+			return PolicyMove.UPLEFT;
+		else if (sourceX == targetX && sourceY > targetY)
+			return PolicyMove.UP;
+		else if (sourceX < targetX && sourceY == targetY) 
+			return PolicyMove.RIGHT;
+		else if (sourceX < targetX && sourceY < targetY) 
+			return PolicyMove.DOWNRIGHT;
+		else
+			return PolicyMove.UPRIGHT;
+		*/
+	}
+
 }

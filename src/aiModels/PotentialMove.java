@@ -3,7 +3,7 @@ package aiModels;
 import java.util.ArrayList;
 
 import primary.Constants;
-import primary.Constants.PolicyMove;
+import aiModels.AIModel.PolicyMove;
 import primary.PhysicsEngine;
 import primary.Point;
 

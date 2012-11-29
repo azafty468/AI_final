@@ -10,7 +10,7 @@ import java.awt.geom.Line2D;
 import java.awt.image.BufferStrategy;
 
 import primary.Constants;
-import primary.Constants.PolicyMove;
+import aiModels.AIModel.PolicyMove;
 
 
 /*

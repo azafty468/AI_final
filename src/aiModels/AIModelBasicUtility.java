@@ -4,36 +4,9 @@ import primary.*;
 import view.PrintListNode;
 import gameObjects.*;
 import actions.ActionMove;
-import primary.Constants.PolicyMove;
+//import primary.Constants.PolicyMove;
 
-public class AIModelBasicUtility extends AIModel {
-	private class PolicyInterim {
-		public double utility;
-		public int count;
-	}
-	
-	private class PolicyNode {
-		public double utility;
-		public PolicyMove myPolicy;
-		public boolean utilityFixed;
-		public boolean unreachableSquare;
-		
-		PolicyNode() {
-			utility = 0.0;
-			myPolicy = PolicyMove.UNKNOWN;
-			utilityFixed = false;
-			unreachableSquare = false;
-		}
-		
-		PolicyNode(PolicyNode dupe) {
-			utility = dupe.utility;
-			myPolicy = dupe.myPolicy;
-			utilityFixed = dupe.utilityFixed;
-			unreachableSquare = dupe.unreachableSquare;
-		}
-	}
-	
-	GameObjectCreature mySelf;
+public class AIModelBasicUtility extends AIModelSelfAware {
 	PolicyNode myPolicies[][] = null;
 	private int maxIterations = 10;
 	

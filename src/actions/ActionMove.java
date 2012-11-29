@@ -1,6 +1,6 @@
 package actions;
 
-import primary.Constants.PolicyMove;
+import aiModels.AIModel.PolicyMove;
 import primary.PhysicsEngine;
 import primary.Point;
 import gameObjects.GameObjectCreature;
