@@ -365,8 +365,12 @@ public class ApplicationController {
 					"visible='" + myLoadConfiguration.visibleWorld + "' " +
 					"informationZones='" + myLoadConfiguration.informativeZones + "' " +
 					"ghostKills='" + myLoadConfiguration.killOnGhostTouch + "' " +
-					"stepsTaken='" + myPlayer.stepsTaken + "' " + 
-					"wallCollisions='" + myPlayer.wallCollisions + "'>" + Constants.newline);
+					"stepsTaken='" + myPlayer.stepsTaken + "' ");
+			
+			if (myLO != null)
+				myOut.write("learningRate='" + myLO.learningRate + "' explorationRate='" + myLO.explorationRate + "' ");
+					
+			myOut.write("wallCollisions='" + myPlayer.wallCollisions + "'>" + Constants.newline);
 			
 			for (int i = 0; i < loggedEvents.size(); i++)
 				myOut.write(loggedEvents.get(i) + Constants.newline);
@@ -388,7 +392,7 @@ public class ApplicationController {
 				System.exit(-1);
 			}
 			if (ApplicationModel.getInstance().myPlayer.myAIModel instanceof AIModelLearning && myLO != null) {
-				myLO.explorationRate = 0;
+				myLO.explorationRate -= 10;
 				AIModelLearning tempAI = (AIModelLearning) ApplicationModel.getInstance().myPlayer.myAIModel;
 				tempAI.setLearningObject(myLO);
 			}
