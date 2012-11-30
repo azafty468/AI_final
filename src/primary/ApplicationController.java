@@ -392,7 +392,8 @@ public class ApplicationController {
 				System.exit(-1);
 			}
 			if (ApplicationModel.getInstance().myPlayer.myAIModel instanceof AIModelLearning && myLO != null) {
-				myLO.explorationRate -= 10;
+				if (myLO.explorationRate > 0)
+					myLO.explorationRate -= 10;
 				AIModelLearning tempAI = (AIModelLearning) ApplicationModel.getInstance().myPlayer.myAIModel;
 				tempAI.setLearningObject(myLO);
 			}

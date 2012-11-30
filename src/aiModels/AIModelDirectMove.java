@@ -26,12 +26,6 @@ public class AIModelDirectMove extends AIModelSelfAware {
 	}
 	
 	@Override
-	public void assignToCreature(GameObjectCreature newSelf) {
-		mySelf = newSelf;
-		newSelf.myAIModel = this;
-	}
-	
-	@Override
 	public ActionMove planNextMove() {
 		if (myTarget == null) {
 			

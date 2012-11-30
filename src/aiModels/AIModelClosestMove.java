@@ -18,12 +18,6 @@ public class AIModelClosestMove extends AIModelSelfAware {
 	}
 	
 	@Override
-	public void assignToCreature(GameObjectCreature newSelf) {
-		mySelf = newSelf;
-		mySelf.myAIModel = this;
-	}
-	
-	@Override
 	public ActionMove planNextMove() {
 		if (allTokens == null) { // select a new target
 			Board myBoard = ApplicationModel.getInstance().myBoard;

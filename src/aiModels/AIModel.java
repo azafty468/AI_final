@@ -221,21 +221,21 @@ public abstract class AIModel {
 	
 	public PolicyMove populateBestSingleMove(int sourceX, int sourceY, int targetX, int targetY) {
 		if (sourceX > targetX && sourceY < targetY)
-			return PolicyMove.UPRIGHT;
-		else if (sourceX == targetX && sourceY < targetY) 
-			return PolicyMove.UP;
-		else if (sourceX > targetX && sourceY == targetY)
-			return PolicyMove.RIGHT;
-		else if (sourceX > targetX && sourceY > targetY)
-			return PolicyMove.DOWNRIGHT;
-		else if (sourceX == targetX && sourceY > targetY)
-			return PolicyMove.DOWN;
-		else if (sourceX < targetX && sourceY == targetY) 
-			return PolicyMove.LEFT;
-		else if (sourceX < targetX && sourceY < targetY) 
-			return PolicyMove.UPLEFT;
-		else
 			return PolicyMove.DOWNLEFT;
+		else if (sourceX == targetX && sourceY < targetY) 
+			return PolicyMove.DOWN;
+		else if (sourceX > targetX && sourceY == targetY)
+			return PolicyMove.LEFT;
+		else if (sourceX > targetX && sourceY > targetY)
+			return PolicyMove.UPLEFT;
+		else if (sourceX == targetX && sourceY > targetY)
+			return PolicyMove.UP;
+		else if (sourceX < targetX && sourceY == targetY) 
+			return PolicyMove.RIGHT;
+		else if (sourceX < targetX && sourceY < targetY) 
+			return PolicyMove.DOWNRIGHT;
+		else
+			return PolicyMove.UPRIGHT;
 		
 		/*
 		if (sourceX > targetX && sourceY < targetY)

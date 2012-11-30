@@ -105,10 +105,10 @@ public class AIModelLearning extends AIModelSelfAware {
 				if (!visitedSquares[y][x])
 					if (Math.max(Math.abs(mySelf.myLocation.x - x), Math.abs(mySelf.myLocation.y - y)) < distance) {
 						bestMoveList = new ArrayList<PolicyMove>();
-						bestMoveList.add(populateBestSingleMove(x, y, mySelf.myLocation.x, mySelf.myLocation.y));
+						bestMoveList.add(populateBestSingleMove(mySelf.myLocation.x, mySelf.myLocation.y, x, y));
 						distance = Math.max(Math.abs(mySelf.myLocation.x - x), Math.abs(mySelf.myLocation.y - y));
 					} else if (Math.max(Math.abs(mySelf.myLocation.x - x), Math.abs(mySelf.myLocation.y - y)) == distance) {
-						bestMoveList.add(populateBestSingleMove(x, y, mySelf.myLocation.x, mySelf.myLocation.y));
+						bestMoveList.add(populateBestSingleMove(mySelf.myLocation.x, mySelf.myLocation.y, x, y));
 					}
 		
 		if (bestMoveList == null)
@@ -117,10 +117,15 @@ public class AIModelLearning extends AIModelSelfAware {
 			Collections.shuffle(bestMoveList);
 		
 		PolicyMove moveTarget = determineBestMove(bestMoveList);
-		if (moveTarget == null)
-			return null;
-		Point targetP = Constants.outcomeOfMove(moveTarget, mySelf.myLocation);
+		if (moveTarget == null) {
+			bestMoveList  = getRandomMoveList();
+			Collections.shuffle(bestMoveList);
+			moveTarget = determineBestMove(bestMoveList);
+			Point targetP = Constants.outcomeOfMove(moveTarget, mySelf.myLocation);
+			return new ActionMove(targetP, mySelf, moveTarget);
+		}
 		
+		Point targetP = Constants.outcomeOfMove(moveTarget, mySelf.myLocation);
 		return new ActionMove(targetP, mySelf, moveTarget);
 	}
 	
