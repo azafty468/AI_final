@@ -31,7 +31,7 @@ public class AIModelHillClimb extends AIModelSelfAware {
 
 	@Override
 	public ActionMove planNextMove() {
-		if (myPolicies == null)
+		if (myPolicies == null || mySelf.myAlliance == CreatureAlliance.GHOST)
 			populateUtilities();
 		
 		ArrayList<PolicyMove> bestMoveList = getBestMoveList();

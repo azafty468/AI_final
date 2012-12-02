@@ -80,7 +80,9 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	}
 	
 	public void resetView() {
-		commandOutArea.clearLog();
+		// only clear during regular runs
+		if (!ApplicationController.getInstance().myLoadConfiguration.fullValidationRun)
+			commandOutArea.clearLog();
 	}
 	
 	//We can reset the game here
@@ -128,7 +130,13 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	}
 
 	public void displayMessage(String newMessage){
-		commandOutArea.displayMessage(newMessage);
+		// Only display during a regular run, ignore otherwise
+		if (!ApplicationController.getInstance().myLoadConfiguration.fullValidationRun)
+			commandOutArea.displayMessage(newMessage);
+	}
+
+	public void displaySystemMessage(String newMessage){
+		commandOutArea.displaySystemMessage(newMessage);
 	}
 	
 	/**
@@ -137,10 +145,11 @@ public class ApplicationView extends JFrame implements KeyListener, WindowListen
 	 * @param printList
 	 */
 	public void renderGraphics(PrintListNode[][] printList) {
+		myVariableDisplay.updateDisplay();
 		if (printList == null) 
 			return;
+		
 		myGraphicCanvas.render(printList);
-		myVariableDisplay.updateDisplay();
 	}	
 	
 	public static BufferedImage convertImageToLocalSettings(BufferedImage input) {

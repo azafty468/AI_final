@@ -57,16 +57,21 @@ public class AIModelBlindlyForward extends AIModel {
 
 		ArrayList<PolicyMove> bestMoveList;
 		
-		if ((myTarget == null) || (myTarget != null && !visibleSquares[myTarget.myLocation.y][myTarget.myLocation.x])) { 
+		if (myTarget == null) { 
 			// No target visible, Randomly move
+			bestMoveList = getRandomMoveList();
+		}
+		else if (myTarget != null && !visibleSquares[myTarget.myLocation.y][myTarget.myLocation.x]) {
 			bestMoveList = getRandomMoveList();
 		}
 		else
 			bestMoveList = populateBestMoveDeterministicList(myLocation.x, myLocation.y, myTarget.myLocation.x, myTarget.myLocation.y);
 		PolicyMove moveTarget = determineBestMove(bestMoveList);
 		
-		if (moveTarget == null)
-			return null;
+		if (moveTarget == null) {
+			bestMoveList = getRandomMoveList();
+			moveTarget = determineBestMove(bestMoveList);
+		}
 		
 		Point targetP = Constants.outcomeOfMove(moveTarget, myLocation);
 		
@@ -81,7 +86,7 @@ public class AIModelBlindlyForward extends AIModel {
 		if (myTarget == null)
 			return;
 		
-		if (oldTarget == myTarget) {
+		if (oldTarget.equals(myTarget)) {
 			myTarget = null;
 		}
 	}

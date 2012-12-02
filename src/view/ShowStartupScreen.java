@@ -37,7 +37,7 @@ public class ShowStartupScreen extends JFrame {
 	ImageIcon logo;
 	JLabel pastRunsLabel;
 	PastRunsJPanel myPastRunsJPanel;
-	JCheckBox chckbxInteriorWalls, chckbxFullyVisibleWorld, chckbxRedGhost, chckbxBlueGhost, chckbxDeterministicMove, chckbxGhostKills;
+	JCheckBox chckbxInteriorWalls, chckbxFullyVisibleWorld, chckbxRedGhost, chckbxBlueGhost, chckbxDeterministicMove, chckbxGhostKills, chckbxCompleteValidtionRun;
 	JComboBox redGhostAICombo, blueGhostAICombo, playerAICombo;
 	private JTextField repeatCounterTextField;
 
@@ -188,6 +188,11 @@ public class ShowStartupScreen extends JFrame {
 	    contentPane.add(repeatCounterTextField);
 	    repeatCounterTextField.setColumns(10);
 	    
+	    chckbxCompleteValidtionRun = new JCheckBox("Complete Validation Run");
+	    chckbxCompleteValidtionRun.setFont(new Font("Tahoma", Font.PLAIN, 10));
+	    chckbxCompleteValidtionRun.setBounds(290, 407, 175, 23);
+	    contentPane.add(chckbxCompleteValidtionRun);
+	    
 	    //This starts the player AI model 
 	    btnStartContoller.addActionListener(new ActionListener() {
 			@Override
@@ -285,6 +290,9 @@ public class ShowStartupScreen extends JFrame {
 		retVal.setInitialBoard(myPastRunsJPanel.localList.getSelectedItem());
 		
 		retVal.setAutoRepeatCounter(Integer.parseInt(repeatCounterTextField.getText()));
+		
+		if (chckbxCompleteValidtionRun.isSelected())
+			retVal.setFullValidationRun();
 		
 		return retVal;
 	}

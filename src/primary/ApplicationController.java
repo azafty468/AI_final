@@ -52,12 +52,15 @@ public class ApplicationController {
 	private AtomicBoolean threadInProcess;
 	private String terminateReason;
 	private boolean terminate;
+	private boolean showScreenInValidationMode;
+	private int turnCounter;
 	
 	public ApplicationController() {
 		currentEvents = new Stack<Event>();
 		myTimeKeeper = new GamePlayTimeKeeper(PlayRate.AIAUTOMATION);
 		threadInProcess = new AtomicBoolean(false);
 		resettingGame = new AtomicBoolean(false);
+		showScreenInValidationMode = false;
 	}
 	
 	public static Random getGenerator() {
@@ -108,6 +111,7 @@ public class ApplicationController {
 		terminate = false;
 		myLoadConfiguration = newLoadConfiguration;
 		myLoadConfiguration.decrementAutoRepeatCounter();
+		turnCounter = 0;
 		loggedEvents = new ArrayList<String>();
 		if (myLoadConfiguration.randomlyGenerateWorld) {
 			AIModel playerAI;
@@ -168,7 +172,8 @@ public class ApplicationController {
 		myPlayer.currentAction = new ActionMove(myPlayer.myLocation, myPlayer, PolicyMove.NOWHERE);
 		
 		myGameView = GameView.STANDARD;
-		renderTimer = new Timer();
+		if (renderTimer == null)
+			renderTimer = new Timer();
 		startGraphicTimer();
 		
 		ApplicationView.getInstance().displayMessage("Starting Game.  Current State - PAUSED");
@@ -178,7 +183,11 @@ public class ApplicationController {
 	}
 	
 	public void renderGraphics() {
-		ApplicationView.getInstance().renderGraphics(ApplicationModel.getInstance().buildPrintList());
+		
+		if (myLoadConfiguration.fullValidationRun && !showScreenInValidationMode)
+			ApplicationView.getInstance().renderGraphics(null);
+		else
+			ApplicationView.getInstance().renderGraphics(ApplicationModel.getInstance().buildPrintList());
 	}
 	
 	public void receiveKeyInput(KeyEvent e) {
@@ -268,7 +277,10 @@ public class ApplicationController {
 					myGameView = GameView.STANDARD;
 				else
 					myGameView = GameView.UTILITY;
-
+				break;
+				
+			case KeyEvent.VK_C:
+				showScreenInValidationMode = !showScreenInValidationMode;
 				break;
 				
 			case KeyEvent.VK_B:
@@ -278,7 +290,6 @@ public class ApplicationController {
 					myGameView = GameView.STANDARD;
 				else
 					myGameView = GameView.POLICY;
-
 				break;
 		
 			default: 
@@ -383,10 +394,20 @@ public class ApplicationController {
 		}
 		loggedEvents.clear();
 		
+		if (myLoadConfiguration.getAutoRepeatCounter() < 1 && myLoadConfiguration.fullValidationRun) {
+			myLoadConfiguration.rotateNextSetting();
+			myLO = null;
+		}
+			
 		if (myLoadConfiguration.getAutoRepeatCounter() > 0) {
 			resettingGame.set(true);
 			ApplicationModel.getInstance().resetModel();
+			ApplicationView.getInstance().resetView();
 			ApplicationView.getInstance().displayMessage("---Automatic Reset---");
+			
+			if (myLoadConfiguration.fullValidationRun)
+				ApplicationView.getInstance().displaySystemMessage(myLoadConfiguration.describeState());
+				
 			if (!initialize(myLoadConfiguration)) {
 				System.err.println("Error while reseting environment");
 				System.exit(-1);
@@ -397,7 +418,6 @@ public class ApplicationController {
 				AIModelLearning tempAI = (AIModelLearning) ApplicationModel.getInstance().myPlayer.myAIModel;
 				tempAI.setLearningObject(myLO);
 			}
-			
 		}
 	}
 
@@ -484,6 +504,14 @@ public class ApplicationController {
 	 */
 	public synchronized void processActions() {
 		ApplicationModel myModel = ApplicationModel.getInstance();
+		
+		turnCounter++;
+		
+		if (turnCounter > 1000) {
+			ApplicationView.getInstance().displayMessage("Maximum number of moves exceeded, game exiting with failure");
+			finishGame("error, exceeded maximum number of moves");
+			return;
+		}
 		
 		if (myModel.myPlayer != null) {
 			if (myModel.myPlayer.currentAction != null) {

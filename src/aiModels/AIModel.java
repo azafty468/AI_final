@@ -213,6 +213,9 @@ public abstract class AIModel {
 			bestMoveList.add(PolicyMove.LEFT);
 			bestMoveList.add(PolicyMove.DOWNLEFT);
 		}
+		else {
+			bestMoveList = getRandomMoveList();
+		}
 			
 		
 		return bestMoveList;
