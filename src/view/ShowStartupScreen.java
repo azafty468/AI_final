@@ -291,8 +291,9 @@ public class ShowStartupScreen extends JFrame {
 		
 		retVal.setAutoRepeatCounter(Integer.parseInt(repeatCounterTextField.getText()));
 		
+		//set this to True for Learning Only validation runs, false for all other validation runs
 		if (chckbxCompleteValidtionRun.isSelected())
-			retVal.setFullValidationRun();
+			retVal.setFullValidationRun(true);
 		
 		return retVal;
 	}

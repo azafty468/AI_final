@@ -19,8 +19,8 @@ public class AIModelLearning extends AIModelSelfAware {
     public ActionMove action;
     public PolicyNode myPolicies[][] = null;
 	private int maxIterations = 10;
-    public int exploration = 100;
-    public double learningRate = 0.1;   //10 percent should make the player learn pretty quickly
+    public int exploration;
+    public double learningRate;
     public String currentActivity;
     
     //set default values for different types of rewards
@@ -28,8 +28,9 @@ public class AIModelLearning extends AIModelSelfAware {
     
 	public AIModelLearning() {
 		currentActivity = "Undefined";
-		//set learningRate
-		//set explorationRate
+		//exploration = 150;
+		exploration = 10;
+		learningRate = 0.1;
 	}
 	
 	@Override
@@ -40,7 +41,7 @@ public class AIModelLearning extends AIModelSelfAware {
 	
 	@Override
 	public String describeActionPlan() { 
-		return "Reinforcement Learning AI.  Explore rate:" + exploration + "% Learning Rate: " + (int)(learningRate*100) + "%  Current Mode:" + currentActivity; 
+		return "Reinforcement Learning AI.  Explore rate:" + (exploration / 10) + "% Learning Rate: " + (int)(learningRate*100) + "%  Current Mode:" + currentActivity; 
 	}
 	
 	private HashMap<String, Double> getRewardList() {
@@ -65,7 +66,7 @@ public class AIModelLearning extends AIModelSelfAware {
 		if (visitedSquares == null) 
 			defaultVisitedSquares();
 		
-		if(exploration >= ApplicationController.getGenerator().nextInt(100)) {
+		if(exploration >= ApplicationController.getGenerator().nextInt(1000)) {
 			return planNextMoveExploration();
 		}
 		else {
@@ -136,8 +137,8 @@ public class AIModelLearning extends AIModelSelfAware {
 	public ActionMove planNextMoveExploitation() {
 		currentActivity = "Exploit";
 		
+		Board myBoard = ApplicationModel.getInstance().myBoard;
 		if (myPolicies == null) {
-			Board myBoard = ApplicationModel.getInstance().myBoard;
 			myPolicies = new PolicyNode[myBoard.height][myBoard.width];
 			maxIterations = Math.max(myBoard.height, myBoard.width);
 			
@@ -156,10 +157,34 @@ public class AIModelLearning extends AIModelSelfAware {
 		if (myPolicies[mySelf.myLocation.y][mySelf.myLocation.x] == null)
 			return null;
 		
-		PolicyMove myPolicy = myPolicies[mySelf.myLocation.y][mySelf.myLocation.x].myPolicy;
+		boolean allSameValues = true;
+		double policyValue = 100;
+		ArrayList<PolicyMove> myBestMoves = new ArrayList<PolicyMove>();
+		for (int y = mySelf.myLocation.y - 1; y <= (mySelf.myLocation.y + 1); y++)
+			for (int x = mySelf.myLocation.x - 1; x <= (mySelf.myLocation.x + 1); x++) {
+				if (x >= 0 && y >= 0 && x < myBoard.width && y < myBoard.height && !mySelf.myLocation.equals(new Point(x, y)))
+					if (!myPolicies[y][x].unreachableSquare) {
+						if (policyValue == 100) {
+							policyValue = myPolicies[y][x].utility;
+							myBestMoves = new ArrayList<PolicyMove>();
+							myBestMoves.add(populateBestSingleMove(mySelf.myLocation.x, mySelf.myLocation.y, x, y));
+						}
+						else if (policyValue != myPolicies[y][x].utility && myPolicies[y][x].utility >= 0)
+							allSameValues = false;
+						else if (policyValue == myPolicies[y][x].utility)
+							myBestMoves.add(populateBestSingleMove(mySelf.myLocation.x, mySelf.myLocation.y, x, y));
+					}
+			}
+		
+		PolicyMove myPolicy;
+		if (allSameValues) {
+			Collections.shuffle(myBestMoves);
+			myPolicy = determineBestMove(myBestMoves);
+		}
+		else
+			myPolicy = myPolicies[mySelf.myLocation.y][mySelf.myLocation.x].myPolicy;
 		Point targetP = Constants.outcomeOfMove(myPolicy, mySelf.myLocation);
 		
-
 		return new ActionMove(targetP, mySelf, myPolicy);
 	}
 	

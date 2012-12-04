@@ -110,7 +110,6 @@ public class ApplicationController {
 	public boolean initialize(GameConfiguration newLoadConfiguration) {
 		terminate = false;
 		myLoadConfiguration = newLoadConfiguration;
-		myLoadConfiguration.decrementAutoRepeatCounter();
 		turnCounter = 0;
 		loggedEvents = new ArrayList<String>();
 		if (myLoadConfiguration.randomlyGenerateWorld) {
@@ -331,10 +330,9 @@ public class ApplicationController {
 		myTimeKeeper.setGameOver();
 		terminate = false;
 		
-		LearningObject myLO = null;
 		if (ApplicationModel.getInstance().myPlayer.myAIModel instanceof AIModelLearning) {
 			AIModelLearning tempAI = (AIModelLearning) ApplicationModel.getInstance().myPlayer.myAIModel;
-			myLO = tempAI.createLearningObject();
+			myLoadConfiguration.myLearningObject = tempAI.createLearningObject();
 		}
 
 		String runDir = myLoadConfiguration.preexistingBoard.replace(".xml", "");
@@ -378,8 +376,11 @@ public class ApplicationController {
 					"ghostKills='" + myLoadConfiguration.killOnGhostTouch + "' " +
 					"stepsTaken='" + myPlayer.stepsTaken + "' ");
 			
-			if (myLO != null)
-				myOut.write("learningRate='" + myLO.learningRate + "' explorationRate='" + myLO.explorationRate + "' ");
+			if (myLoadConfiguration.myLearningObject != null)
+				myOut.write("learningRate='" + myLoadConfiguration.myLearningObject.learningRate + "' explorationRate='" + myLoadConfiguration.myLearningObject.explorationRate + "' ");
+			
+			if (myLoadConfiguration.fullValidationRun)
+				myOut.write("Set='" + myLoadConfiguration.getSetCardinal() + "' Repetitions='" + myLoadConfiguration.getRepetitionCardinal() + "' ");
 					
 			myOut.write("wallCollisions='" + myPlayer.wallCollisions + "'>" + Constants.newline);
 			
@@ -394,12 +395,9 @@ public class ApplicationController {
 		}
 		loggedEvents.clear();
 		
-		if (myLoadConfiguration.getAutoRepeatCounter() < 1 && myLoadConfiguration.fullValidationRun) {
-			myLoadConfiguration.rotateNextSetting();
-			myLO = null;
-		}
+		myLoadConfiguration.rotateNextSetting();
 			
-		if (myLoadConfiguration.getAutoRepeatCounter() > 0) {
+		if (!myLoadConfiguration.getIsDone()) {
 			resettingGame.set(true);
 			ApplicationModel.getInstance().resetModel();
 			ApplicationView.getInstance().resetView();
@@ -412,11 +410,9 @@ public class ApplicationController {
 				System.err.println("Error while reseting environment");
 				System.exit(-1);
 			}
-			if (ApplicationModel.getInstance().myPlayer.myAIModel instanceof AIModelLearning && myLO != null) {
-				if (myLO.explorationRate > 0)
-					myLO.explorationRate -= 10;
+			if (ApplicationModel.getInstance().myPlayer.myAIModel instanceof AIModelLearning && myLoadConfiguration.myLearningObject != null) {
 				AIModelLearning tempAI = (AIModelLearning) ApplicationModel.getInstance().myPlayer.myAIModel;
-				tempAI.setLearningObject(myLO);
+				tempAI.setLearningObject(myLoadConfiguration.myLearningObject);
 			}
 		}
 	}

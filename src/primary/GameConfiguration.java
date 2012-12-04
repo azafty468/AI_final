@@ -15,11 +15,17 @@ public class GameConfiguration {
 	public boolean informativeZones; // these are the areas around a pit and/or a strawberry that indicate something is near
 	public boolean isHumanControlled;
 	public boolean hasInternalWalls;
-	private int autoRepeatCounter;
+	public LearningObject myLearningObject;
+	private int TotalSets = 10;
+	private int TotalRepetitions = 100;
+	//private int autoRepeatCounter;
+	private int runSets;
+	private int runRepetitions;
 	public boolean onAutoRepeat;
 	public int nonDeterministicMovement [] = { 80, 10, 10, 5, 5, 0, 0, 0, 0 };
 	public boolean killOnGhostTouch;
 	public boolean fullValidationRun;
+	private boolean extendedLearningValidation;
 	
 	/**
 	 * 
@@ -36,9 +42,12 @@ public class GameConfiguration {
 		hasBlueGhost = false;
 		informativeZones = hasInformativeZones;
 		this.hasInternalWalls = hasInternalWalls; 
-		autoRepeatCounter = 1;
+		runRepetitions = 1;
+		runSets = 0;
 		onAutoRepeat = false;
 		killOnGhostTouch = hasKills;
+		extendedLearningValidation = false;
+		myLearningObject = null;
 	}
 	
 	/**
@@ -46,9 +55,55 @@ public class GameConfiguration {
 	 * @return Returns true if another setting exists, false otherwise
 	 */
 	public boolean rotateNextSetting() {
+		if (extendedLearningValidation) 
+			return rotateNextSettingsLearningValidation();
+		else
+			return rotateNextSettingsFullValidation();
+	}
+	
+
+	private boolean rotateNextSettingsLearningValidation() {
+		runRepetitions--;
+		if (runRepetitions > 0)
+			return true;
+		
+		if (runSets > 0) {
+			runSets--;
+			runRepetitions = TotalRepetitions - 1;
+			myLearningObject.rewardList = null;
+			return true;
+		}
+		
+		if (myLearningObject.explorationRate == 10) {
+			myLearningObject.explorationRate = 50;
+			runRepetitions = TotalRepetitions;
+			runSets = TotalSets - 1;
+			return true;
+		}
+		else if (myLearningObject.explorationRate < 1000) {
+			myLearningObject.explorationRate += 50;
+			runRepetitions = TotalRepetitions;
+			runSets = TotalSets - 1;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean rotateNextSettingsFullValidation() {
 		boolean validationComplete = false;
 		boolean rotateGhostModel = false;
 		boolean rotatePlayerModel = false;
+		
+		runRepetitions--;
+		if (runRepetitions > 0)
+			return true;
+		
+		if (myLearningObject != null) {
+			myLearningObject.rewardList = null;
+			if (myLearningObject.explorationRate > 0)
+				myLearningObject.explorationRate -= 100;
+		}
 
 		if (deterministicWorld) {
 			deterministicWorld = false;
@@ -119,24 +174,47 @@ public class GameConfiguration {
 		}
 		
 		if (validationComplete) {
-			autoRepeatCounter = 0;
+			runRepetitions = 0;
 			return false;
 		}		
 		
-		autoRepeatCounter = 10;
+		runRepetitions = 9;
 		return true;
 	}
 	
-	public void setFullValidationRun() {
+	public boolean getIsDone() {
+		if (runSets == 0 && runRepetitions == 0)
+			return true;
+		return false;
+	}
+	
+	public void setFullValidationRun(boolean isLearningFocused) {
 		// clear to base settings
-		deterministicWorld = false;
-		killOnGhostTouch = false;
-		visibleWorld = false;
-		hasRedGhost = false;
-		hasBlueGhost = false;
-		playerAIModel = "class aiModels.AIModelBlindlyForward";
-
-		autoRepeatCounter = 10;
+		if (isLearningFocused) {
+			extendedLearningValidation = true;
+			deterministicWorld = true;
+			killOnGhostTouch = false;
+			visibleWorld = true;
+			hasRedGhost = false;
+			hasBlueGhost = false;
+			playerAIModel = "class aiModels.AIModelLearning";
+			runRepetitions = TotalRepetitions - 1;
+			runSets = TotalSets - 1;
+			//runSets = 0;
+			//runRepetitions = 1;					
+		}
+		else {
+			extendedLearningValidation = false;
+			deterministicWorld = false;
+			killOnGhostTouch = false;
+			visibleWorld = false;
+			hasRedGhost = false;
+			hasBlueGhost = false;
+			playerAIModel = "class aiModels.AIModelBlindlyForward";
+			runRepetitions = 9;
+			runSets = 0;
+		}
+		
 		onAutoRepeat = true;
 		fullValidationRun = true;
 	}
@@ -183,17 +261,9 @@ public class GameConfiguration {
 	}
 	
 	public void setAutoRepeatCounter(int newCounter) {
-		if (newCounter > 1)
+		if (newCounter > 2)
 			onAutoRepeat = true;
-		autoRepeatCounter = newCounter;
-	}
-	
-	public void decrementAutoRepeatCounter() {
-		autoRepeatCounter--;
-	}
-	
-	public int getAutoRepeatCounter() {
-		return autoRepeatCounter;
+		runRepetitions = newCounter - 1;
 	}
 	
 	public void setBlueGhostAI(String aiName) {
@@ -201,8 +271,16 @@ public class GameConfiguration {
 		blueGhostAIModel = aiName;
 	}
 	
+	public int getSetCardinal() {
+		return TotalSets - runSets;
+	}
+	
+	public int getRepetitionCardinal() {
+		return TotalRepetitions - runRepetitions;
+	}
+	
 	public String describeState() {
-		String retVal = "Player AI: " + playerAIModel + " Runs Remaining: " + autoRepeatCounter +  " Deterministic: " + deterministicWorld + " Visible: " + visibleWorld + 
+		String retVal = "Player AI: " + playerAIModel + " Runs: " + runRepetitions +  " Sets: " + runSets + " Deterministic: " + deterministicWorld + " Visible: " + visibleWorld + 
 				" Ghost Kills: " + killOnGhostTouch + " Red Ghost: " + hasRedGhost;
 		if (hasRedGhost)
 			retVal += " Red Ghost AI: " + redGhostAIModel;
